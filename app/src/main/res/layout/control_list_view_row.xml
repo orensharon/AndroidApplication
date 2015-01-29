@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/list_view_row">
+
+    <!-- Row Checkbox -->
+    <CheckBox
+        android:id="@+id/list_view_check_box"
+        style="@style/list_view_checkbox">
+    </CheckBox>
+
+
+    <!-- Row Title -->
+    <TextView
+        android:id="@+id/list_view_title"
+        style="@style/list_view_title"
+        android:text="Some content"/>
+
+    <!-- Release Year -->
+    <ImageView
+        android:id="@+id/list_view_details_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/arrow"
+        android:layout_toLeftOf="@id/list_view_title"
+        android:layout_alignParentRight="true"
+        android:layout_centerInParent="true"
+        android:gravity="center" />
+
+</RelativeLayout>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+    <!-- Blue -->
+    <color name="color_blue_0">#e2f4fb</color>
+    <color name="color_blue_1">#c5eaf8</color>
+    <color name="color_blue_2">#a8dff4</color>
+    <color name="color_blue_3">#8ad5f0</color>
+    <color name="color_blue_4">#6dcaec</color>
+    <color name="color_blue_5">#50c0e9</color>
+    <color name="color_blue_6">#33b5e5</color>
+    <color name="color_blue_7">#2cb1e1</color>
+    <color name="color_blue_8">#24adde</color>
+    <color name="color_blue_9">#1da9da</color>
+    <color name="color_blue_10">#16a5d7</color>
+    <color name="color_blue_11">#0fa1d3</color>
+    <color name="color_blue_12">#079dd0</color>
+    <color name="color_blue_13">#0099cc</color>
+
+    <!-- Purple -->
+    <!-- Green -->
+    <!-- Yellow -->
+    <!-- Red -->
+
+
+    <!-- Start Activity and Fragments Background -->
+    <color name="background_white">#ffffff</color>
+    <color name="background_activity">@color/color_blue_0</color>
+    <!-- End Activity and Fragments Background -->
+
+    <!-- Start Texts -->
+    <color name="text_header">@color/color_blue_10</color>
+    <color name="text_small">@color/color_blue_5</color>
+    <color name="text_regular">@color/color_blue_13</color>
+    <!-- End Texts -->
+
+    <!-- Start Header background -->
+    <color name="header_feed_start_color">@color/color_blue_13</color>
+    <color name="header_feed_end_color">@color/color_blue_5</color>
+    <!-- End Header background -->
+
+
+    <!-- More to refactor .. -->
+
+
+    <color name="online">#ff1fac1f</color>
+    <color name="offline">#e12828</color>
+
+
+    <!-- Tab -->
+    <color name="tab_bg_start">#ffffffff</color>
+    <color name="tab_bg_end">#1f376996</color>
+    <color name="tab_bg_border">#306088</color>
+    <!-- End Tab -->
+
+    <!-- List view row colors -->
+    <color name="list_divider">@color/color_blue_2</color>
+    <color name="list_row_start_color">@color/color_blue_0</color>
+    <color name="list_row_end_color">@color/color_blue_0</color>
+    <color name="list_row_hover_start_color">#ebeef0</color>
+    <color name="list_row_hover_end_color">#ebeef0</color>
+    <!-- End List view row colors -->
+</resources>

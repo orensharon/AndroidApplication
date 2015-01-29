@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="/Users/orensharon/sdk/extras/android/m2repository/com/android/support/support-v4/19.1.0/support-v4-19.1.0.jar"
+        jumboMode="false"
+        revision="20.0.0"
+        sha1="85f201b380937e61a9dce6ca90ccf6872abbfb67">
+        <dex dex="/Users/orensharon/AndroidStudioProjects/FinalProject/AndroidApplication/app/build/intermediates/pre-dexed/debug/support-v4-19.1.0-c6b9949a8269e5e06efaa7b01fd1e32f7c8ab8c9.jar" />
+    </item>
+    <item
+        jar="/Users/orensharon/.gradle/caches/modules-2/files-2.1/com.mcxiaoke.volley/library/1.0.6/b2e6988baeea1aed656995f973aaa2fc3feaf447/library-1.0.6.jar"
+        jumboMode="false"
+        revision="20.0.0"
+        sha1="b2e6988baeea1aed656995f973aaa2fc3feaf447">
+        <dex dex="/Users/orensharon/AndroidStudioProjects/FinalProject/AndroidApplication/app/build/intermediates/pre-dexed/debug/library-1.0.6-182a626d9943185c68cb4b3c40937b435a8b84cd.jar" />
+    </item>
+
+</items>
