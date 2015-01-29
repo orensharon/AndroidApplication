@@ -1,11 +1,11 @@
-package com.example.orensharon.finalproject.services.contentobserver.helpers;
+package com.example.orensharon.finalproject.service.helpers;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
 import com.example.orensharon.finalproject.MainActivityTemp;
-import com.example.orensharon.finalproject.services.contentobserver.ObserverService;
+import com.example.orensharon.finalproject.service.ObserverService;
 
 // TODO: Service to update UI - is this the right approach?
 

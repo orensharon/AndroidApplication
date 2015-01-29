@@ -1,9 +1,9 @@
-package com.example.orensharon.finalproject.services.contentobserver.observers;
+package com.example.orensharon.finalproject.service.observers;
 
 import android.content.Context;
 import android.net.Uri;
 
-import com.example.orensharon.finalproject.services.contentobserver.managers.ContactManager;
+import com.example.orensharon.finalproject.service.managers.ContactManager;
 
 
 /**

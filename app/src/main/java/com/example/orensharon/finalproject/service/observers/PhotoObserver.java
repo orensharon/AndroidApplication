@@ -1,8 +1,8 @@
-package com.example.orensharon.finalproject.services.contentobserver.observers;
+package com.example.orensharon.finalproject.service.observers;
 
 import android.content.Context;
 import android.net.Uri;
-import com.example.orensharon.finalproject.services.contentobserver.managers.PhotoManager;
+import com.example.orensharon.finalproject.service.managers.PhotoManager;
 
 /**
  * Created by orensharon on 12/10/14.

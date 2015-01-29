@@ -1,7 +1,6 @@
 package com.example.orensharon.finalproject.gui.settings;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -17,7 +16,7 @@ import com.example.orensharon.finalproject.gui.settings.controls.CheckboxAdapter
 
 import com.example.orensharon.finalproject.R;
 import com.example.orensharon.finalproject.gui.settings.controls.Content;
-import com.example.orensharon.finalproject.services.contentobserver.ObserverService;
+import com.example.orensharon.finalproject.service.ObserverService;
 import com.example.orensharon.finalproject.sessions.SettingsSession;
 import com.example.orensharon.finalproject.sessions.SystemSession;
 

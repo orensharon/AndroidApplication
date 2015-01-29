@@ -1,13 +1,13 @@
-package com.example.orensharon.finalproject.services.contentobserver.upload;
+package com.example.orensharon.finalproject.service.upload;
 
 import android.content.Context;
 import android.util.Log;
 
 import com.example.orensharon.finalproject.logic.RequestFactory;
 
-import com.example.orensharon.finalproject.services.contentobserver.upload.helpers.SyncUpdateMessage;
+import com.example.orensharon.finalproject.service.upload.helpers.SyncUpdateMessage;
 
-import com.example.orensharon.finalproject.services.contentobserver.upload.helpers.NetworkChangeReceiver;
+import com.example.orensharon.finalproject.service.upload.helpers.NetworkChangeReceiver;
 import com.example.orensharon.finalproject.sessions.SystemSession;
 
 import java.util.Observable;

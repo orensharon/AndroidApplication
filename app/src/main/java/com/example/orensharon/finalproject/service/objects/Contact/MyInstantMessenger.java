@@ -1,4 +1,4 @@
-package com.example.orensharon.finalproject.services.contentobserver.objects.Contact;
+package com.example.orensharon.finalproject.service.objects.Contact;
 
 /**
  * Created by orensharon on 12/15/14.

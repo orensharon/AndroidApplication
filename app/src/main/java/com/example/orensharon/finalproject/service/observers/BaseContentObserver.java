@@ -1,10 +1,10 @@
-package com.example.orensharon.finalproject.services.contentobserver.observers;
+package com.example.orensharon.finalproject.service.observers;
 
 import android.content.Context;
 import android.database.ContentObserver;
 
-import com.example.orensharon.finalproject.services.contentobserver.ObserverService;
-import com.example.orensharon.finalproject.services.contentobserver.managers.BaseManager;
+import com.example.orensharon.finalproject.service.ObserverService;
+import com.example.orensharon.finalproject.service.managers.BaseManager;
 
 
 /**

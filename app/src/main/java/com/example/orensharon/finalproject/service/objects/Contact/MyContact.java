@@ -1,8 +1,8 @@
-package com.example.orensharon.finalproject.services.contentobserver.objects.Contact;
+package com.example.orensharon.finalproject.service.objects.Contact;
 
 import android.net.Uri;
 
-import com.example.orensharon.finalproject.services.contentobserver.objects.BaseObject;
+import com.example.orensharon.finalproject.service.objects.BaseObject;
 
 import java.util.List;
 

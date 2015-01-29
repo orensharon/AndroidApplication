@@ -1,11 +1,11 @@
-package com.example.orensharon.finalproject.services.contentobserver.managers;
+package com.example.orensharon.finalproject.service.managers;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
 
-import com.example.orensharon.finalproject.services.contentobserver.objects.Photo.MyPhoto;
+import com.example.orensharon.finalproject.service.objects.Photo.MyPhoto;
 
 import java.io.File;
 /**

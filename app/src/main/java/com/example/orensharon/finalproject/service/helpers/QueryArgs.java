@@ -1,4 +1,4 @@
-package com.example.orensharon.finalproject.services.contentobserver.helpers;
+package com.example.orensharon.finalproject.service.helpers;
 
 import android.net.Uri;
 

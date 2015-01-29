@@ -3,7 +3,7 @@ package com.example.orensharon.finalproject;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.example.orensharon.finalproject.services.contentobserver.objects.Photo.MyPhoto;
+import com.example.orensharon.finalproject.service.objects.Photo.MyPhoto;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

@@ -1,4 +1,4 @@
-package com.example.orensharon.finalproject.services.contentobserver.managers;
+package com.example.orensharon.finalproject.service.managers;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -8,8 +8,8 @@ import android.provider.BaseColumns;
 import android.util.Log;
 
 import com.example.orensharon.finalproject.MainActivityTemp;
-import com.example.orensharon.finalproject.services.contentobserver.helpers.QueryArgs;
-import com.example.orensharon.finalproject.services.contentobserver.objects.BaseObject;
+import com.example.orensharon.finalproject.service.helpers.QueryArgs;
+import com.example.orensharon.finalproject.service.objects.BaseObject;
 
 
 import java.util.ArrayList;

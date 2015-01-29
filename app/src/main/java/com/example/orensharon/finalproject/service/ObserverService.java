@@ -1,4 +1,4 @@
-package com.example.orensharon.finalproject.services.contentobserver;
+package com.example.orensharon.finalproject.service;
 
 
 import android.app.Service;
@@ -11,10 +11,10 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 
-import com.example.orensharon.finalproject.services.contentobserver.upload.UploadManager;
-import com.example.orensharon.finalproject.services.contentobserver.observers.BaseContentObserver;
-import com.example.orensharon.finalproject.services.contentobserver.observers.ContactObserver;
-import com.example.orensharon.finalproject.services.contentobserver.observers.PhotoObserver;
+import com.example.orensharon.finalproject.service.upload.UploadManager;
+import com.example.orensharon.finalproject.service.observers.BaseContentObserver;
+import com.example.orensharon.finalproject.service.observers.ContactObserver;
+import com.example.orensharon.finalproject.service.observers.PhotoObserver;
 
 
 /**

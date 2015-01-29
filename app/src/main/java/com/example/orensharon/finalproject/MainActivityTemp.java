@@ -1,11 +1,9 @@
 package com.example.orensharon.finalproject;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.method.ScrollingMovementMethod;
@@ -17,11 +15,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.orensharon.finalproject.gui.settings.controls.CheckboxAdapter;
-import com.example.orensharon.finalproject.gui.settings.controls.Content;
-import com.example.orensharon.finalproject.services.contentobserver.ObserverService;
-import com.example.orensharon.finalproject.services.contentobserver.helpers.ObserverServiceBroadcastReceiver;
+import com.example.orensharon.finalproject.service.ObserverService;
+import com.example.orensharon.finalproject.service.helpers.ObserverServiceBroadcastReceiver;
 
-import java.util.ArrayList;
 import java.util.Hashtable;
 
 

@@ -1,4 +1,4 @@
-package com.example.orensharon.finalproject.services.contentobserver.managers;
+package com.example.orensharon.finalproject.service.managers;
 
 
 import android.content.ContentUris;
@@ -8,13 +8,13 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.ContactsContract;
 
-import com.example.orensharon.finalproject.services.contentobserver.helpers.QueryArgs;
-import com.example.orensharon.finalproject.services.contentobserver.objects.Contact.MyAddress;
-import com.example.orensharon.finalproject.services.contentobserver.objects.Contact.MyContact;
-import com.example.orensharon.finalproject.services.contentobserver.objects.Contact.MyEmail;
-import com.example.orensharon.finalproject.services.contentobserver.objects.Contact.MyNotes;
-import com.example.orensharon.finalproject.services.contentobserver.objects.Contact.MyOrganization;
-import com.example.orensharon.finalproject.services.contentobserver.objects.Contact.MyPhone;
+import com.example.orensharon.finalproject.service.helpers.QueryArgs;
+import com.example.orensharon.finalproject.service.objects.Contact.MyAddress;
+import com.example.orensharon.finalproject.service.objects.Contact.MyContact;
+import com.example.orensharon.finalproject.service.objects.Contact.MyEmail;
+import com.example.orensharon.finalproject.service.objects.Contact.MyNotes;
+import com.example.orensharon.finalproject.service.objects.Contact.MyOrganization;
+import com.example.orensharon.finalproject.service.objects.Contact.MyPhone;
 
 
 import java.util.ArrayList;

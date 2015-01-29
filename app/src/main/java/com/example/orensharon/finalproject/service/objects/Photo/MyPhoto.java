@@ -1,6 +1,6 @@
-package com.example.orensharon.finalproject.services.contentobserver.objects.Photo;
+package com.example.orensharon.finalproject.service.objects.Photo;
 
-import com.example.orensharon.finalproject.services.contentobserver.objects.BaseObject;
+import com.example.orensharon.finalproject.service.objects.BaseObject;
 
 import java.io.File;
 
