@@ -1,23 +1,20 @@
 package com.example.orensharon.finalproject.gui.settings.controls;
 
+/**
+ * This class is a representation of the contents from the xml resource
+ * Will be used to build the adapter
+ */
 public class Content {
     private String mTitle;
-    private boolean mChecked;
 
-    public Content (String title, boolean checked) {
+
+    public Content (String title) {
         mTitle = title;
-        mChecked = checked;
     }
 
     public String getTitle() {
         return mTitle;
     }
 
-    public boolean getChecked() {
-        return mChecked;
-    }
 
-    public void setChecked(boolean checked) {
-        mChecked = checked;
-    }
 }

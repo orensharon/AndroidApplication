@@ -12,7 +12,6 @@ import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.Switch;
 
-import com.example.orensharon.finalproject.gui.feed.FeedActivity;
 import com.example.orensharon.finalproject.gui.login.LoginActivity;
 import com.example.orensharon.finalproject.gui.settings.controls.CheckboxAdapter;
 
@@ -23,7 +22,6 @@ import com.example.orensharon.finalproject.sessions.SettingsSession;
 import com.example.orensharon.finalproject.sessions.SystemSession;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
 
 public class SettingsActivity extends Activity{
 
@@ -31,6 +29,7 @@ public class SettingsActivity extends Activity{
     private ListView mContentsListView;
 
     private SettingsSession mSettingsSession;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,21 +39,20 @@ public class SettingsActivity extends Activity{
         mContentsListView = (ListView) findViewById(R.id.content_list_view);
 
 
-        Switch mySwitch = (Switch) findViewById(R.id.switch_enable_service);
+        Switch mySwitch;
+        mySwitch = (Switch) findViewById(R.id.switch_enable_service);
 
         // Set the switch according what the user saved preference, by default will be false
         mySwitch.setChecked(mSettingsSession.getServiceIsEnabledByUser());
+        EnableSwitchListener(mySwitch);
 
         // Check the current state before we display the screen
         mContentsListView.setVisibility( ((mySwitch.isChecked()==true) ? View.VISIBLE : View.INVISIBLE) );
-
-        EnableSwitchListener(mySwitch);
-
         LoadContentOptionsIntoListView();
     }
 
     private void EnableSwitchListener(Switch mySwitch) {
-        //attach a listener to check for changes in state
+        // Attach a listener to check for changes in state
         mySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
             @Override
@@ -85,12 +83,12 @@ public class SettingsActivity extends Activity{
     private void StartObservingService() {
 
         // Creating an intent with the selected values of the user
-        Intent ServiceIntent = new Intent(getApplicationContext(), ObserverService.class);
+        Intent ServiceIntent;
+        ServiceIntent = new Intent(getApplicationContext(), ObserverService.class);
+
 
         // Service will start once, any call after that will only send
         // the intent to communicate with the service this way
-
-
         startService(ServiceIntent);
     }
 
@@ -111,7 +109,7 @@ public class SettingsActivity extends Activity{
         switch (item.getItemId()) {
             case R.id.action_save:
                 // Save Settings
-                SaveSettings();
+                LogOut();
                 return true;
 
             default:
@@ -119,21 +117,10 @@ public class SettingsActivity extends Activity{
         }
     }
 
-    private void SaveSettings() {
-        // Creating hash table to hold a pair of content name and it's value
-        // according to the selection of the user in the list view.
+    private void LogOut() {
 
-        // Create data structure from the selected check boxes to send to service
-        Hashtable<String,Boolean> ContentToBackup = new Hashtable<String, Boolean>();
-
-        // Iterate over the content items check box values
-        // and create pair of the content name and the value of it in boolean
-        // This hash table will be sent later with intent to the service
-        for (Content c : mBoxAdapter.getBox()) {
-            ContentToBackup.put(c.getTitle(), c.getChecked());
-        }
-
-        SystemSession systemSession = new SystemSession(getApplicationContext());
+        SystemSession systemSession;
+        systemSession = new SystemSession(getApplicationContext());
         systemSession.Logout();
         LoadLoginActivity();
     }
@@ -144,37 +131,36 @@ public class SettingsActivity extends Activity{
         intent = new Intent(getApplicationContext(), LoginActivity.class);
 
         // Closing all the Activities
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-        // Add new Flag to start new Activity
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         // Staring Login Activity
         startActivity(intent);
+
+        // Finish this activity
         finish();
     }
 
     private void LoadContentOptionsIntoListView() {
 
         // This method will load all the content backup options
-        // Into the list view, to user selection
+        // Into the list view
 
-        Context ctx = getApplicationContext();
-        Resources res = ctx.getResources();
+        Resources res;
+        ArrayList<Content> contents;
+        String[] options;
 
-        //Hashtable<String,Boolean> savedSettings = mSystemSession.getUserContentSettings();
+
+        res = getApplicationContext().getResources();
 
         // Reading items from contents xml resource
-        ArrayList<Content> contents = new ArrayList<Content>();
-        String[] options = res.getStringArray(R.array.contenttypes);
+        contents = new ArrayList<Content>();
+        options = res.getStringArray(R.array.contenttypes);
 
         // Add each item the list view
         for (String option : options) {
-            boolean flag;
 
             // Read the saved setting of this content from the system saved data
-            //flag = ((savedSettings.containsKey(option)) ? savedSettings.get(option) : false);
-            contents.add(new Content(option, false));
+            contents.add(new Content(option));
         }
 
         mBoxAdapter = new CheckboxAdapter(this, contents);

@@ -19,10 +19,12 @@ import android.widget.TextView;
 import com.example.orensharon.finalproject.R;
 import com.example.orensharon.finalproject.gui.IFragment;
 import com.example.orensharon.finalproject.gui.settings.SettingsActivity;
-
+/**
+ * Created by orensharon on 1/21/15.
+ * This is the activity of the feed. It will request the data from the
+ * pc server and will show the contents of the user.
+ */
 public class FeedActivity extends FragmentActivity implements IFragment {
-
-    //protected boolean mIsLogged = true;
 
 
     @Override
@@ -30,24 +32,11 @@ public class FeedActivity extends FragmentActivity implements IFragment {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feed);
 
-        createCutomActionBarTitle();
+        createCustomActionBarTitle();
         LoadFragment(new FeedTabbedFragment());
 
-
     }
 
-
-    private void createCutomActionBarTitle(){
-
-        int actionBarTitle = Resources.getSystem().getIdentifier("action_bar_title", "id", "android");
-        TextView actionBarTitleView = (TextView) getWindow().findViewById(actionBarTitle);
-        actionBarTitleView.setTextColor(Color.WHITE);
-        Typeface robotoBoldCondensedItalic = Typeface.createFromAsset(getAssets(), "fonts/LHANDW.TTF");
-        if(actionBarTitleView != null){
-            actionBarTitleView.setTypeface(robotoBoldCondensedItalic);
-        }
-
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -63,55 +52,17 @@ public class FeedActivity extends FragmentActivity implements IFragment {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_settings) {
-            ShowActivity();
+            ShowSettingsActivity();
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-
-    private void ShowActivity() {
-
-
-        Intent intent;
-
-        // Sending data to the activity
-        intent = new Intent(this, SettingsActivity.class);
-
-        // Stating the activity
-        startActivityForResult(intent, 1);
-    }
-
-
-    protected void LoadViewIntoLayout(int resource, int parentLayoutResource, int childViewResource) {
-
-        // Initializing and adding screen parts from the given:
-        // 1. resource - the source activity
-        // 2. parentLayoutResource - the layout which the child will be added to
-        // 3/ childViewResource - the view to add to the layout
-
-        View child;
-        LinearLayout parentActivity, parentLayout;
-        LayoutInflater inflater;
-
-        inflater = getLayoutInflater();
-
-        // Get the parent layout
-        parentActivity = (LinearLayout) inflater.inflate (resource, null);
-        parentLayout = (LinearLayout) parentActivity.findViewById(parentLayoutResource);
-
-        // Get the child as view
-        child = inflater.inflate(childViewResource, null);
-
-        // Adding the child to the parent layout
-        parentLayout.addView(child);
-
-        // Finally set the content view
-        setContentView(parentActivity);
-    }
-
     @Override
     public void LoadFragment(Fragment fragment) {
+
+        // The implementation of the IFragment interface
+
         FragmentTransaction fragmentTransaction;
         FragmentManager fragmentManager;
 
@@ -123,4 +74,36 @@ public class FeedActivity extends FragmentActivity implements IFragment {
         fragmentTransaction.add(R.id.fragment_container, fragment);
         fragmentTransaction.commit();
     }
+
+
+    private void ShowSettingsActivity() {
+
+
+        Intent intent;
+
+        // Sending data to the activity
+        intent = new Intent(this, SettingsActivity.class);
+
+        // Stating the activity
+        startActivityForResult(intent, 1);
+    }
+    private void createCustomActionBarTitle(){
+
+        // Customize the action bar title, fonts and alignments
+
+        int actionBarTitle;
+        TextView actionBarTitleView;
+
+        actionBarTitle = Resources.getSystem().getIdentifier("action_bar_title", "id", "android");
+
+        actionBarTitleView = (TextView) getWindow().findViewById(actionBarTitle);
+        actionBarTitleView.setTextColor(Color.WHITE);
+        Typeface font = Typeface.createFromAsset(getAssets(), "fonts/LHANDW.TTF");
+
+        if(actionBarTitleView != null){
+            actionBarTitleView.setTypeface(font);
+        }
+
+    }
+
 }

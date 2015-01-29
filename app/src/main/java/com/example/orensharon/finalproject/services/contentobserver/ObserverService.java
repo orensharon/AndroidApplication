@@ -11,7 +11,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 
-import com.example.orensharon.finalproject.HelpMethods;
 import com.example.orensharon.finalproject.services.contentobserver.upload.UploadManager;
 import com.example.orensharon.finalproject.services.contentobserver.observers.BaseContentObserver;
 import com.example.orensharon.finalproject.services.contentobserver.observers.ContactObserver;
@@ -76,6 +75,7 @@ public class ObserverService extends Service {
         // 1. Set service status to not running
         // 2. Send a broadcast with new service status
         // 3. Unregister from content observer
+        // 4. Disposing the upload manager
 
         super.onDestroy();
 
@@ -105,8 +105,6 @@ public class ObserverService extends Service {
         String message = null;
 
         super.onStartCommand(intent, flags, startId);
-
-
 
 
         // If the service is started at the first time - send message its running
@@ -142,7 +140,6 @@ public class ObserverService extends Service {
 
 
         return START_STICKY;
-        //return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
@@ -154,6 +151,8 @@ public class ObserverService extends Service {
 
     private void RegisterToObserver(Uri uri, BaseContentObserver observer) {
 
+        // Register a given observer according to the given uri
+
         this.getApplicationContext()
                 .getContentResolver()
                 .registerContentObserver(
@@ -161,6 +160,8 @@ public class ObserverService extends Service {
                         observer);
     }
     private void sendResult(String message) {
+
+        // Send a broadcast
 
         Intent intent;
 

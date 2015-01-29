@@ -38,10 +38,7 @@ public class FeedTabbedFragment extends Fragment {
 
         public String getTabString() { return mTabString; }
     }
-    private FragmentActivity mContext;
 
-    // Interface instance
-    //InterfaceFragment mInterfaceFragment;
 
     public FeedTabbedFragment() {
         // Empty constructor
@@ -67,7 +64,7 @@ public class FeedTabbedFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        // Adding tabs
+
         View view;
 
         view = inflater.inflate(R.layout.inner_feed, container, false);
@@ -78,7 +75,7 @@ public class FeedTabbedFragment extends Fragment {
 
     private void AddTabs(View view) {
 
-
+        // Adding the tabs
         mTabHost = (FragmentTabHost) view.findViewById(android.R.id.tabhost);
         mTabHost.setup(getActivity(), getActivity().getSupportFragmentManager(), android.R.id.tabcontent);
 

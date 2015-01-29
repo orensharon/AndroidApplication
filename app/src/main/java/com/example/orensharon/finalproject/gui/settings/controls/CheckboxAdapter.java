@@ -18,6 +18,8 @@ import java.util.ArrayList;
 
 /**
  * Created by orensharon on 11/30/14.
+ * This class is the adapter for the list view.
+ * It will load the items into it from the resource
  */
 public class CheckboxAdapter extends BaseAdapter {
 
@@ -77,7 +79,6 @@ public class CheckboxAdapter extends BaseAdapter {
             view = mLayoutInflater.inflate(R.layout.control_list_view_row, parent, false);
         }
 
-        //AddRoundedStyleToList(position, view);
         AddContentItem(position, view);
 
         return view;
@@ -107,54 +108,11 @@ public class CheckboxAdapter extends BaseAdapter {
         checkBox.setTag(position);
         checkBox.setChecked(mSettingsSession.getUserContentItem(c.getTitle()));
 
-        /*view.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                checkBox.setChecked(!checkBox.isChecked());
-            }
-
-        });*/
     }
 
-    private void AddRoundedStyleToList(int position, View view) {
-        int rowType;
-        rowType = getItemViewType(position);
-
-        // This will add a rounded styles to the top and bottom items
-        if (rowType == 0) {
-            view.setBackgroundResource(R.drawable.list_view_row_bg_top);
-        } else if (rowType == 1) {
-            view.setBackgroundResource(R.drawable.list_view_row_bg_bottom);
-        }
-    }
-
-    Content getContent(int position) {
+    private Content getContent(int position) {
         return ((Content) getItem(position));
     }
-
-    public ArrayList<Content> getBox() {
-        ArrayList<Content> box = new ArrayList<Content>();
-        for (Content c : mObjects) {
-            //if (c.box)
-                box.add(c);
-        }
-        return box;
-    }
-
-    AdapterView.OnItemClickListener itemClick = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-            Content content;
-
-            content = getContent(position);
-
-            // Toggle the selection of the content item
-            //content.setChecked(!content.getChecked());
-
-        }
-    };
 
     CompoundButton.OnCheckedChangeListener myCheckChangList = new CompoundButton.OnCheckedChangeListener() {
         public void onCheckedChanged(CompoundButton buttonView,
@@ -162,11 +120,8 @@ public class CheckboxAdapter extends BaseAdapter {
 
             Content content;
 
-
             content = getContent((Integer) buttonView.getTag());
-            content.setChecked(isChecked);
-
-            mSettingsSession.setUserContentItem(content.getTitle(), content.getChecked());
+            mSettingsSession.setUserContentItem(content.getTitle(), isChecked);
         }
     };
 }

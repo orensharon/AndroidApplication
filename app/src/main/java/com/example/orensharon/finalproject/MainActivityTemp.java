@@ -55,7 +55,7 @@ public class MainActivityTemp extends Activity {
         WriteToLog("Loading application modules..");
 
         InitBroadcastReceiver();
-        LoadContentOptionsIntoListView();
+
 
         // Check if the status is already running or not and update mServiceStatus flag
         // according to the service status
@@ -127,16 +127,10 @@ public class MainActivityTemp extends Activity {
         // Create data structure from the selected check boxes to send to service
         Hashtable<String,Boolean> ContentToBackup = new Hashtable<String, Boolean>();
 
-        // Iterate over the content items check box values
-        // and create pair of the content name and the value of it in boolean
-        // This hash table will be sent later with intent to the service
-        for (Content c : mBoxAdapter.getBox()) {
-            ContentToBackup.put(c.getTitle(), c.getChecked());
-        }
 
         // Creating an intent with the selected values of the user
         Intent ServiceIntent = new Intent(this, ObserverService.class);
-        ServiceIntent.putExtra(ObserverService.MSG_TO_SERVICE, ContentToBackup.toString());
+
 
 
         // Service will start once, any call after that will only send
@@ -185,29 +179,7 @@ public class MainActivityTemp extends Activity {
         }
     }
 
-    private void LoadContentOptionsIntoListView() {
 
-        // This method will load all the content backup options
-        // Into the list view, to user selection
-
-        Context ctx = getApplicationContext();
-        Resources res = ctx.getResources();
-
-        // Reading items from contents xml resource
-        ArrayList<Content> contents = new ArrayList<Content>();
-        String[] options = res.getStringArray(R.array.contenttypes);
-
-        // Add each item the list view
-        for (int i = 0; i < options.length ; i ++){
-            contents.add(new Content(options[i], false));
-        }
-
-        mBoxAdapter = new CheckboxAdapter(this, contents);
-        mContentsListView.setAdapter(mBoxAdapter);
-
-
-
-    }
 
     private void GetDataFromSharedPreferences() {
         // Init shared preferences instance and read data if exists

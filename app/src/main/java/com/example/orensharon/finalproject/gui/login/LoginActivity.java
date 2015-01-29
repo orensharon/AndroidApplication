@@ -31,110 +31,17 @@ public class LoginActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_login);
 
-
+        // Initialize the system session
         mSystemSession = new SystemSession(getApplicationContext());
 
 
-        setContentView(R.layout.activity_login);
-
-        mLoginButton = (Button) findViewById(R.id.button_login);
         LoginButtonListener();
+        InitLogo();
 
-        // Font path
-        String fontPath = "fonts/LHANDW.TTF";
 
-        // text view label
-        TextView txtGhost = (TextView) findViewById(R.id.text_view_logo);
-
-        // Loading Font Face
-        Typeface tf = Typeface.createFromAsset(getAssets(), fontPath);
-
-        // Applying font
-        txtGhost.setTypeface(tf);
     }
-
-    private void LoginButtonListener() {
-        // create click listener
-        View.OnClickListener mLoginButton_onClick = new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-
-
-
-                String username, password;
-
-                username = ((EditText)findViewById(R.id.edit_text_username)).getText().toString();
-                password = ((EditText)findViewById(R.id.edit_text_password)).getText().toString();
-
-
-                String IP_GET_SERVICE_URL = "http://sharon-se-server.dynu.com:9002/IPGetterService/json/dummyuser";
-                RequestFactory requestFactory = new RequestFactory(getApplicationContext());
-
-                // TODO: sending login request
-                if (username.equals("") && password.equals("")) {
-                    mSystemSession.Login();
-
-                    JSONObject body = new JSONObject();
-                    // Request IP from server
-                    requestFactory.createRequest(Request.Method.GET, IP_GET_SERVICE_URL, body,
-                        new Response.Listener<String>() {
-                            @Override
-                            public void onResponse(String response) {
-
-                                try {
-                                    JSONObject jsonObject = new JSONObject(response);
-                                    String ip = jsonObject.getJSONObject("GetPCIPJsonResult").getString("IP");
-
-                                    if (ip != null) {
-                                        mSystemSession.setRemoteIPAddress(ip);
-                                    }
-
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        },
-
-                        new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                Log.e("Error", error.getMessage());
-                            }
-                    });
-
-                    LoadFeedActivity();
-                    finish();
-                } else {
-
-                }
-                Log.d("System state login", mSystemSession.getRemoteIPAddress());
-
-            }
-        };
-
-        // Assign click listener to the Login button
-        mLoginButton.setOnClickListener(mLoginButton_onClick);
-    }
-
-
-
-    private void LoadFeedActivity() {
-
-        Intent intent;
-        intent = new Intent(getApplicationContext(), FeedActivity.class);
-
-        // Closing all the Activities
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-        // Add new Flag to start new Activity
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-        // Staring Login Activity
-        startActivity(intent);
-    }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -159,6 +66,109 @@ public class LoginActivity extends Activity {
     }
 
 
+    private void InitLogo() {
+        // Font path
+        String fontPath = "fonts/LHANDW.TTF";
+
+        // text view label
+        TextView txtGhost = (TextView) findViewById(R.id.text_view_logo);
+
+        // Loading Font Face
+        Typeface tf = Typeface.createFromAsset(getAssets(), fontPath);
+
+        // Applying font
+        txtGhost.setTypeface(tf);
+    }
+
+    private void LoginButtonListener() {
+        // create click listener
+
+        mLoginButton = (Button) findViewById(R.id.button_login);
+
+        View.OnClickListener mLoginButton_onClick = new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                String username, password;
+
+                // Extracting values from the input texts
+                username = ((EditText)findViewById(R.id.edit_text_username)).getText().toString();
+                password = ((EditText)findViewById(R.id.edit_text_password)).getText().toString();
+
+
+                String IP_GET_SERVICE_URL = "http://sharon-se-server.dynu.com:9002/IPGetterService/json/dummyuser";
+                RequestFactory requestFactory = new RequestFactory(getApplicationContext());
+
+                // TODO: sending login request
+                if (username.equals("") && password.equals("")) {
+                    mSystemSession.Login();
+
+                    JSONObject body = new JSONObject();
+                    // Request IP from server
+                    requestFactory.createRequest(Request.Method.GET, IP_GET_SERVICE_URL, body,
+                            new Response.Listener<String>() {
+                                @Override
+                                public void onResponse(String response) {
+
+                                    // Extract the IP from the response
+                                    try {
+                                        JSONObject jsonObject = new JSONObject(response);
+                                        String ip = jsonObject.getJSONObject("GetPCIPJsonResult").getString("IP");
+
+                                        if (ip != null) {
+                                            // Save the ip
+                                            mSystemSession.setRemoteIPAddress(ip);
+                                        } else {
+                                            mSystemSession.setRemoteIPAddress(SystemSession.NO_IP);
+                                        }
+
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                        mSystemSession.setRemoteIPAddress(SystemSession.NO_IP);
+                                    }
+                                }
+                            },
+
+                            new Response.ErrorListener() {
+                                @Override
+                                public void onErrorResponse(VolleyError error) {
+                                    Log.e("Error", error.getMessage());
+                                    mSystemSession.setRemoteIPAddress(SystemSession.NO_IP);
+                                }
+                            });
+
+                    LoadFeedActivity();
+
+                } else {
+
+                }
+                Log.d("System state login", mSystemSession.getRemoteIPAddress());
+
+            }
+        };
+
+        // Assign click listener to the Login button
+        mLoginButton.setOnClickListener(mLoginButton_onClick);
+    }
+
+    private void LoadFeedActivity() {
+
+        Intent intent;
+        intent = new Intent(getApplicationContext(), FeedActivity.class);
+
+        // Closing all the Activities
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+        // Add new Flag to start new Activity
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        // Staring Login Activity
+        startActivity(intent);
+
+        // Finish this activity
+        finish();
+    }
 
 
 }

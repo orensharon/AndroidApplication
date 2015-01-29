@@ -70,6 +70,7 @@ public class FeedSectionFragment extends Fragment {
 
     private void ReloadWebView(View view) {
 
+        // Reloads the web view on swiping
 
         final SwipeRefreshLayout swipeView = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
 
