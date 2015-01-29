@@ -7,7 +7,7 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 import android.util.Log;
 
-import com.example.orensharon.finalproject.MainActivityTemp;
+import com.example.orensharon.finalproject.TempActivity;
 import com.example.orensharon.finalproject.service.helpers.QueryArgs;
 import com.example.orensharon.finalproject.service.objects.BaseObject;
 
@@ -42,7 +42,7 @@ public abstract class BaseManager {
 
         mContext = context;
         mObservingUri = uri;
-        mSharedPreferences = mContext.getSharedPreferences(MainActivityTemp.APP_NAME, Context.MODE_PRIVATE);
+        mSharedPreferences = mContext.getSharedPreferences(TempActivity.APP_NAME, Context.MODE_PRIVATE);
     }
 
 

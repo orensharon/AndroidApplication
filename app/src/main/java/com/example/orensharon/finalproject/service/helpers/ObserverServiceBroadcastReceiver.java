@@ -4,7 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import com.example.orensharon.finalproject.MainActivityTemp;
+import com.example.orensharon.finalproject.TempActivity;
 import com.example.orensharon.finalproject.service.ObserverService;
 
 // TODO: Service to update UI - is this the right approach?
@@ -29,10 +29,10 @@ public class ObserverServiceBroadcastReceiver extends BroadcastReceiver {
         // This method will be the receiver of the messages
 
         String message;
-        MainActivityTemp main;
+        TempActivity main;
 
         message = intent.getStringExtra(ObserverService.MSG_FROM_SERVICE);
-        main = (MainActivityTemp)mMainContext;
+        main = (TempActivity)mMainContext;
 
         main.WriteToLog(message);
         main.UpdateUI();
