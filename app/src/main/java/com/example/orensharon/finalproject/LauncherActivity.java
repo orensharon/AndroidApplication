@@ -29,7 +29,7 @@ public class LauncherActivity extends Activity {
     }
 
 
-
+    // Load the activity
     private void LoadActivity(Class cls) {
 
         Intent intent;
