@@ -3,6 +3,7 @@ package com.example.orensharon.finalproject.service.observers;
 import android.content.Context;
 import android.net.Uri;
 
+import com.example.orensharon.finalproject.ApplicationConstants;
 import com.example.orensharon.finalproject.service.managers.ContactManager;
 
 
@@ -18,7 +19,7 @@ public class ContactObserver extends BaseContentObserver {
 
         // Create a manager for that content. The manager will monitor the change of the content
 
-        mManager = new ContactManager(mContext, uri);
+        mManager = new ContactManager(mContext, uri, ApplicationConstants.ContentKeys.CONTACTS);
         this.Manage();
 
         // Get the last contact

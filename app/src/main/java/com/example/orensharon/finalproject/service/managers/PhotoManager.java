@@ -3,9 +3,13 @@ package com.example.orensharon.finalproject.service.managers;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.provider.ContactsContract;
 import android.provider.MediaStore;
 
+import com.example.orensharon.finalproject.ApplicationConstants;
+import com.example.orensharon.finalproject.service.objects.BaseObject;
 import com.example.orensharon.finalproject.service.objects.Photo.MyPhoto;
+import com.example.orensharon.finalproject.utils.MD5Checksum;
 
 import java.io.File;
 /**
@@ -14,13 +18,14 @@ import java.io.File;
  */
 public class PhotoManager extends BaseManager {
 
-    public PhotoManager (Context context, Uri uri) {
-        super(context, uri);
+    public PhotoManager (Context context, Uri uri, ApplicationConstants.ContentKeys contentKeys) {
+        super(context, uri, contentKeys);
     }
 
     @Override
-    public Object getContent(Cursor cursor) {
+    public BaseObject getContent(Cursor cursor) {
         MyPhoto photo;
+        String checksum;
 
         photo = null;
 
@@ -34,11 +39,32 @@ public class PhotoManager extends BaseManager {
             mimeType = getColumnString(cursor, MediaStore.MediaColumns.MIME_TYPE);
             title = getColumnString(cursor, MediaStore.MediaColumns.TITLE);
 
+            checksum = MD5Checksum.getMd5HashFromFilePath(filePath);
 
-            // Creating new contentItem with the data
-            photo = new MyPhoto(id, new File(filePath), mimeType, title);
+            // Creating new Photo object with extracted data
+            photo = new MyPhoto(id, ApplicationConstants.TYPE_OF_CONTENT_PHOTO, new File(filePath), mimeType, title,checksum);
         }
         return photo;
+    }
+
+    @Override
+    public BaseObject getBaseContent(Cursor cursor) {
+
+        String id, checksum, filePath;
+        BaseObject result;
+
+        id = cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns._ID));
+
+
+
+        filePath = getColumnString(cursor, MediaStore.MediaColumns.DATA);
+        checksum = MD5Checksum.getMd5HashFromFilePath(filePath);
+
+
+        // Create new contact with matched id and string of its name
+        result = new BaseObject(id, ApplicationConstants.TYPE_OF_CONTENT_PHOTO, checksum);
+        return result;
+
     }
 
 

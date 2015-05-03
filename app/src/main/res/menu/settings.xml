@@ -2,8 +2,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.example.orensharon.finalproject.gui.settings.SettingsActivity" >
     <item android:id="@+id/action_save"
-        android:title="@string/save"
+        android:title="@string/account"
         android:orderInCategory="100"
-        android:icon="@drawable/icon_save"
+        android:icon="@drawable/icon_account"
         android:showAsAction="ifRoom" />
 </menu>

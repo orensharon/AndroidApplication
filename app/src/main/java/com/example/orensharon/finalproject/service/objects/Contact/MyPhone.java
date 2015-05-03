@@ -1,5 +1,8 @@
 package com.example.orensharon.finalproject.service.objects.Contact;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Created by orensharon on 12/15/14.
  */
@@ -39,4 +42,18 @@ public class MyPhone {
         return "MyPhones [number=" + number + ", type=" + type + "]";
     }
 
+    public String toJSONString() {
+
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            jsonObject.put("Number",number);
+            jsonObject.put("Type",type);
+            return jsonObject.toString();
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+    }
 }

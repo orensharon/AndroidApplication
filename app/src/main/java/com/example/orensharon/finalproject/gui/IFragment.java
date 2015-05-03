@@ -10,4 +10,6 @@ import android.support.v4.app.Fragment;
 public interface IFragment {
 
     public void LoadFragment(Fragment fragment);
+
+    //public void LoadActivity(Class cls, boolean isSupportBack);
 }

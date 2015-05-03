@@ -13,6 +13,7 @@ import android.webkit.WebView;
 
 import com.example.orensharon.finalproject.R;
 import com.example.orensharon.finalproject.gui.IFragment;
+import com.example.orensharon.finalproject.sessions.SystemSession;
 
 /**
  * Created by orensharon on 1/4/15.
@@ -54,12 +55,13 @@ public class FeedSectionFragment extends Fragment {
 
 
         View view;
+        SystemSession systemSession = new SystemSession(getActivity());
 
         view = inflater.inflate(R.layout.control_web_view, container, false);
         mWebView = (WebView) view.findViewById(R.id.web_view_feed);
 
         if (savedInstanceState == null) {
-            mWebView.loadUrl("http://sharon-se-server.dynu.com/demo.html");
+            mWebView.loadUrl("http://" + systemSession.geIPAddressOfSafe() + ":9003/StreamService/Gallery");
         }
 
         ReloadWebView(view);

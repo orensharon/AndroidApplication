@@ -52,8 +52,6 @@ public class ObserverService extends Service {
     // The concrete observers
     private BaseContentObserver mPhotosObserver, mContactsObserver;
 
-    // The upload manager of the contents
-    private static UploadManager mUploadManager;
 
 
     @Override
@@ -79,8 +77,7 @@ public class ObserverService extends Service {
 
         super.onDestroy();
 
-        // It will save an image of the manager and destroy it
-        mUploadManager.Dispose();
+
 
 
         mServiceStatus = STATUS_SERVICE_NOT_RUNNING;
@@ -113,22 +110,22 @@ public class ObserverService extends Service {
             message = SERVICE_RUNNING_MSG;
 
 
+            // Init the concrete observers
             mContactsObserver = new ContactObserver(this, CONTACT_OBSERVER_URI);
             mPhotosObserver = new PhotoObserver(this, PHOTO_OBSERVER_URI);
 
             RegisterToObserver(CONTACT_OBSERVER_URI, mContactsObserver);
             RegisterToObserver(PHOTO_OBSERVER_URI, mPhotosObserver);
 
-            // Init the upload manager component
-            mUploadManager = new UploadManager(this);
+
 
             Log.d("INSTANT", "registered content observer");
         } else if (mServiceStatus == STATUS_SERVICE_RUNNING) {
 
             // If service is already running - manage the content
             message = "Settings saved on service";
-            mContactsObserver.Manage();
-            mPhotosObserver.Manage();
+            //mContactsObserver.Manage();
+            //mPhotosObserver.Manage();
         }
 
 
@@ -159,9 +156,10 @@ public class ObserverService extends Service {
                         uri, false,
                         observer);
     }
+
     private void sendResult(String message) {
 
-        // Send a broadcast
+        // Send a broadcast to the loader activity
 
         Intent intent;
 
@@ -173,6 +171,7 @@ public class ObserverService extends Service {
         // Send the broadcast message
         mBroadcaster.sendBroadcast(intent);
     }
+
     public static int getServiceStatus() {
 
         // Getter of service status
@@ -180,8 +179,5 @@ public class ObserverService extends Service {
         return mServiceStatus;
     }
 
-    public static UploadManager getUploadManager() {
-        return mUploadManager;
-    }
 
 }

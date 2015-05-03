@@ -1,6 +1,7 @@
 package com.example.orensharon.finalproject.logic;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -43,7 +44,8 @@ public class RequestPool {
     }
 
     public <T> void addToRequestQueue(Request<T> req) {
-        getRequestQueue().add(req);
+        Log.e(" +_+_+_+ request _+_+_+_+_",req.toString());
+        Request<T> requ = getRequestQueue().add(req);
     }
 }
 

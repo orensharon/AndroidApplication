@@ -1,5 +1,8 @@
 package com.example.orensharon.finalproject.service.objects.Contact;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Created by orensharon on 12/15/14.
  */
@@ -39,5 +42,17 @@ public class MyOrganization {
         return "MyOrganization [company=" + company + ", title=" + title + "]";
     }
 
+    public JSONObject toJSONObject() {
 
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            jsonObject.put("Company",company);
+            jsonObject.put("Title",title);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonObject;
+
+    }
 }

@@ -8,7 +8,9 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.ContactsContract;
 
+import com.example.orensharon.finalproject.ApplicationConstants;
 import com.example.orensharon.finalproject.service.helpers.QueryArgs;
+import com.example.orensharon.finalproject.service.objects.BaseObject;
 import com.example.orensharon.finalproject.service.objects.Contact.MyAddress;
 import com.example.orensharon.finalproject.service.objects.Contact.MyContact;
 import com.example.orensharon.finalproject.service.objects.Contact.MyEmail;
@@ -27,25 +29,28 @@ import java.util.List;
 public class ContactManager extends BaseManager {
 
 
-    public ContactManager(Context context, Uri uri) {
+    public ContactManager(Context context, Uri uri, ApplicationConstants.ContentKeys contentKeys) {
 
-        super(context, uri);
+        super(context, uri,contentKeys);
 
     }
 
     /* Used by the base manager class */
     @Override
-    public Object getContent(Cursor cursor) {
+    public BaseObject getContent(Cursor cursor) {
         // From a given cursor - create a new MyContact and return it
 
-        String id, name;
+        String id, name, version;
         MyContact contact;
 
         id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
         name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
 
-        // Create new contact with matched id
-        contact = new MyContact(id);
+        // The version is the checksum in the case of contacts
+        version = getVersion(id);
+
+        // Create new contact with matched id and string of its name
+        contact = new MyContact(id, ApplicationConstants.TYPE_OF_CONTENT_CONTACT, version);
         contact.setDisplayName(name);
 
         // Check if there is a phone number exist for this user
@@ -62,8 +67,24 @@ public class ContactManager extends BaseManager {
         contact.setNotes( requestNotes(contact.getId()) );
         contact.setPhoto( getDataUri(contact.getId()) );
 
-
         return contact;
+    }
+
+    @Override
+    public BaseObject getBaseContent(Cursor cursor) {
+        String id, version;
+        BaseObject result;
+
+        id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+
+
+        // The version is the checksum in the case of contacts
+        version = getVersion(id);
+
+        // Create new contact with matched id and string of its name
+        result = new BaseObject(id, ApplicationConstants.TYPE_OF_CONTENT_CONTACT, version);
+        return result;
+
     }
 
     /* Used for internal usage - building the contact profile */
@@ -227,7 +248,7 @@ public class ContactManager extends BaseManager {
         Uri uri;
         Cursor cursor;
 
-        organization = null;
+        organization = new MyOrganization();
 
         selection = ContactsContract.Data.CONTACT_ID + " = ? AND " + ContactsContract.Data.MIMETYPE + " = ?";
         selectionArgs = new String[]{idContact,
@@ -251,7 +272,8 @@ public class ContactManager extends BaseManager {
             orgName = getColumnString(cursor, ContactsContract.CommonDataKinds.Organization.DATA);
             title = getColumnString(cursor, ContactsContract.CommonDataKinds.Organization.TITLE);
 
-            organization = new MyOrganization(orgName, title);
+            organization.setCompany(orgName);
+            organization.setTitle(title);
         }
 
         cursor.close();
@@ -375,7 +397,24 @@ public class ContactManager extends BaseManager {
     }
 
 
+    private String getVersion(String id) {
+        //specify which fields of RawContacts table to be retrieved.
+        String[] projection = new String[]{ContactsContract.RawContacts.VERSION};
+        String selection = ContactsContract.RawContacts.CONTACT_ID + " = ?";
+        String[] selectionArgs = new String[]{id};
+        //query the RawContacts.CONTENT_URI
+        Cursor cur = mContext.getContentResolver().query(ContactsContract.RawContacts.CONTENT_URI, projection, selection, selectionArgs, null);
 
+        if (cur.moveToNext()) {
+            String version = cur.getString(cur.getColumnIndex(ContactsContract.RawContacts.VERSION));
+            return version;
+        }
+
+        //Always remember to close the cursor. Otherwise it leads to side-effects.
+
+        cur.close();
+        return null;
+    }
 
 
 

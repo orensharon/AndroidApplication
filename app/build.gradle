@@ -19,7 +19,11 @@ android {
     productFlavors {
     }
 
-
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+    }
 
 
 }
@@ -28,5 +32,8 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:support-v4:19.1.+'
     compile 'com.mcxiaoke.volley:library:1.0.6'
+    compile 'org.apache.httpcomponents:httpmime:4.3'
+    compile 'org.apache.httpcomponents:httpcore:4.3'
+
 }
 

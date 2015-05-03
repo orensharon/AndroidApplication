@@ -2,7 +2,12 @@ package com.example.orensharon.finalproject.service.objects.Contact;
 
 import android.net.Uri;
 
+import com.example.orensharon.finalproject.ApplicationConstants;
 import com.example.orensharon.finalproject.service.objects.BaseObject;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -21,8 +26,11 @@ public class MyContact extends BaseObject {
     private MyNotes mNotes;
     private Uri mPhotoUri;
 
-    public MyContact(String id) {
-        super(id);
+
+
+
+    public MyContact(String id, String objectType, String checksum) {
+        super(id, objectType, checksum);
     }
 
     public String getDisplayName() {
@@ -95,6 +103,77 @@ public class MyContact extends BaseObject {
                 + ", emails=" + mEmails + ", addresses=" + mAddresses
                 + ", instantMessengers=" + mInstantMessengers
                 + ", organization=" + mOrganization + ", notes=" + mNotes + "]";
+    }
+
+    public JSONObject toJSONObject() {
+
+        // From class members building JSON object and returns it
+
+        JSONObject jsonObject = new JSONObject();
+        // TODO: enum
+        try {
+            jsonObject.put(ApplicationConstants.CONTACT_ID_KEY, getId());
+            jsonObject.put(ApplicationConstants.CONTACT_DISPLAY_NAME_KEY, mDisplayName);
+            jsonObject.put(ApplicationConstants.CONTACT_PHOTO_URI_KEY, mPhotoUri.toString());
+
+            // Add list of phones
+            JSONArray phones = new JSONArray();
+
+            if (mPhones != null) {
+                for (MyPhone phone : mPhones) {
+                    JSONObject singlePhone = new JSONObject(phone.toJSONString());
+                    phones.put(singlePhone);
+                }
+            }
+            jsonObject.put(ApplicationConstants.CONTACT_PHONES_KEY, phones);
+
+            // Add list of emails
+            JSONArray emails = new JSONArray();
+
+            if (mEmails != null) {
+                for (MyEmail email : mEmails) {
+                    JSONObject singleEmail = new JSONObject(email.toJSONString());
+                    emails.put(singleEmail);
+                }
+            }
+            jsonObject.put(ApplicationConstants.CONTACT_EMAIL_KEY, emails);
+
+
+            // Add list of addresses
+            JSONArray addresses = new JSONArray();
+
+            if (mAddresses != null){
+                for (MyAddress address : mAddresses) {
+                    JSONObject singleAddress = new JSONObject(address.toJSONString());
+                    addresses.put(singleAddress);
+                }
+            }
+            jsonObject.put(ApplicationConstants.CONTACT_ADDRESSES_KEY, addresses);
+
+            // Add list of instant messengers
+            JSONArray instantMessengers = new JSONArray();
+
+            if (mInstantMessengers != null) {
+                for (MyInstantMessenger im : mInstantMessengers) {
+                    JSONObject singleIM = new JSONObject(im.toJSONString());
+                    instantMessengers.put(singleIM);
+                }
+            }
+            jsonObject.put(ApplicationConstants.CONTACT_INSTANT_MESSENGERS_KEY, instantMessengers);
+
+            if (mOrganization != null) {
+                jsonObject.put(ApplicationConstants.CONTACT_ORGANIZATION_KEY, mOrganization.toJSONObject());
+            }
+
+            if (mNotes != null) {
+                jsonObject.put(ApplicationConstants.CONTACT_NOTES_KEY, mNotes.toJSONString());
+            }
+            return jsonObject;
+        } catch (JSONException e) {
+            e.printStackTrace();
+            // TODO: means error building json object from data from db
+            return null;
+        }
     }
 
 

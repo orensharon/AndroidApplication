@@ -75,10 +75,11 @@ public class ContentUpload extends AsyncTask<Object, Void, Void> {
             // Set HTTP method to POST.
             connection.setRequestMethod("POST");
 
-            // Adding request message headers
+            // Adding request message mHeaders
             connection.setRequestProperty("Connection", "Keep-Alive");
             connection.setRequestProperty("Content-Type", "application/octet");
             connection.setChunkedStreamingMode(1024);
+
             outputStream = new DataOutputStream( connection.getOutputStream() );
             outputStream.writeBytes(TWO_HYPHENS + BOUNDARY + LINE_END);
 
@@ -99,6 +100,7 @@ public class ContentUpload extends AsyncTask<Object, Void, Void> {
             // Read file
             bytesRead = fileInputStream.read(buffer, 0, bufferSize);
 
+
             // Streaming the file
             while (bytesRead > 0)
             {
@@ -112,11 +114,12 @@ public class ContentUpload extends AsyncTask<Object, Void, Void> {
             outputStream.writeBytes(LINE_END);
             outputStream.writeBytes(TWO_HYPHENS + BOUNDARY + TWO_HYPHENS + LINE_END);
 
+            //Log.e("request",connection.getReq);
             // Responses from the server (code and message)
             int serverResponseCode = connection.getResponseCode();
             String serverResponseMessage = connection.getResponseMessage();
 
-            Log.d("Server response after upload: (code: " + serverResponseCode + "): ",serverResponseMessage);
+           // Log.d("Server response after upload: (code: " + serverResponseCode + "): ",serverResponseMessage);
 
             fileInputStream.close();
             outputStream.flush();

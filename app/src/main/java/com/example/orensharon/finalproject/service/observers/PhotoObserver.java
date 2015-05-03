@@ -2,6 +2,8 @@ package com.example.orensharon.finalproject.service.observers;
 
 import android.content.Context;
 import android.net.Uri;
+
+import com.example.orensharon.finalproject.ApplicationConstants;
 import com.example.orensharon.finalproject.service.managers.PhotoManager;
 
 /**
@@ -15,7 +17,7 @@ public class PhotoObserver extends BaseContentObserver {
         super(context);
 
         // Create a manager for that content. The manager will monitor the change of the content
-        mManager = new PhotoManager(mContext, uri);
+        mManager = new PhotoManager(mContext, uri, ApplicationConstants.ContentKeys.PHOTOS);
         this.Manage();
 
         // Get the last photo

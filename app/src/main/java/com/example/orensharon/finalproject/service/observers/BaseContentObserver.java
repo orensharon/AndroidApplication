@@ -2,9 +2,10 @@ package com.example.orensharon.finalproject.service.observers;
 
 import android.content.Context;
 import android.database.ContentObserver;
+import android.util.Log;
 
-import com.example.orensharon.finalproject.service.ObserverService;
 import com.example.orensharon.finalproject.service.managers.BaseManager;
+import com.example.orensharon.finalproject.service.objects.BaseObject;
 
 
 /**
@@ -16,6 +17,9 @@ abstract public class BaseContentObserver extends ContentObserver {
     public Context mContext;
     protected BaseManager mManager;
 
+    private long lastTimeofCall = 0L;
+    private long lastTimeofUpdate = 0L;
+    private long threshold_time = 5000;
 
     public BaseContentObserver(Context context) {
 
@@ -29,15 +33,60 @@ abstract public class BaseContentObserver extends ContentObserver {
         // Each registered content observer will fire this event on any change of the content
         // Checking if this is a new content and add it to the pool to send it
 
-        Object newContent;
 
-        newContent = mManager.getNewContent();
-        ObserverService.getUploadManager().AddToPool(newContent);
+        lastTimeofCall = System.currentTimeMillis();
 
-        super.onChange(selfChange);
+        // To prevent multiple calls
+        if(lastTimeofCall - lastTimeofUpdate > threshold_time) {
+
+            // Handling with content sampling using thread
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+
+                    BaseObject content;
+
+                    content = mManager.HandleContent();
+
+                    if (content != null) {
+                        Log.e("sharonlog", "Found victim content!" + content.getTypeOfContent() + " ID:" + content.getId());
+
+                        // Sending the content into the upload pool
+                        mManager.getUploadManager().DispatchRequest(content);
+                    } else {
+                        Log.e("sharonlog", "No content found");
+                    }
+                }
+            }).start();
+
+
+            lastTimeofUpdate = System.currentTimeMillis();
+        }
+        //newContent = HandleNewContent;
+        //newContent = mManager.getNewContent();
+        //newContent = mManager.requestLatestContentFromDatabase();
+
+
+        //
+
+        /*SystemSession systemSession = new SystemSession(mContext);
+
+        String ip = systemSession.geIPAddressOfSafe();
+        ContentUpload upload = new ContentUpload();
+        MyPhoto myPhoto = (MyPhoto)newContent;
+
+        upload.execute(ip, myPhoto);
+*/
+      //  super.onChange(selfChange);
+    }
+
+    @Override
+    public boolean deliverSelfNotifications() {
+        return true;
     }
 
     public void Manage() {
+
         mManager.Manage();
     }
 }

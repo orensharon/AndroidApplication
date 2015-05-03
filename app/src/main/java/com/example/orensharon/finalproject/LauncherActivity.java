@@ -25,7 +25,6 @@ public class LauncherActivity extends Activity {
         // Initialize the system session
         mSystemSession = new SystemSession(getApplicationContext());
 
-
         if (mSystemSession.getLoginState() == true) {
             // If already logged in - show the feed activity
             LoadActivity(FeedActivity.class);

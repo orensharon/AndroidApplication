@@ -54,6 +54,6 @@ public class SettingsSession {
     public boolean getUserContentItem(String key) {
 
         // If no settings exist then set as false
-        return mSharedPreferences.getBoolean(key, false);
+        return mSharedPreferences.getBoolean(key, true);
     }
 }

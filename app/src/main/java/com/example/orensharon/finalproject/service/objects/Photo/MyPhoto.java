@@ -1,6 +1,7 @@
 package com.example.orensharon.finalproject.service.objects.Photo;
 
 import com.example.orensharon.finalproject.service.objects.BaseObject;
+import com.example.orensharon.finalproject.utils.MD5Checksum;
 
 import java.io.File;
 
@@ -15,9 +16,9 @@ public class MyPhoto extends BaseObject {
     @SuppressWarnings("unused")
     private String mType;
 
-    public MyPhoto(String id, File file, String type, String title) {
+    public MyPhoto(String id, String objectType, File file, String type, String title, String checksum) {
 
-        super(id);
+        super(id, objectType, checksum);
         mFile = file;
         mType = type;
         mTitle = title;
