@@ -2,13 +2,6 @@
 <items version="2" >
 
     <item
-        jar="/Users/orensharon/.gradle/caches/modules-2/files-2.1/com.mcxiaoke.volley/library/1.0.6/b2e6988baeea1aed656995f973aaa2fc3feaf447/library-1.0.6.jar"
-        jumboMode="false"
-        revision="20.0.0"
-        sha1="b2e6988baeea1aed656995f973aaa2fc3feaf447">
-        <dex dex="/Users/orensharon/AndroidStudioProjects/FinalProject/AndroidApplication/app/build/intermediates/pre-dexed/debug/library-1.0.6-182a626d9943185c68cb4b3c40937b435a8b84cd.jar" />
-    </item>
-    <item
         jar="/Users/orensharon/sdk/extras/android/m2repository/com/android/support/support-v4/19.1.0/support-v4-19.1.0.jar"
         jumboMode="false"
         revision="20.0.0"
@@ -23,11 +16,25 @@
         <dex dex="/Users/orensharon/AndroidStudioProjects/FinalProject/AndroidApplication/app/build/intermediates/pre-dexed/debug/httpmime-4.3-c9618dce02cf998aef711633d2b3e011b138a173.jar" />
     </item>
     <item
+        jar="/Users/orensharon/.gradle/caches/modules-2/files-2.1/com.squareup.picasso/picasso/2.5.2/7446d06ec8d4f7ffcc53f1da37c95f200dcb9387/picasso-2.5.2.jar"
+        jumboMode="false"
+        revision="20.0.0"
+        sha1="7446d06ec8d4f7ffcc53f1da37c95f200dcb9387">
+        <dex dex="/Users/orensharon/AndroidStudioProjects/FinalProject/AndroidApplication/app/build/intermediates/pre-dexed/debug/picasso-2.5.2-82acadc7a55887c0b4fd5f3b37821a480e08d1ae.jar" />
+    </item>
+    <item
         jar="/Users/orensharon/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpcore/4.3/11393498b38e9695d0850cac26fde5613ae268b9/httpcore-4.3.jar"
         jumboMode="false"
         revision="20.0.0"
         sha1="11393498b38e9695d0850cac26fde5613ae268b9">
         <dex dex="/Users/orensharon/AndroidStudioProjects/FinalProject/AndroidApplication/app/build/intermediates/pre-dexed/debug/httpcore-4.3-74ef03a49949771fcc0cc8fb3812dd00d5414a16.jar" />
+    </item>
+    <item
+        jar="/Users/orensharon/.gradle/caches/modules-2/files-2.1/com.mcxiaoke.volley/library/1.0.6/b2e6988baeea1aed656995f973aaa2fc3feaf447/library-1.0.6.jar"
+        jumboMode="false"
+        revision="20.0.0"
+        sha1="b2e6988baeea1aed656995f973aaa2fc3feaf447">
+        <dex dex="/Users/orensharon/AndroidStudioProjects/FinalProject/AndroidApplication/app/build/intermediates/pre-dexed/debug/library-1.0.6-182a626d9943185c68cb4b3c40937b435a8b84cd.jar" />
     </item>
 
 </items>

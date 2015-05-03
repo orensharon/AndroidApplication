@@ -1,18 +1,17 @@
 package com.example.orensharon.finalproject.gui.feed;
 
 import android.app.Activity;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
+import android.widget.ListView;
 
 import com.example.orensharon.finalproject.R;
 import com.example.orensharon.finalproject.gui.IFragment;
+import com.example.orensharon.finalproject.gui.feed.controls.FeedItem;
+import com.example.orensharon.finalproject.gui.feed.controls.FeedItemAdapter;
 import com.example.orensharon.finalproject.sessions.SystemSession;
 
 /**
@@ -21,9 +20,10 @@ import com.example.orensharon.finalproject.sessions.SystemSession;
 public class FeedSectionFragment extends Fragment {
 
     private IFragment mListener;
+    private FeedItemAdapter mFeedItemAdapter;
+    private ListView mFeedItemListView;
 
     // TODO: change the method - so there will be one HTTP post and load the html into the web view
-    private WebView mWebView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -39,14 +39,12 @@ public class FeedSectionFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
 
-//        mWebView.saveState(outState);
         super.onSaveInstanceState(outState);
     }
 
     @Override
     public void onViewStateRestored(Bundle savedInstanceState) {
 
-//        mWebView.restoreState(savedInstanceState);
         super.onViewStateRestored(savedInstanceState);
     }
 
@@ -57,39 +55,29 @@ public class FeedSectionFragment extends Fragment {
         View view;
         SystemSession systemSession = new SystemSession(getActivity());
 
-        view = inflater.inflate(R.layout.control_web_view, container, false);
-        mWebView = (WebView) view.findViewById(R.id.web_view_feed);
+        view = inflater.inflate(R.layout.fragment_feed_section, container, false);
 
-        if (savedInstanceState == null) {
-            mWebView.loadUrl("http://" + systemSession.geIPAddressOfSafe() + ":9003/StreamService/Gallery");
+
+        mFeedItemListView = (ListView) view.findViewById(R.id.feed_items_list_view);
+
+        FeedItem[] feedItems = new FeedItem[10];
+        for (int i = 0; i < feedItems.length ; i++) {
+            feedItems[i] = new FeedItem(i, "http://www.weebly.com/uploads/1/1/2/9/11298616/8590025_orig.png?0");
         }
 
-        ReloadWebView(view);
+        mFeedItemAdapter = new FeedItemAdapter(getActivity(),
+                R.layout.control_list_view_row_feed_items,
+                feedItems);
 
+        mFeedItemListView.setAdapter(mFeedItemAdapter);
 
         return view;
     }
 
-    private void ReloadWebView(View view) {
 
-        // Reloads the web view on swiping
 
-        final SwipeRefreshLayout swipeView = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
 
-        //final TextView rndNum = (TextView) findViewById(R.id.rndNum);
-        swipeView.setColorScheme(android.R.color.holo_blue_dark, android.R.color.holo_blue_light, android.R.color.holo_green_light, android.R.color.holo_green_light);
-        swipeView.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                swipeView.setRefreshing(true);
-                Log.d("Swipe", "Refreshing Number");
-                ( new Handler()).postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        swipeView.setRefreshing(false);
-                    }
-                }, 3000);
-            }
-        });
-    }
+
+
 }
+

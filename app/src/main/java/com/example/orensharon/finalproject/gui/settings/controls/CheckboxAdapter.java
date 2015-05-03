@@ -4,7 +4,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -76,7 +75,7 @@ public class CheckboxAdapter extends BaseAdapter {
         view = convertView;
 
         if (view == null) {
-            view = mLayoutInflater.inflate(R.layout.control_list_view_row, parent, false);
+            view = mLayoutInflater.inflate(R.layout.control_list_view_row_settings_contents, parent, false);
         }
 
         AddContentItem(position, view);
