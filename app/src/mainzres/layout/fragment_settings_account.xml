@@ -2,7 +2,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/fragment_account"
+    android:id="@+id/fragment_account_container"
     style="@style/body">
 
     <!-- User row -->
@@ -16,7 +16,7 @@
 
         <TextView
             style="@style/row_value"
-            android:text="Dummy User" />
+            android:id="@+id/username_text_view" />
     </RelativeLayout>
 
 

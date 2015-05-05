@@ -1,0 +1,25 @@
+<!-- Dialog box container -->
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12px">
+
+    <!-- Try again button -->
+    <TextView
+        android:padding="24px"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Error"
+        android:id="@+id/error_message_text_view"
+        android:layout_alignParentTop="true"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/error_message_text_view"
+        android:text="Close"
+        android:id="@+id/button_try_again"/>
+
+</RelativeLayout>

@@ -1,0 +1,92 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/fragment_settings_container"
+    style="@style/body">
+
+    <!-- Network status row
+    <RelativeLayout
+        style="@style/activity_row">
+
+        <TextView
+            android:id="@+id/text_view_system_status_title"
+            style="@style/row_title"
+            android:text="Network status:" />
+
+        <TextView
+            style="@style/row_value"
+            android:text="Online"
+            android:textColor="@color/online"/>
+    </RelativeLayout>-->
+
+
+    <!-- Backup switch row -->
+    <RelativeLayout
+        android:id="@+id/text_view_enable_backup_title"
+        style="@style/activity_row">
+
+        <TextView
+            style="@style/row_title"
+            android:text="Enable backup:" />
+
+        <Switch
+            style="@style/row_value"
+            android:id="@+id/switch_enable_service"
+            android:checked="false" />
+    </RelativeLayout>
+
+
+    <!-- auto sync row -->
+    <RelativeLayout
+        style="@style/activity_row">
+
+        <TextView
+            android:id="@+id/text_view_auto_sync_title"
+            style="@style/row_title"
+            android:text="Auto sync:" />
+
+        <Switch
+            style="@style/row_value"
+            android:id="@+id/switch_auto_sync"
+            android:checked="true" />
+    </RelativeLayout>
+
+    <!-- Wifi only row -->
+    <RelativeLayout
+        style="@style/activity_row">
+
+        <TextView
+            android:id="@+id/text_view_wifi_only_title"
+            style="@style/row_title"
+            android:text="Wifi only:" />
+
+        <Switch
+            style="@style/row_value"
+            android:id="@+id/switch_wifi_only"
+            android:checked="true" />
+    </RelativeLayout>
+
+    <!-- List of contents to backup layout -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/content_list_container">
+
+        <!-- Text description before the list -->
+        <TextView
+            style="@style/text_item_small"
+            android:id="@+id/text_view_content_list_description"
+            android:text="Select the content you would like to safe store:"/>
+
+        <!-- List of contents -->
+        <ListView
+            style="@style/list_view"
+            android:id="@+id/content_list_view" >
+        </ListView>
+    </LinearLayout>
+
+
+
+</LinearLayout>

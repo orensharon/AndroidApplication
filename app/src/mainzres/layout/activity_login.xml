@@ -1,0 +1,116 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/login_body"
+    tools:context="com.example.orensharon.finalproject.gui.login.LoginActivity">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="KeepItSafe"
+        android:shadowColor="@color/color_blue_13"
+        android:shadowRadius="15"
+        android:textColor="@color/background_white"
+        android:id="@+id/text_view_logo"
+        android:gravity="center_horizontal"
+        android:textSize="45dp"/>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="1dp"
+        android:id="@+id/imageView_logo"
+        android:src="@drawable/login_logo"
+        android:layout_alignParentTop="true"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="48dp" />
+
+        <!-- User name row -->
+        <RelativeLayout
+
+            android:layout_marginTop="24dp"
+            android:id="@+id/layout_username_row"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/imageView_logo">
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress"
+                android:layout_toRightOf="@+id/image_view_mail_icon"
+                android:id="@+id/edit_text_username"
+                android:padding="3dp"
+                android:background="@drawable/login_text_box" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/image_view_mail_icon"
+                android:src="@drawable/login_icon_mail" />
+
+        </RelativeLayout>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="test"
+            android:onClick="Testing"/>
+        <!-- Password row -->
+        <RelativeLayout
+            android:layout_below="@id/layout_username_row"
+            android:id="@+id/layout_password_row"
+            android:layout_marginTop="12dp"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content">
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:padding="3dp"
+                android:layout_toRightOf="@+id/image_view_lock_icon"
+                android:id="@+id/edit_text_password"
+                android:background="@drawable/login_text_box" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/image_view_lock_icon"
+                android:src="@drawable/login_icon_lock" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+
+            android:layout_marginTop="12dp"
+            android:id="@+id/layout_button_row"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/layout_password_row">
+
+            <Button
+                android:layout_marginTop="@dimen/activity_half_horizontal_margin"
+                android:layout_width="wrap_content"
+                android:layout_height="33dp"
+                android:layout_toRightOf="@+id/image_view_empty_icon"
+                android:id="@+id/button_login"
+                android:background="@drawable/button_login_selector" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/image_view_empty_icon"
+                android:src="@drawable/login_icon_empty" />
+
+        </RelativeLayout>
+
+
+        </RelativeLayout>
+</RelativeLayout>
+
+
+

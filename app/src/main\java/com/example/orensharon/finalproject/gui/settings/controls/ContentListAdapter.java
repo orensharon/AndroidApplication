@@ -20,7 +20,7 @@ import java.util.ArrayList;
  * This class is the adapter for the list view.
  * It will load the items into it from the resource
  */
-public class CheckboxAdapter extends BaseAdapter {
+public class ContentListAdapter extends BaseAdapter {
 
     private Context mContext;
     private LayoutInflater mLayoutInflater;
@@ -29,7 +29,7 @@ public class CheckboxAdapter extends BaseAdapter {
     private SettingsSession mSettingsSession;
 
 
-    public CheckboxAdapter(Context context, ArrayList<Content> contents) {
+    public ContentListAdapter(Context context, ArrayList<Content> contents) {
 
         mContext = context;
         mObjects = contents;

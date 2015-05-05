@@ -1,0 +1,141 @@
+<resources>
+
+    <style name="AppTheme" parent="android:Theme.Holo.Light">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:fontFamily">Helvetica</item>
+
+        <!--Tab bar style-->
+        <item name="android:tabWidgetStyle">@style/Widget.TabWidget</item>
+
+        <!--Action bar style-->
+        <item name="android:actionBarStyle">@style/ActionBar</item>
+        <item name="android:actionBarTabTextStyle">@style/ActionBarTitleText</item>
+    </style>
+
+    <style name="AppThemeNoActionBar" parent="android:Theme.Holo.Light.NoActionBar.Fullscreen">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:fontFamily">Helvetica</item>
+    </style>
+
+    <!-- Start Action bar style -->
+    <style name="ActionBar" parent="@android:style/Widget.Holo.Light.ActionBar">
+        <item name="android:actionBarSize">@dimen/actionbar_height</item>
+        <item name="android:height">@dimen/actionbar_height</item>
+        <item name="android:background">@drawable/action_bar</item>
+        <item name="android:icon">@android:color/transparent</item>
+    </style>
+    <!-- End Action bar style -->
+
+    <!-- Start Action bar title text -->
+    <style name="ActionBarTitleText" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
+        <item name="android:color">@color/color_blue_1</item>
+        <item name="android:textColor">@color/color_blue_1</item>
+        <item name="android:shadowColor">@color/color_blue_13</item>
+        <item name="android:textSize">52sp</item>
+    </style>
+    <!-- End Action bar title text -->
+
+    <style name="body" parent="AppTheme">
+        <item name="android:orientation">vertical</item>
+        <item name="android:background">@color/background_white</item>
+        <item name="android:padding">16dp</item>
+    </style>
+
+    <style name="login_body" parent="AppThemeNoActionBar">
+        <item name="android:padding">16dp</item>
+        <item name="android:background">@drawable/login_bg</item>
+    </style>
+
+    <!-- Start Texts -->
+    <style name="text_item" parent="AppTheme">
+        <item name="android:textSize">20sp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/text_regular</item>
+    </style>
+
+    <style name="text_item_small" parent="text_item">
+        <item name="android:textSize">12sp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:textColor">@color/text_small</item>
+    </style>
+    <!-- End Texts -->
+
+    <!-- Activity rows -->
+    <style name="activity_row">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">64dp</item>
+        <item name="android:gravity">center_vertical</item>
+
+    </style>
+
+    <style name="row_title" parent="text_item">
+        <item name="android:textStyle">bold</item>
+        <item name="android:layout_alignParentLeft">true</item>
+    </style>
+
+    <style name="row_value" parent="text_item">
+        <item name="android:gravity">right</item>
+        <item name="android:layout_alignParentRight">true</item>
+    </style>
+    <!-- End Activity rows -->
+
+
+
+
+
+    <!--  START LIST VIEW STYLES -->
+
+        <!-- List view -->
+        <style name="list_view">
+            <item name="android:layout_width">match_parent</item>
+            <item name="android:layout_height">match_parent</item>
+            <item name="android:divider">@color/list_divider</item>
+            <item name="android:dividerHeight">1dp</item>
+            <item name="android:scrollbars">none</item>
+            <item name="android:listSelector">@drawable/list_view_row_selector</item>
+        </style>
+        <!-- End List view -->
+
+        <!-- List view row -->
+        <style name="list_view_row">
+            <item name="android:layout_width">fill_parent</item>
+            <item name="android:layout_height">wrap_content</item>
+
+            <item name="android:padding">4dp</item>
+
+
+        </style>
+        <!-- End List view row -->
+
+        <!-- List view check box -->
+        <style name="list_view_checkbox">
+            <item name="android:layout_width">40dp</item>
+            <item name="android:layout_height">40dp</item>
+            <item name="android:layout_alignParentLeft">true</item>
+        </style>
+        <!-- End List view check box -->
+
+        <!-- List view title -->
+        <style name="list_view_title" parent="text_item">
+            <item name="android:layout_gravity">center_vertical</item>
+            <item name="android:layout_margin">5dp</item>
+            <item name="android:textSize">18sp</item>
+            <item name="android:textStyle">bold</item>
+            <item name="android:layout_alignTop">@+id/list_view_check_box</item>
+            <item name="android:layout_toRightOf">@+id/list_view_check_box</item>
+            <item name="android:layout_centerInParent">true</item>
+        </style>
+        <!-- End List view item -->
+
+    <!--  END LIST VIEW STYLES -->
+
+
+    <style name="Widget.TabWidget" parent="android:style/Theme">
+
+    </style>
+
+
+</resources>
