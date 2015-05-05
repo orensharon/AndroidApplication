@@ -1,8 +1,6 @@
 package com.example.orensharon.finalproject.gui.settings;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -10,23 +8,10 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.CompoundButton;
-import android.widget.ListView;
-import android.widget.Switch;
 
 import com.example.orensharon.finalproject.gui.IFragment;
-import com.example.orensharon.finalproject.gui.feed.FeedTabbedFragment;
-import com.example.orensharon.finalproject.gui.login.LoginActivity;
-import com.example.orensharon.finalproject.gui.settings.controls.CheckboxAdapter;
 
 import com.example.orensharon.finalproject.R;
-import com.example.orensharon.finalproject.gui.settings.controls.Content;
-import com.example.orensharon.finalproject.service.ObserverService;
-import com.example.orensharon.finalproject.sessions.SettingsSession;
-import com.example.orensharon.finalproject.sessions.SystemSession;
-
-import java.util.ArrayList;
 
 public class SettingsActivity extends FragmentActivity implements IFragment {
 
@@ -38,13 +23,11 @@ public class SettingsActivity extends FragmentActivity implements IFragment {
         setContentView(R.layout.activity_settings);
 
         if (savedInstanceState == null) {
-            LoadFragment(new SettingsFragment());
+            LoadFragment(new SettingsFragment(), false);
         }
 
 
     }
-
-
 
 
     @Override
@@ -63,7 +46,7 @@ public class SettingsActivity extends FragmentActivity implements IFragment {
         switch (item.getItemId()) {
             case R.id.action_save:
 
-                LoadFragment(new AccountFragment());
+                LoadFragment(new AccountFragment(), true);
                 return true;
 
             default:
@@ -71,9 +54,9 @@ public class SettingsActivity extends FragmentActivity implements IFragment {
         }
     }
 
-
     @Override
-    public void LoadFragment(Fragment fragment) {
+    public void LoadFragment(Fragment fragment, boolean isSupportBack) {
+
         // The implementation of the IFragment interface
 
         FragmentTransaction fragmentTransaction;
@@ -84,7 +67,34 @@ public class SettingsActivity extends FragmentActivity implements IFragment {
         fragmentTransaction = fragmentManager.beginTransaction();
 
 
-        fragmentTransaction.add(R.id.fragment_container, fragment);
-        fragmentTransaction.commit();
+        if (isSupportBack) {
+            fragmentTransaction.replace(R.id.fragment_container, fragment).addToBackStack(null).commit();
+        } else {
+            fragmentTransaction.replace(R.id.fragment_container, fragment).commit();
+        }
+
     }
+
+    @Override
+    public void LoadActivity(Class cls, boolean isSupportBack) {
+
+        // Load a given the activity
+
+        Intent intent;
+        intent = new Intent(this, cls);
+
+        // Closing all the Activities
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        // Staring Login Activity
+        startActivity(intent);
+
+        // Check if need to support the back button
+        if (!isSupportBack) {
+            // Close this activity
+            finish();
+        }
+    }
+
+
 }

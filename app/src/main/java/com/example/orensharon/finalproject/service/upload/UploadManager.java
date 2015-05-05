@@ -18,7 +18,9 @@ import com.example.orensharon.finalproject.service.upload.helpers.SyncUpdateMess
 
 import com.example.orensharon.finalproject.service.upload.helpers.NetworkChangeReceiver;
 import com.example.orensharon.finalproject.sessions.ContentSession;
+import com.example.orensharon.finalproject.sessions.SettingsSession;
 import com.example.orensharon.finalproject.sessions.SystemSession;
+import com.example.orensharon.finalproject.utils.Connectivity;
 import com.example.orensharon.finalproject.utils.MD5Checksum;
 
 import org.json.JSONException;
@@ -30,13 +32,14 @@ import java.util.Observer;
 /**
  * Created by orensharon on 12/30/14.
  */
-public class UploadManager implements Observer {
+public class UploadManager {
 
 
     private Context mContext;
     private RequestFactory mRequestFactory;
     private SystemSession mSystemSession;
     private ContentSession mContentSession;
+    private SettingsSession mSettingsSession;
 
     private ApplicationConstants.ContentKeys mContentKeys;
 
@@ -45,6 +48,7 @@ public class UploadManager implements Observer {
         mContext = context;
         mRequestFactory = new RequestFactory(mContext);
         mSystemSession = new SystemSession(mContext);
+        mSettingsSession = new SettingsSession(mContext);
         mContentSession = new ContentSession(mContext);
         mContentKeys = contentKeys;
         // Register to the network observer.
@@ -52,65 +56,14 @@ public class UploadManager implements Observer {
         // To sync the unsynced items
 
         //RegisterNetworkObserver();
-
-        //NetworkChangeReceiver.UpdateInternetStatus(mContext);
+       // NetworkChangeReceiver.UpdateInternetStatus(mContext);
     }
 
 
-    public void RegisterNetworkObserver() {
-
-        // Register to the internet connection observer
-        NetworkChangeReceiver.getObservable().addObserver(this);
-    }
-    public void UnregisterNetworkObserver() {
-        // Unregister to the internet connection observer
-
-        Log.i("Unregister NetworkObserver","");
-        NetworkChangeReceiver.getObservable().deleteObserver(this);
-    }
-
-    @Override
-    public void update(Observable observable, Object data) {
-
-        // Whenever connection changes, this method will be called and determine the internet status
-
-        int internetStatus;
-        SyncUpdateMessage msg;
-        msg = ExtractMessageFromData(data);
-
-        if (msg == null) {
-            return;
-        }
 
 
-        internetStatus = (Integer)msg.getData();
-
-        if (internetStatus == NetworkChangeReceiver.NOT_CONNECTED) {
-
-        } else {
-            // Internet is connected
-
-        }
 
 
-    }
-
-    private SyncUpdateMessage ExtractMessageFromData(Object data) {
-
-        SyncUpdateMessage msg;
-
-        if (data instanceof SyncUpdateMessage) {
-            msg = (SyncUpdateMessage) data;
-        } else {
-            return null;
-        }
-
-        if (msg.getMessageCode() != SyncUpdateMessage.SYNC_SUCCESSFUL) {
-            return null;
-        }
-
-        return msg;
-    }
 
     public void DispatchRequest(BaseObject newContent) {
 
@@ -120,27 +73,38 @@ public class UploadManager implements Observer {
         typeOfContent = newContent.getTypeOfContent();
         ip = mSystemSession.geIPAddressOfSafe();
 
+        // Ignore sending if wifi only and the connection is not wifi
+        boolean isWifiOnly = mSettingsSession.getWIFIOnly();
+        boolean connectedToWifi = Connectivity.isConnectedWifi(mContext);
 
-        if (typeOfContent.equals(ApplicationConstants.TYPE_OF_CONTENT_PHOTO)) {
+        if (mSettingsSession.getAutoSync()) {
 
-            url = "http://" + ip + ApplicationConstants.UPLOAD_STREAM_API_SUFFIX;
+            Log.e("sharonlog", "Is auto sync ....");
 
-            final MyPhoto myPhoto = (MyPhoto)newContent;
-            UploadPhoto(url, myPhoto);
+            if (Connectivity.isConnected(mContext) && (isWifiOnly && connectedToWifi) || !isWifiOnly) {
+                if (typeOfContent.equals(ApplicationConstants.TYPE_OF_CONTENT_PHOTO)) {
+
+                    Log.e("sharonlog", "All terms ok, Calling UploadPhoto()");
+
+                    url = "http://" + ip + ApplicationConstants.PHOTO_UPLOAD_STREAM_API_SUFFIX;
+
+                    final MyPhoto myPhoto = (MyPhoto) newContent;
+                    UploadPhoto(url, myPhoto);
 
 
-        } else if(typeOfContent.equals(ApplicationConstants.TYPE_OF_CONTENT_CONTACT)) {
-            url = "http://" + ip + ApplicationConstants.CONTACT_UPLOAD_API;
+                } else if (typeOfContent.equals(ApplicationConstants.TYPE_OF_CONTENT_CONTACT)) {
+                    url = "http://" + ip + ApplicationConstants.CONTACT_UPLOAD_API_SUFFIX;
 
+                    Log.e("sharonlog", "All terms ok, Calling UploadContact()");
+                    final MyContact myContact = (MyContact) newContent;
 
-            final MyContact myContact = (MyContact)newContent;
+                    UploadContact(url, myContact);
+                }
 
-            UploadContact(url, myContact);
+            }
+        } else {
+            Log.e("sharonlog", "No auto sync .... nothing to do");
         }
-
-
-
-
 
 
     }
@@ -246,6 +210,7 @@ public class UploadManager implements Observer {
                 url,
                 myPhoto.getTypeOfContent(),
                 myPhoto.getFile(),
+                myPhoto.getId(),
                 new Response.Listener() {
                     @Override
                     public void onResponse(Object response) {
@@ -255,36 +220,36 @@ public class UploadManager implements Observer {
                         String uploadResult;
                         JSONObject jsonResponse = (JSONObject) response;
 
-                        try {
+                      //  try {
                             //TODO: read from headers
-                            uploadResult = jsonResponse.getString(ApplicationConstants.CONTENT_STREAM_UPLOAD_RESULT_KEY);
-                            uploadResult = uploadResult.replace("\"","");
+                            //uploadResult = jsonResponse.getString(ApplicationConstants.CONTENT_STREAM_UPLOAD_RESULT_KEY);
+                            //uploadResult = uploadResult.replace("\"","");
 
                             String localFileHash = MD5Checksum.getMd5Hash(myPhoto.getFile());
 
                             Toast.makeText(mContext, localFileHash,
                                     Toast.LENGTH_LONG).show();
 
-                            if (localFileHash.equals(uploadResult)) {
+                            //if (localFileHash.equals(uploadResult)) {
                                 // Means the content was successfully uploaded
                                 mContentSession.RemoveFromUnsyncedList(
                                         mContentKeys.getUnsyncedListKey(),
                                         myPhoto.getId()
                                 );
 
-                            } else {
+                            //} else {
                                 // TODO: the content didn't sent correctly
-                            }
+                           // }
                             Log.i("sharonlog","Unsyncned list: (after sending)");
                             Log.i("sharonlog",mContentSession.getUnsyncedList(mContentKeys.getUnsyncedListKey()).toString());
 
                             Log.i("sharonlog","toBackup list: (after sending)");
                             Log.i("sharonlog",mContentSession.getToBackupList(mContentKeys.getBackupDataListKey()).toString());
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                        //} catch (JSONException e) {
+                        //    e.printStackTrace();
 
                             // TODO: the content didn't sent correctly
-                        }
+                       // }
                     }
                 },
                 new Response.ErrorListener() {

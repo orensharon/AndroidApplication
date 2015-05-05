@@ -3,10 +3,20 @@ package com.example.orensharon.finalproject;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Toast;
 
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.example.orensharon.finalproject.gui.feed.FeedActivity;
 import com.example.orensharon.finalproject.gui.login.LoginActivity;
+import com.example.orensharon.finalproject.logic.RequestFactory;
 import com.example.orensharon.finalproject.sessions.SystemSession;
+import com.example.orensharon.finalproject.utils.IPAddressValidator;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * This is an activity without any UI.
@@ -55,5 +65,4 @@ public class LauncherActivity extends Activity {
         // Close this activity
         finish();
     }
-
 }

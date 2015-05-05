@@ -15,10 +15,23 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.example.orensharon.finalproject.ApplicationConstants;
 import com.example.orensharon.finalproject.R;
 import com.example.orensharon.finalproject.gui.IFragment;
 import com.example.orensharon.finalproject.gui.settings.SettingsActivity;
+import com.example.orensharon.finalproject.logic.RequestFactory;
+import com.example.orensharon.finalproject.sessions.SystemSession;
+import com.example.orensharon.finalproject.utils.IPAddressValidator;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Created by orensharon on 1/21/15.
  * This is the activity of the feed. It will request the data from the
@@ -33,10 +46,10 @@ public class FeedActivity extends FragmentActivity implements IFragment {
         setContentView(R.layout.activity_feed);
 
         createCustomActionBarTitle();
-        LoadFragment(new FeedTabbedFragment());
+
+        LoadFragment(new FeedManagerFragment(), false);
 
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -52,14 +65,14 @@ public class FeedActivity extends FragmentActivity implements IFragment {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_settings) {
-            ShowSettingsActivity();
+            LoadActivity(SettingsActivity.class, true);
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
-    public void LoadFragment(Fragment fragment) {
+    public void LoadFragment(Fragment fragment, boolean isSupportBack) {
 
         // The implementation of the IFragment interface
 
@@ -71,22 +84,39 @@ public class FeedActivity extends FragmentActivity implements IFragment {
         fragmentTransaction = fragmentManager.beginTransaction();
 
 
-        fragmentTransaction.add(R.id.fragment_container, fragment);
-        fragmentTransaction.commit();
+        if (isSupportBack) {
+            fragmentTransaction.replace(R.id.fragment_container, fragment).addToBackStack(null).commit();
+        } else {
+            fragmentTransaction.replace(R.id.fragment_container, fragment).commit();
+        }
+
     }
 
+    @Override
+    public void LoadActivity(Class cls, boolean isSupportBack) {
 
-    private void ShowSettingsActivity() {
-
+        // Load a given the activity
 
         Intent intent;
+        intent = new Intent(this, cls);
 
-        // Sending data to the activity
-        intent = new Intent(this, SettingsActivity.class);
+        // Closing all the Activities
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-        // Stating the activity
-        startActivityForResult(intent, 1);
+        // Add new Flag to start new Activity
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        // Staring Login Activity
+        startActivity(intent);
+
+        // Check if need to support the back button
+        if (!isSupportBack) {
+            // Close this activity
+            finish();
+        }
     }
+
+
     private void createCustomActionBarTitle(){
 
         // Customize the action bar title, fonts and alignments
@@ -105,5 +135,7 @@ public class FeedActivity extends FragmentActivity implements IFragment {
         }
 
     }
+
+
 
 }

@@ -60,7 +60,7 @@ public class RequestFactory {
 
     }
 
-    public void createMultipartRequest(String url, String typeOfContent, File file,
+    public void createMultipartRequest(String url, String typeOfContent, File file, String id,
                                        Response.Listener listener, Response.ErrorListener errorListener) {
 
 
@@ -72,6 +72,7 @@ public class RequestFactory {
                 listener,
                 file,
                 systemSession.getToken(),
+                id,
                 typeOfContent
         );
 

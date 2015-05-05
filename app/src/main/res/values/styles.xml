@@ -57,7 +57,7 @@
     </style>
 
     <style name="text_item_small" parent="text_item">
-        <item name="android:textSize">14sp</item>
+        <item name="android:textSize">12sp</item>
         <item name="android:layout_marginBottom">8dp</item>
         <item name="android:textColor">@color/text_small</item>
     </style>

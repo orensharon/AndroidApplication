@@ -93,7 +93,17 @@ public class MyJsonRequest extends JsonRequest<String> {
         } else {
 
             // In case of: TimeoutError, NoConnectionError ....
-            return new VolleyError(new String(volleyError.toString()));
+            String errorMessage = new String(volleyError.toString());
+
+            // TODO: Change the error checking method
+            if (errorMessage.contains("TimeoutError")) {
+                errorMessage = "The server is unreachable.\nPlease try again later";
+            } else if (errorMessage.contains("NoConnectionError")) {
+                errorMessage = "Please check your internet connectivity and then try again";
+            }
+
+            // Other errors
+            return new VolleyError(errorMessage);
         }
     }
 }

@@ -17,8 +17,8 @@ abstract public class BaseContentObserver extends ContentObserver {
     public Context mContext;
     protected BaseManager mManager;
 
-    private long lastTimeofCall = 0L;
-    private long lastTimeofUpdate = 0L;
+    private long mLastTimeOfCall = 0L;
+    private long mLastTimeOfUpdate = 0L;
     private long threshold_time = 5000;
 
     public BaseContentObserver(Context context) {
@@ -34,10 +34,10 @@ abstract public class BaseContentObserver extends ContentObserver {
         // Checking if this is a new content and add it to the pool to send it
 
 
-        lastTimeofCall = System.currentTimeMillis();
+        mLastTimeOfCall = System.currentTimeMillis();
 
         // To prevent multiple calls
-        if(lastTimeofCall - lastTimeofUpdate > threshold_time) {
+        if(mLastTimeOfCall - mLastTimeOfUpdate > threshold_time) {
 
             // Handling with content sampling using thread
             new Thread(new Runnable() {
@@ -49,7 +49,7 @@ abstract public class BaseContentObserver extends ContentObserver {
                     content = mManager.HandleContent();
 
                     if (content != null) {
-                        Log.e("sharonlog", "Found victim content!" + content.getTypeOfContent() + " ID:" + content.getId());
+                        Log.e("sharonlog", "Found (new/edit) content!" + content.getTypeOfContent() + " ID:" + content.getId());
 
                         // Sending the content into the upload pool
                         mManager.getUploadManager().DispatchRequest(content);
@@ -60,24 +60,8 @@ abstract public class BaseContentObserver extends ContentObserver {
             }).start();
 
 
-            lastTimeofUpdate = System.currentTimeMillis();
+            mLastTimeOfUpdate = System.currentTimeMillis();
         }
-        //newContent = HandleNewContent;
-        //newContent = mManager.getNewContent();
-        //newContent = mManager.requestLatestContentFromDatabase();
-
-
-        //
-
-        /*SystemSession systemSession = new SystemSession(mContext);
-
-        String ip = systemSession.geIPAddressOfSafe();
-        ContentUpload upload = new ContentUpload();
-        MyPhoto myPhoto = (MyPhoto)newContent;
-
-        upload.execute(ip, myPhoto);
-*/
-      //  super.onChange(selfChange);
     }
 
     @Override
@@ -89,4 +73,5 @@ abstract public class BaseContentObserver extends ContentObserver {
 
         mManager.Manage();
     }
+
 }

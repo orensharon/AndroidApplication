@@ -10,13 +10,21 @@ import android.util.Log;
 import com.example.orensharon.finalproject.ApplicationConstants;
 import com.example.orensharon.finalproject.service.helpers.QueryArgs;
 import com.example.orensharon.finalproject.service.objects.BaseObject;
+import com.example.orensharon.finalproject.service.observers.InternetObserver;
 import com.example.orensharon.finalproject.service.upload.UploadManager;
+import com.example.orensharon.finalproject.service.upload.helpers.NetworkChangeReceiver;
+import com.example.orensharon.finalproject.service.upload.helpers.SyncUpdateMessage;
 import com.example.orensharon.finalproject.sessions.ContentSession;
+import com.example.orensharon.finalproject.sessions.SettingsSession;
+import com.example.orensharon.finalproject.sessions.SystemSession;
+import com.example.orensharon.finalproject.utils.Connectivity;
 import com.example.orensharon.finalproject.utils.MD5Checksum;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * Created by orensharon on 12/17/14.
@@ -36,8 +44,9 @@ public abstract class BaseManager {
     public Context mContext;
 
     private ContentSession mContentSession;
+    private SettingsSession mSettingsSession;
 
-
+    // TODO: should be static?
     // The upload manager of the contents
     private UploadManager mUploadManager;
 
@@ -46,10 +55,13 @@ public abstract class BaseManager {
         mContext = context;
         mObservingUri = uri;
         mContentSession = new ContentSession(mContext);
+        mSettingsSession = new SettingsSession(mContext);
         mContentKeys = contentKeys;
 
         // Init the upload manager component
         mUploadManager = new UploadManager(mContext, mContentKeys);
+
+
     }
 
 
@@ -66,28 +78,40 @@ public abstract class BaseManager {
             // Means the saved ID is not synced with the actual one
             mContentSession.setLatestId(mContentKeys.getLastIDKey(),latestSystemID);
         }
-
-
-        // TODO: Where to put this?
-        HandleUnsyncedContent();
-
         Log.e("sharonlog","After Managing ID: " + mContentSession.getLatestId(mContentKeys.getLastIDKey()));
+
+        if ( mSettingsSession.getAutoSync() ) {
+
+            Log.e("sharonlog","Is in AUTOSYNC mode");
+            // Ignore sending if wifi only and the connection is not wifi
+            boolean isWifiOnly = mSettingsSession.getWIFIOnly();
+            boolean connectedToWifi = Connectivity.isConnectedWifi(mContext);
+
+            if (Connectivity.isConnected(mContext) && (isWifiOnly && connectedToWifi) || !isWifiOnly) {
+                // TODO: Where to put this?
+                Log.e("sharonlog","All terms ok, Calling HandleUnsyncedContent()");
+                HandleUnsyncedContent();
+            }
+        }
+
 
     }
 
-    private void HandleUnsyncedContent() {
+    // TODO: thread
+    public void HandleUnsyncedContent() {
         List<String> unsyncedList;
 
         Log.i("sharonlog","Unsyncned list:");
         Log.i("sharonlog",mContentSession.getUnsyncedList(mContentKeys.getUnsyncedListKey()).toString());
 
-        Log.i("sharonlog","Backup list:");
+        Log.i("sharonlog","Backuped list:");
         Log.i("sharonlog",mContentSession.getToBackupList(mContentKeys.getBackupDataListKey()).toString());
 
-
+        Log.e("sharonlog","Syncing unsynced list...");
         unsyncedList = mContentSession.getUnsyncedList(mContentKeys.getUnsyncedListKey());
         for (String key : unsyncedList) {
             BaseObject content = getContentByID(key);
+            Log.e("sharonlog","Calling ... DispatchRequest(content)");
             mUploadManager.DispatchRequest(content);
         }
     }
@@ -375,221 +399,6 @@ public abstract class BaseManager {
 
 
 
-
-
-
-
-
-
-    // Manage the reference of the content from database
-    // Means - saving the last id of the most new content (by id)
-  /*
-    public void Manage() {
-
-        // Mange method job is to monitor and keep an reference of the synced contents
-        // according to the id column - we will check what is the most last id from the device database
-        // vs the saved last id of the content table
-
-        String databaseLatestId;
-
-        //String savedLatestId;
-
-        // Get the last saved id from the shared preferences
-        mLastSavedId = getLastSavedContentId();
-
-        // Save a pointer to the most latest content
-
-        mLatestContent = requestLatestContentFromDatabase();
-        databaseLatestId = getIdOfContent(mLatestContent);
-
-        Log.w("START ---" + CLASS_NAME + "---", "Manage()");
-        Log.w("Before, Last current DB id: " + databaseLatestId, "Last current saved id: " + mLastSavedId);
-
-        //if (mLatestContent != null)
-        //    Log.e("mLatestContent",mLatestContent.toString());
-
-
-        // Third - check if there is some old content to sync
-        handleUnsyncedContents(databaseLatestId);
-        setLastSavedContentId(databaseLatestId);
-
-        Log.w("After, Now current DB id: " + databaseLatestId, "Now current saved id: " + mLastSavedId);
-        Log.w("END ---" + CLASS_NAME + "---", "Manage()");
-    }
-
-    // Checker if the content is new one using the difference in the value id of
-    public BaseObject getNewContent() {
-
-        boolean b;
-        String dbId;
-        BaseObject tempNewestContent;
-
-        tempNewestContent = requestLatestContentFromDatabase();
-        // Update the pointer to the most latest content and get the id of it
-        dbId = getIdOfContent(tempNewestContent);
-
-
-        //if (mLatestContent != null)
-        //    Log.e("mLatestContent",mLatestContent.toString());
-        // Checking if the id of the most latest content is greater then the saved one
-        b = Long.valueOf(dbId) > Long.valueOf(mLastSavedId);
-
-        // Save the new most latest id in local storage
-
-        // According to the previous condition - return the object or null
-        if (b) {
-
-            Log.w(CLASS_NAME + ".getNewContent() --START-- change in db, latest is: " + mLastSavedId + " and db id is:", dbId);
-
-
-            mLatestContent = tempNewestContent;
-            setLastSavedContentId(dbId);
-            Log.w(CLASS_NAME + ".getNewContent() --START-- change in db, new latest is: " + mLastSavedId + " and db id is:", dbId);
-            return mLatestContent;
-        }
-
-        return null;
-    }
-
-
-
-
-
-    // Shared Preferences Helpers
-    private String getLastSavedContentId() {
-        return mSharedPreferences.getString(KEY_LAST_ID, KEY_ID_DOES_NOT_EXIST);
-    }
-
-    // Set new value for id in Shared Preferences
-    private void setLastSavedContentId(String databaseLastId) {
-
-        // Update the new id to the shared preferences
-
-        SharedPreferences.Editor editor;
-        editor = mSharedPreferences.edit();
-        editor.putString(KEY_LAST_ID, databaseLastId);
-        editor.apply();
-
-        mLastSavedId = databaseLastId;
-        // Fifth - Update the lastId flag
-        //mLastId = databaseLastId;
-    }
-
-    // By given content object - returns the id of it
-    private String getIdOfContent(Object object) {
-
-        return  ((object==null) ? KEY_ID_DOES_NOT_EXIST : BaseObject.class.cast(object).getId());
-
-    }
-
-    // Return object type of the latest added content according to the observer uri
-    public BaseObject requestLatestContentFromDatabase() {
-
-        // Returns a generic type of a the last content in the database
-        // sorting by the id column desc
-
-        // Create a list of unsynced contents
-
-        QueryArgs queryArgs;
-        String sortingOrder;
-
-        // If there is more then one content - latestContents will be a list
-        // Otherwise it will be a one BaseObject
-        Object latestContents;
-
-
-        sortingOrder = "_id desc limit 1";
-
-        queryArgs = new QueryArgs(mObservingUri,null, null, null, sortingOrder);
-
-        // Taking the first element of the list - we limited the size to 1 anyway
-        latestContents = requestContents(queryArgs);
-
-        // Make sure the latest content is really exist
-        if (latestContents != null) {
-            return ((List<BaseObject>)latestContents).get(0);
-        }
-
-        // Now latest content - may be a fresh new database
-        return null;
-    }
-
-    // Return a list of Object type of all the unsynced contents
-    private List<BaseObject> requestListOfUnsyncedContents() {
-
-        // Create a list of unsynced contents
-
-        QueryArgs queryArgs;
-        String selection;
-        String[] selectionArgs;
-        List<BaseObject> unsyncedContents;
-
-        selection = BaseColumns._ID + " > ? ";
-        selectionArgs = new String[]{ mLastSavedId };
-
-        queryArgs = new QueryArgs(mObservingUri,null, selection, selectionArgs, null);
-        unsyncedContents = requestContents(queryArgs);
-
-        return unsyncedContents;
-    }
-
-    // Getting the last id of the database and handling all the unsynced contant
-    private void handleUnsyncedContents(String databaseLastId) {
-
-        // Check if the given database id is greater then saved one.
-        // If does - need to sync the difference contents and the shared preferences id
-
-        List<BaseObject> unsyncedContents;
-
-        unsyncedContents = null;
-        if ( Long.valueOf(mLastSavedId) < Long.valueOf(databaseLastId)) {
-
-            // Create a list of unsynced contents
-            unsyncedContents = requestListOfUnsyncedContents();
-            Log.e("to sync:",unsyncedContents.toString());
-
-            // Send the unsynced items to the request pool
-            for (BaseObject content : unsyncedContents) {
-                ObserverService.getUploadManager().DispatchRequest(content);
-            }
-
-
-        }
-
-
-    }
-
-    // Return a list of Object type of contents according to the query arg
-    private List<BaseObject> requestContents(QueryArgs queryArgs) {
-
-
-        BaseObject content;
-        List<BaseObject> contentList;
-
-        Cursor cursor;
-
-        contentList = new ArrayList<BaseObject>();
-
-        cursor = getCursor(queryArgs);
-
-        if (cursor != null) {
-            // Make sure the cursor is not null before iterate
-
-            while (cursor.moveToNext()) {
-                // Iterate over the cursor, creating new contact and add it to the list
-
-                content = getContent(cursor);
-                //Log.i("requestContents, content",content.toString());
-                contentList.add(content);
-            }
-            cursor.close();
-            return contentList;
-        }
-
-        return null;
-
-    }
-*/
     // Helper for the children classes
     protected String getColumnString(Cursor cursor, String columnName) {
         return cursor.getString(cursor.getColumnIndex(columnName));
@@ -632,11 +441,10 @@ public abstract class BaseManager {
 
 
 
-
-
     // Will called in each child class
     public abstract BaseObject getContent(Cursor cursor);
 
     public abstract BaseObject getBaseContent(Cursor cursor);
+
 
 }

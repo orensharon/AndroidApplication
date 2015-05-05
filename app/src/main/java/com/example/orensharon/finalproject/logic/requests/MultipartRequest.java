@@ -29,18 +29,18 @@ import java.util.Map;
  */
 public class MultipartRequest<T> extends Request<T> {
 
-    private static final String FILE_PART_NAME = "file";
 
     private MultipartEntityBuilder mBuilder = MultipartEntityBuilder.create();
     private final Response.Listener<T> mListener;
     private final File mImageFile;
-    private String mToken, mTypeOfContent;
+    private String mToken, mTypeOfContent, mId;
 
     public MultipartRequest(String url,
                                  Response.ErrorListener errorListener,
                                  Response.Listener<T> listener,
                                  File imageFile,
                                  String token,
+                                 String id,
                                  String typeOfContent)
     {
         super(Method.POST, url, errorListener);
@@ -49,7 +49,7 @@ public class MultipartRequest<T> extends Request<T> {
         mImageFile = imageFile;
         mToken = token;
         mTypeOfContent = typeOfContent;
-
+        mId = id;
 
         buildMultipartEntity();
     }
@@ -67,18 +67,17 @@ public class MultipartRequest<T> extends Request<T> {
 
         //headers.put("Accept", "application/json");
         headers.put(ApplicationConstants.HEADER_CONTENT_MD5,localFileHash);
-        //headers.put(ApplicationConstants.HEADER_AUTHORIZATION, mToken);
+        headers.put(ApplicationConstants.HEADER_AUTHORIZATION, mToken);
 
         return headers;
     }
 
     private void buildMultipartEntity()
     {
-
-        mBuilder.addTextBody(ApplicationConstants.AUTH_TOKEN_KEY,mToken);
+        mBuilder.addTextBody(ApplicationConstants.CONTENT_ID_KEY, mId);
         mBuilder.addTextBody(ApplicationConstants.CONTENT_TYPE_OF_CONTENT_KEY, mTypeOfContent);
         mBuilder.addBinaryBody(
-                FILE_PART_NAME,
+                mImageFile.getName(),
                 mImageFile,
                 ContentType.APPLICATION_OCTET_STREAM, //ContentType.create(URLConnection.guessContentTypeFromName(mImageFile.getPath())),
                 mImageFile.getName());

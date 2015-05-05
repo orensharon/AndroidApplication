@@ -11,10 +11,11 @@ import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.Switch;
+import android.widget.TextView;
 
 import com.example.orensharon.finalproject.R;
 import com.example.orensharon.finalproject.gui.IFragment;
-import com.example.orensharon.finalproject.gui.settings.controls.CheckboxAdapter;
+import com.example.orensharon.finalproject.gui.settings.controls.ContentListAdapter;
 import com.example.orensharon.finalproject.gui.settings.controls.Content;
 import com.example.orensharon.finalproject.service.ObserverService;
 import com.example.orensharon.finalproject.sessions.SettingsSession;
@@ -27,8 +28,10 @@ import java.util.ArrayList;
 public class SettingsFragment extends Fragment {
 
     private IFragment mListener;
-    private CheckboxAdapter mBoxAdapter;
+    private ContentListAdapter mContentListAdapter;
     private ListView mContentsListView;
+    private TextView mListDescriptionTextView;
+    private Switch mServiceEnableSwitch, mWifiOnlySwitch, mAutoSyncSwitch;
 
     private SettingsSession mSettingsSession;
 
@@ -64,53 +67,87 @@ public class SettingsFragment extends Fragment {
 
         mSettingsSession = new SettingsSession(getActivity());
         mContentsListView = (ListView) view.findViewById(R.id.content_list_view);
+        mListDescriptionTextView = (TextView) view.findViewById(R.id.text_view_content_list_description);
 
 
-        Switch mySwitch;
-        mySwitch = (Switch) view.findViewById(R.id.switch_enable_service);
+        mServiceEnableSwitch = (Switch) view.findViewById(R.id.switch_enable_service);
+        mWifiOnlySwitch = (Switch) view.findViewById(R.id.switch_wifi_only);
+        mAutoSyncSwitch = (Switch) view.findViewById(R.id.switch_auto_sync);
 
-        // Set the switch according what the user saved preference, by default will be false
-        mySwitch.setChecked(mSettingsSession.getServiceIsEnabledByUser());
-        EnableSwitchListener(mySwitch);
+        // Set the switch according what the user saved options
+        mServiceEnableSwitch.setChecked(mSettingsSession.getServiceIsEnabledByUser());
+        mWifiOnlySwitch.setChecked(mSettingsSession.getWIFIOnly());
+        mAutoSyncSwitch.setChecked(mSettingsSession.getAutoSync());
 
-        // Check the current state before we display the screen
-        mContentsListView.setVisibility( ((mySwitch.isChecked()==true) ? View.VISIBLE : View.INVISIBLE) );
+        initServiceEnableListener();
+        initWIFIOnlyListener();
+        initAutoSyncListener();
+
+        // Check the current state before we display the list
+        mListDescriptionTextView.setVisibility(((mServiceEnableSwitch.isChecked() == true) ? View.VISIBLE : View.INVISIBLE));
+        mContentsListView.setVisibility(((mServiceEnableSwitch.isChecked() == true) ? View.VISIBLE : View.INVISIBLE));
         LoadContentOptionsIntoListView();
 
         return view;
     }
 
-
-    private void EnableSwitchListener(Switch mySwitch) {
+    // Switch listeners
+    private void initServiceEnableListener() {
         // Attach a listener to check for changes in state
-        mySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        mServiceEnableSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
             @Override
             public void onCheckedChanged(CompoundButton buttonView,
                                          boolean isChecked) {
 
-                mContentsListView.setVisibility( ((isChecked==true) ? View.VISIBLE : View.INVISIBLE) );
+                mListDescriptionTextView.setVisibility(((isChecked == true) ? View.VISIBLE : View.INVISIBLE));
+                mContentsListView.setVisibility(((isChecked == true) ? View.VISIBLE : View.INVISIBLE));
+                mWifiOnlySwitch.setEnabled(isChecked);
+                mAutoSyncSwitch.setEnabled(isChecked);
+
                 mSettingsSession.setServiceIsEnabledByUser(isChecked);
 
-
                 if (isChecked == true) {
-                    // Start the service if the user has enabled it
-                    StartObservingService();
-
-
+                    startObservingService();
                 } else {
-                    // Stop the service
-                    Intent mServiceIntent;
-                    mServiceIntent= new Intent(getActivity(), ObserverService.class);
-                    getActivity().stopService(mServiceIntent);
+                    stopObservingService();
                 }
+            }
+        });
+
+    }
+    private void initWIFIOnlyListener() {
+
+        // Attach a listener to check for changes in state
+        mWifiOnlySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,
+                                         boolean isChecked) {
+
+                mSettingsSession.setWIFIOnly(isChecked);
+
+            }
+        });
+
+    }
+    private void initAutoSyncListener() {
+
+        // Attach a listener to check for changes in state
+        mAutoSyncSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,
+                                         boolean isChecked) {
+
+                mSettingsSession.setAutoSync(isChecked);
 
             }
         });
 
     }
 
-    private void StartObservingService() {
+    private void startObservingService() {
 
         // Creating an intent with the selected values of the user
         Intent ServiceIntent;
@@ -121,6 +158,13 @@ public class SettingsFragment extends Fragment {
         // the intent to communicate with the service this way
         getActivity().startService(ServiceIntent);
     }
+    private void stopObservingService() {
+        // Stop the service
+        Intent mServiceIntent;
+        mServiceIntent = new Intent(getActivity(), ObserverService.class);
+        getActivity().stopService(mServiceIntent);
+    }
+
 
     private void LoadContentOptionsIntoListView() {
 
@@ -145,8 +189,8 @@ public class SettingsFragment extends Fragment {
             contents.add(new Content(option));
         }
 
-        mBoxAdapter = new CheckboxAdapter(getActivity(), contents);
-        mContentsListView.setAdapter(mBoxAdapter);
+        mContentListAdapter = new ContentListAdapter(getActivity(), contents);
+        mContentsListView.setAdapter(mContentListAdapter);
 
     }
 

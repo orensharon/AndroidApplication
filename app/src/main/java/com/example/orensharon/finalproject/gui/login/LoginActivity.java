@@ -1,19 +1,19 @@
 package com.example.orensharon.finalproject.gui.login;
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.provider.ContactsContract;
-import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -22,18 +22,20 @@ import com.example.orensharon.finalproject.ApplicationConstants;
 import com.example.orensharon.finalproject.R;
 import com.example.orensharon.finalproject.gui.feed.FeedActivity;
 import com.example.orensharon.finalproject.logic.RequestFactory;
-import com.example.orensharon.finalproject.service.managers.BaseManager;
-import com.example.orensharon.finalproject.service.managers.ContactManager;
-import com.example.orensharon.finalproject.service.objects.Contact.MyContact;
+import com.example.orensharon.finalproject.sessions.SettingsSession;
 import com.example.orensharon.finalproject.sessions.SystemSession;
+import com.example.orensharon.finalproject.utils.IPAddressValidator;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class LoginActivity extends Activity {
 
-    private Button mLoginButton;
     private SystemSession mSystemSession;
+
+    private ProgressDialog mProgressDialog;
+
+    private EditText mUsername, mPassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,10 +45,16 @@ public class LoginActivity extends Activity {
         // Initialize the system session
         mSystemSession = new SystemSession(getApplicationContext());
 
-
         LoginButtonListener();
         InitLogo();
 
+        // Read save username and password from the session
+        // And set them in the text fields
+        mUsername = ((EditText)findViewById(R.id.edit_text_username));
+        mPassword = ((EditText)findViewById(R.id.edit_text_password));
+
+        mUsername.setText(mSystemSession.getUsername());
+        mPassword.setText(mSystemSession.getPassword());
 
     }
 
@@ -87,10 +95,20 @@ public class LoginActivity extends Activity {
         txtGhost.setTypeface(tf);
     }
 
+    private void initProgressDialog() {
+
+        // Init the progress bar
+        mProgressDialog = new ProgressDialog(this);
+        // Set Progress Dialog Text
+        mProgressDialog.setMessage("Please wait...");
+        // Set Cancelable as False
+        mProgressDialog.setCancelable(false);
+    }
+
     private void LoginButtonListener() {
         // create click listener
 
-        mLoginButton = (Button) findViewById(R.id.button_login);
+        Button loginButton = (Button) findViewById(R.id.button_login);
 
         View.OnClickListener mLoginButton_onClick = new View.OnClickListener() {
 
@@ -100,18 +118,22 @@ public class LoginActivity extends Activity {
                 String username, password;
 
                 // Extracting values from the input texts
-                username = ((EditText)findViewById(R.id.edit_text_username)).getText().toString();
-                password = ((EditText)findViewById(R.id.edit_text_password)).getText().toString();
+                username = mUsername.getText().toString();
+                password = mPassword.getText().toString();
 
                 // TODO: Form validation
                 if (!username.equals("") && !password.equals("")) {
 
+                    initProgressDialog();
+                    // Show the progress bar
+                    mProgressDialog.show();
 
                     // Sending login request to server
                     LoginAttempt(username, password);
 
                 } else {
                     // Show message
+                    ShowErrorDialog("Please fill all the required fields");
                 }
 
 
@@ -119,10 +141,10 @@ public class LoginActivity extends Activity {
         };
 
         // Assign click listener to the Login button
-        mLoginButton.setOnClickListener(mLoginButton_onClick);
+        loginButton.setOnClickListener(mLoginButton_onClick);
     }
 
-    private void LoginAttempt(String username, String password) {
+    private void LoginAttempt(final String username, final String password) {
 
         JSONObject body;
         RequestFactory requestFactory;
@@ -155,8 +177,21 @@ public class LoginActivity extends Activity {
                         public void onResponse(String response) {
                             // handle the login response
 
+
+
+                            // Hide Progress Dialog
+                            mProgressDialog.hide();
+                            if (mProgressDialog != null) {
+                                mProgressDialog.dismiss();
+                            }
+
+                            HandleLoginResponse(response);
+                        }
+
+                        private void HandleLoginResponse(String response) {
                             String token = null;
 
+                            // TODO: read token from header
                             try {
                                 JSONObject jsonObject = new JSONObject(response);
                                 token = jsonObject.getString(ApplicationConstants.AUTH_TOKEN_KEY);
@@ -169,103 +204,19 @@ public class LoginActivity extends Activity {
                             if (token != null) {
 
                                 // Set login state
-                                mSystemSession.Login(token);
+                                mSystemSession.Login(token, username, password);
 
                                 // Request safe IP from server
-                                RequestSafeIP(token);
-
-
+                               // RequestSafeIP(token);
 
                                 LoadFeedActivity();
                             } else {
                                 // Something is wrong with reading the token
                                 // Unexpected response
-
-                                Toast.makeText(getApplicationContext(), "Unexpected Login response (Not error)",
-                                        Toast.LENGTH_LONG).show();
+                                ShowErrorDialog("Unexpected Login response (Not error)");
+                                /*Toast.makeText(getApplicationContext(), "Unexpected Login response (Not error)",
+                                        Toast.LENGTH_LONG).show();*/
                             }
-                        }
-
-                        private void RequestSafeIP(final String token) {
-
-                            // After login - create a request to server to get the ip address of the safe
-
-
-
-                            RequestFactory requestFactory = new RequestFactory(getApplicationContext());
-                            JSONObject body = new JSONObject();
-
-                            requestFactory.createJsonRequest(
-                                    Request.Method.GET,
-                                    ApplicationConstants.IP_GET_API, body.toString(), token,
-                                    new Response.Listener<String>() {
-                                        @Override
-                                        public void onResponse(String response) {
-
-                                            String ip = null;
-
-                                            // Extract the safe IP from the response
-                                            try {
-                                                JSONObject jsonObject = new JSONObject(response);
-                                                ip = jsonObject.getString(ApplicationConstants.IP_GETTER_IP_ADDRESS_KEY);
-
-                                            } catch (JSONException e) {
-                                                e.printStackTrace();
-                                            }
-
-                                            // null for error reading from json
-                                            // empty string for - server don't know the ip
-                                            if (ip != null && !ip.equals("")) {
-
-                                                // Save the ip
-                                                mSystemSession.setIPAddressOfSafe(ip);
-
-                                            } else {
-                                                // TODO: fix no-ip issue
-
-                                                RequestSafeIP(token);
-                                                mSystemSession.setIPAddressOfSafe(ApplicationConstants.NO_IP_VALUE);
-
-                                            }
-
-                                            Toast.makeText(getApplicationContext(), mSystemSession.geIPAddressOfSafe(),
-                                                    Toast.LENGTH_LONG).show();
-                                        }
-                                    },
-
-                                    new Response.ErrorListener() {
-                                        @Override
-                                        public void onErrorResponse(VolleyError error) {
-                                            String errorMessage = null;
-
-                                            NetworkResponse response = error.networkResponse;
-                                            if (response != null && response.data != null) {
-                                                switch (response.statusCode) {
-
-                                                    // 400
-                                                    case ApplicationConstants.HTTP_BAD_REQUEST:
-                                                        errorMessage = "Bad request";
-                                                        break;
-
-                                                    // 403
-                                                    case ApplicationConstants.HTTP_FORBIDDEN:
-                                                        errorMessage = "You don't have the permission";
-                                                        break;
-
-
-                                                }
-
-                                            } else if (error.getMessage() != null) {
-                                                errorMessage = error.getMessage();
-                                            }
-
-
-                                            if (errorMessage != null ){
-                                                Toast.makeText(getApplicationContext(), errorMessage,
-                                                        Toast.LENGTH_LONG).show();
-                                            }
-                                        }
-                                    });
                         }
                     },
 
@@ -274,6 +225,12 @@ public class LoginActivity extends Activity {
                         public void onErrorResponse(VolleyError error) {
 
                             String errorMessage = null;
+
+                            // Hide Progress Dialog
+                            mProgressDialog.hide();
+                            if (mProgressDialog != null) {
+                                mProgressDialog.dismiss();
+                            }
 
                             NetworkResponse response = error.networkResponse;
                             if (response != null && response.data != null) {
@@ -296,17 +253,57 @@ public class LoginActivity extends Activity {
                                 errorMessage = error.getMessage();
                             }
 
-
-                            if (errorMessage != null ){
+                            ShowErrorDialog(errorMessage);
+                            /*if (errorMessage != null ){
                                 Toast.makeText(getApplicationContext(), errorMessage,
                                         Toast.LENGTH_LONG).show();
-                            }
+                            }*/
                         }
                     }
             );
         }
 
 
+    }
+
+    private void ShowErrorDialog(String message) {
+
+        // Custom 'sorry' dialog with a return button
+
+        final Dialog dialog;
+
+        dialog = new Dialog(this);
+
+        // Set the dialog style - without a title bar
+        dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+
+        // Set the dialog background to transparent
+        //dialog.getWindow().setBackgroundDrawable(
+        //        new ColorDrawable(Color.TRANSPARENT));
+
+        // Get the dialog layout
+        dialog.setContentView(this.getLayoutInflater().inflate(R.layout.dialog_login_error, null));
+
+        // Set the custom dialog component button
+        Button dialogButton = (Button) dialog.findViewById(R.id.button_try_again);
+
+        // Set the error message
+        TextView errorMessage = (TextView) dialog.findViewById(R.id.error_message_text_view);
+
+        errorMessage.setText(message);
+
+        // If button is clicked, close the custom dialog
+        dialogButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                // Button clicked - close the dialog
+                dialog.dismiss();
+            }
+        });
+
+        // Show the dialog
+        dialog.show();
     }
 
     private void LoadFeedActivity() {
@@ -328,6 +325,9 @@ public class LoginActivity extends Activity {
     }
 
 
+
+
+
     public void Testing(View view) {
 /*
         // Contact Uploading test
@@ -341,7 +341,7 @@ public class LoginActivity extends Activity {
         RequestFactory requestFactory;
 
         String ip = mSystemSession.geIPAddressOfSafe();
-        String url = "http://" + ip + ApplicationConstants.CONTACT_UPLOAD_API;
+        String url = "http://" + ip + ApplicationConstants.CONTACT_UPLOAD_API_SUFFIX;
 
         requestFactory = new RequestFactory(getApplicationContext());
 
@@ -353,7 +353,7 @@ public class LoginActivity extends Activity {
         final MyPhoto photo = new MyPhoto("505", "MyPhoto", file,"image/jpeg", "20150418_234415");
         String ip = mSystemSession.geIPAddressOfSafe();
 
-        String url = "http://" + ip + ApplicationConstants.UPLOAD_STREAM_API_SUFFIX;
+        String url = "http://" + ip + ApplicationConstants.PHOTO_UPLOAD_STREAM_API_SUFFIX;
         RequestFactory requestFactory = new RequestFactory(getApplication());
 
 

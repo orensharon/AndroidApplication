@@ -1,24 +1,16 @@
 package com.example.orensharon.finalproject;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.method.ScrollingMovementMethod;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.example.orensharon.finalproject.gui.settings.controls.CheckboxAdapter;
 import com.example.orensharon.finalproject.service.ObserverService;
 import com.example.orensharon.finalproject.service.helpers.ObserverServiceBroadcastReceiver;
-
-import java.util.Hashtable;
 
 
 public class TempActivity extends Activity {

@@ -96,6 +96,9 @@ public class MyContact extends BaseObject {
     public void setPhoto(Uri photo) {
         this.mPhotoUri = photo;
     }
+
+
+
     @Override
     public String toString() {
         return "MyContact [id=" + getId() + ", display name=" + mDisplayName

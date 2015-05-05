@@ -11,10 +11,17 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 
+import com.example.orensharon.finalproject.service.managers.BaseManager;
 import com.example.orensharon.finalproject.service.upload.UploadManager;
 import com.example.orensharon.finalproject.service.observers.BaseContentObserver;
 import com.example.orensharon.finalproject.service.observers.ContactObserver;
 import com.example.orensharon.finalproject.service.observers.PhotoObserver;
+import com.example.orensharon.finalproject.service.upload.helpers.NetworkChangeReceiver;
+import com.example.orensharon.finalproject.service.upload.helpers.SyncUpdateMessage;
+import com.example.orensharon.finalproject.sessions.SettingsSession;
+
+import java.util.Observable;
+import java.util.Observer;
 
 
 /**
@@ -23,7 +30,7 @@ import com.example.orensharon.finalproject.service.observers.PhotoObserver;
  * Service job is to register to a content observers according to the
  * user's selection.
  */
-public class ObserverService extends Service {
+public class ObserverService extends Service implements Observer {
 
     // Constants
     public static final int STATUS_SERVICE_NOT_RUNNING = 0;
@@ -52,6 +59,8 @@ public class ObserverService extends Service {
     // The concrete observers
     private BaseContentObserver mPhotosObserver, mContactsObserver;
 
+    // Session
+    private SettingsSession mSettingsSession;
 
 
     @Override
@@ -92,6 +101,13 @@ public class ObserverService extends Service {
         this.getApplicationContext().getContentResolver()
                 .unregisterContentObserver(mContactsObserver);
 
+        if (mSettingsSession.getAutoSync()) {
+            UnregisterNetworkObserver();
+        }
+
+        Log.i("sharonlog","Service destroyed");
+
+
     }
 
     @Override
@@ -100,6 +116,7 @@ public class ObserverService extends Service {
         // Service was started
 
         String message = null;
+        mSettingsSession = new SettingsSession(getApplicationContext());
 
         super.onStartCommand(intent, flags, startId);
 
@@ -109,7 +126,12 @@ public class ObserverService extends Service {
             mServiceStatus = STATUS_SERVICE_RUNNING;
             message = SERVICE_RUNNING_MSG;
 
+            // Register to internet connection observer
+            if (mSettingsSession.getAutoSync()) {
+                RegisterNetworkObserver();
+            }
 
+            // TODO: read from session and register to observers
             // Init the concrete observers
             mContactsObserver = new ContactObserver(this, CONTACT_OBSERVER_URI);
             mPhotosObserver = new PhotoObserver(this, PHOTO_OBSERVER_URI);
@@ -119,13 +141,11 @@ public class ObserverService extends Service {
 
 
 
-            Log.d("INSTANT", "registered content observer");
+            Log.i("sharonlog","SERVICE STARTED");
         } else if (mServiceStatus == STATUS_SERVICE_RUNNING) {
 
             // If service is already running - manage the content
-            message = "Settings saved on service";
-            //mContactsObserver.Manage();
-            //mPhotosObserver.Manage();
+            message = "Settings not yed but should saved on service";
         }
 
 
@@ -177,6 +197,67 @@ public class ObserverService extends Service {
         // Getter of service status
 
         return mServiceStatus;
+    }
+
+
+
+    // Internet observer
+
+    public void RegisterNetworkObserver() {
+
+        // Register to the internet connection observer
+        NetworkChangeReceiver.getObservable().addObserver(this);
+        Log.i("sharonlog","Registered to internet observing");
+    }
+    public void UnregisterNetworkObserver() {
+        // Unregister to the internet connection observer
+
+        Log.i("sharonlog","Unregistered from internet observing");
+        NetworkChangeReceiver.getObservable().deleteObserver(this);
+    }
+
+    @Override
+    public void update(Observable observable, Object data) {
+
+        // Whenever connection changes, this method will be called and determine the internet status
+
+        int internetStatus;
+        SyncUpdateMessage msg;
+        msg = ExtractMessageFromData(data);
+
+        if (msg == null) {
+            return;
+        }
+
+
+        internetStatus = (Integer)msg.getData();
+
+        if (internetStatus == NetworkChangeReceiver.NOT_CONNECTED) {
+
+        } else {
+            // Internet is connected
+            Log.e("sharonlog","Internet connection changed : " +  internetStatus);
+           // mManager.HandleUnsyncedContent();
+        }
+
+
+    }
+
+    private SyncUpdateMessage ExtractMessageFromData(Object data) {
+
+        SyncUpdateMessage msg;
+
+        if (data instanceof SyncUpdateMessage) {
+            msg = (SyncUpdateMessage) data;
+        } else {
+            return null;
+        }
+
+        if (msg.getMessageCode() != SyncUpdateMessage.SYNC_SUCCESSFUL) {
+            return null;
+        }
+
+        return msg;
     }
 
 

@@ -44,7 +44,6 @@
                 android:inputType="textEmailAddress"
                 android:layout_toRightOf="@+id/image_view_mail_icon"
                 android:id="@+id/edit_text_username"
-                android:text="sharon@oren.com"
                 android:padding="3dp"
                 android:background="@drawable/login_text_box" />
 
@@ -73,7 +72,6 @@
                 android:layout_height="wrap_content"
                 android:inputType="textPassword"
                 android:padding="3dp"
-                android:text="12345678"
                 android:layout_toRightOf="@+id/image_view_lock_icon"
                 android:id="@+id/edit_text_password"
                 android:background="@drawable/login_text_box" />

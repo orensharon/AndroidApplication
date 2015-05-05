@@ -4,14 +4,25 @@ package com.example.orensharon.finalproject.gui.feed;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTabHost;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.example.orensharon.finalproject.ApplicationConstants;
 import com.example.orensharon.finalproject.R;
 import com.example.orensharon.finalproject.gui.IFragment;
+import com.example.orensharon.finalproject.logic.RequestFactory;
+import com.example.orensharon.finalproject.sessions.SystemSession;
+import com.example.orensharon.finalproject.utils.IPAddressValidator;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 public class FeedTabbedFragment extends Fragment {
@@ -67,9 +78,9 @@ public class FeedTabbedFragment extends Fragment {
 
         View view;
 
-        view = inflater.inflate(R.layout.inner_feed, container, false);
-
+        view = inflater.inflate(R.layout.fragment_feed_tabs, container, false);
         AddTabs(view);
+
         return view;
     }
 
@@ -77,7 +88,7 @@ public class FeedTabbedFragment extends Fragment {
 
         // Adding the tabs
         mTabHost = (FragmentTabHost) view.findViewById(android.R.id.tabhost);
-        mTabHost.setup(getActivity(), getActivity().getSupportFragmentManager(), android.R.id.tabcontent);
+        mTabHost.setup(getActivity(), getChildFragmentManager(), android.R.id.tabcontent);
 
         for (Tabs tab : Tabs.values()) {
 
@@ -89,4 +100,7 @@ public class FeedTabbedFragment extends Fragment {
                     FeedSectionFragment.class, null);
         }
     }
+
+
+
 }
