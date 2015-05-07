@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -13,6 +15,7 @@ import android.widget.TextView;
 import com.example.orensharon.finalproject.R;
 import com.example.orensharon.finalproject.gui.IFragment;
 import com.example.orensharon.finalproject.gui.login.LoginActivity;
+import com.example.orensharon.finalproject.service.ObserverService;
 import com.example.orensharon.finalproject.sessions.SystemSession;
 
 /**
@@ -29,7 +32,13 @@ public class AccountFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
 
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.account, menu);
     }
 
     @Override
@@ -43,6 +52,8 @@ public class AccountFragment extends Fragment {
 
     }
 
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -53,10 +64,12 @@ public class AccountFragment extends Fragment {
 
         Button logoutButton = (Button) view.findViewById(R.id.button_logout);
         TextView usernameTextView = (TextView) view.findViewById(R.id.username_text_view);
+        TextView safeIPTextView = (TextView) view.findViewById(R.id.safe_ip_text_view);
 
         SystemSession systemSession = new SystemSession(getActivity());
 
         usernameTextView.setText(systemSession.getUsername());
+        safeIPTextView.setText(systemSession.geIPAddressOfSafe());
 
         View.OnClickListener mLoginButton_onClick = new View.OnClickListener() {
 
@@ -77,11 +90,18 @@ public class AccountFragment extends Fragment {
         SystemSession systemSession;
         systemSession = new SystemSession(getActivity());
         systemSession.Logout();
+        stopObservingService();
 
         mListener.LoadActivity(LoginActivity.class, false);
     }
 
 
+    private void stopObservingService() {
+        // Stop the service
+        Intent mServiceIntent;
+        mServiceIntent = new Intent(getActivity(), ObserverService.class);
+        getActivity().stopService(mServiceIntent);
+    }
 
 
 

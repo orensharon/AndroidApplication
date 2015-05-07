@@ -5,6 +5,7 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.example.orensharon.finalproject.ApplicationConstants;
@@ -130,6 +131,34 @@ public class MultipartRequest<T> extends Request<T> {
         }
 
     }
+
+    @Override
+    protected VolleyError parseNetworkError(VolleyError volleyError) {
+
+        // Parser for the network error
+
+        if (volleyError.networkResponse != null && volleyError.networkResponse.data != null) {
+
+            // In case of http error
+            return volleyError;
+
+        } else {
+
+            // In case of: TimeoutError, NoConnectionError ....
+            String errorMessage = new String(volleyError.toString());
+
+            // TODO: Change the error checking method
+            if (errorMessage.contains("TimeoutError")) {
+                errorMessage = "The server is unreachable.\nPlease try again later";
+            } else if (errorMessage.contains("NoConnectionError")) {
+                errorMessage = "Please check your internet connectivity and then try again";
+            }
+
+            // Other errors
+            return new VolleyError(errorMessage);
+        }
+    }
+
 
     @Override
     protected void deliverResponse(T response)

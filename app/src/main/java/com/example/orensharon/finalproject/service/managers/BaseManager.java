@@ -6,25 +6,31 @@ import android.net.Uri;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.example.orensharon.finalproject.ApplicationConstants;
+import com.example.orensharon.finalproject.logic.RequestFactory;
+import com.example.orensharon.finalproject.service.ObserverService;
 import com.example.orensharon.finalproject.service.helpers.QueryArgs;
 import com.example.orensharon.finalproject.service.objects.BaseObject;
-import com.example.orensharon.finalproject.service.observers.InternetObserver;
 import com.example.orensharon.finalproject.service.upload.UploadManager;
-import com.example.orensharon.finalproject.service.upload.helpers.NetworkChangeReceiver;
-import com.example.orensharon.finalproject.service.upload.helpers.SyncUpdateMessage;
 import com.example.orensharon.finalproject.sessions.ContentSession;
 import com.example.orensharon.finalproject.sessions.SettingsSession;
 import com.example.orensharon.finalproject.sessions.SystemSession;
 import com.example.orensharon.finalproject.utils.Connectivity;
+import com.example.orensharon.finalproject.utils.IPAddressValidator;
 import com.example.orensharon.finalproject.utils.MD5Checksum;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  * Created by orensharon on 12/17/14.
@@ -80,19 +86,17 @@ public abstract class BaseManager {
         }
         Log.e("sharonlog","After Managing ID: " + mContentSession.getLatestId(mContentKeys.getLastIDKey()));
 
-        if ( mSettingsSession.getAutoSync() ) {
 
-            Log.e("sharonlog","Is in AUTOSYNC mode");
-            // Ignore sending if wifi only and the connection is not wifi
-            boolean isWifiOnly = mSettingsSession.getWIFIOnly();
-            boolean connectedToWifi = Connectivity.isConnectedWifi(mContext);
+        // Ignore sending if wifi only and the connection is not wifi
+        boolean isWifiOnly = mSettingsSession.getWIFIOnly();
+        boolean connectedToWifi = Connectivity.isConnectedWifi(mContext);
 
-            if (Connectivity.isConnected(mContext) && (isWifiOnly && connectedToWifi) || !isWifiOnly) {
-                // TODO: Where to put this?
-                Log.e("sharonlog","All terms ok, Calling HandleUnsyncedContent()");
-                HandleUnsyncedContent();
-            }
+        if (Connectivity.isConnected(mContext) && (isWifiOnly && connectedToWifi) || !isWifiOnly) {
+            // TODO: Where to put this?
+            Log.e("sharonlog","All terms ok, Calling HandleUnsyncedContent()");
+            HandleUnsyncedContent();
         }
+
 
 
     }
@@ -108,12 +112,38 @@ public abstract class BaseManager {
         Log.i("sharonlog",mContentSession.getToBackupList(mContentKeys.getBackupDataListKey()).toString());
 
         Log.e("sharonlog","Syncing unsynced list...");
-        unsyncedList = mContentSession.getUnsyncedList(mContentKeys.getUnsyncedListKey());
+
+        unsyncedList = new ArrayList<String>(mContentSession.getUnsyncedList(mContentKeys.getUnsyncedListKey()));
+
+
         for (String key : unsyncedList) {
             BaseObject content = getContentByID(key);
             Log.e("sharonlog","Calling ... DispatchRequest(content)");
-            mUploadManager.DispatchRequest(content);
+
+            if (content == null) {
+                // Means content was deleted from local device
+
+                Log.e("sharonlog","Cant find content.. deleting " + key);
+                mContentSession.RemoveFromUnsyncedList(mContentKeys.getUnsyncedListKey(), key);
+
+                //int size = mContentSession.getUnsyncedList(mContentKeys.getUnsyncedListKey()).size();
+                //if (size == 0) {
+                //    ObserverService serviceInstance =
+                //            (ObserverService) mContext;
+                //    serviceInstance.sendProgress(ObserverService.SYNC_MIGHT_DONE_WITH_ERROR);
+
+                //}
+
+                continue;
+            }
+            Log.e("sharonlog","Dispaching ..." + key);
+            mUploadManager.DispatchRequest(content, true);
         }
+
+
+
+
+
     }
 
     public UploadManager getUploadManager() {
@@ -319,6 +349,116 @@ public abstract class BaseManager {
 
         return list;
     }
+
+
+    public void Destroy() {
+        mUploadManager.Suspend();
+    }
+
+
+
+    private void RequestSafeIP() {
+
+        // Create a request to server to get the ip address of the safe
+
+        final SystemSession systemSession = new SystemSession(mContext);
+
+
+        RequestFactory requestFactory = new RequestFactory(mContext);
+        JSONObject body = new JSONObject();
+
+
+        requestFactory.createJsonRequest(
+                Request.Method.GET,
+                ApplicationConstants.IP_GET_API, body.toString(), systemSession.getToken(),
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        String ip = null;
+
+                        // Extract the safe IP from the response
+                        try {
+                            JSONObject jsonObject = new JSONObject(response);
+                            ip = jsonObject.getString(ApplicationConstants.IP_GETTER_IP_ADDRESS_KEY);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        // null for error reading from json
+                        // Check if this is a valid ip address
+                        IPAddressValidator ipAddressValidator;
+                        ipAddressValidator = new IPAddressValidator();
+
+                        if (ip != null && ipAddressValidator.validate(ip)) {
+
+                            // Save only if new ip
+                            if (!ip.equals(systemSession.geIPAddressOfSafe())) {
+                                systemSession.setIPAddressOfSafe(ip);
+                            }
+
+                            Toast.makeText(mContext, systemSession.geIPAddressOfSafe(),
+                                    Toast.LENGTH_LONG).show();
+                            Log.i("sharonlog", "got ip:" + ip);
+
+
+                            Log.i("sharonlog", "Calling UploadPhoto(..)");
+
+
+                        } else {
+                            //TODO:// RequestSafeIP(token); with retry policy
+                            systemSession.setIPAddressOfSafe(ApplicationConstants.NO_IP_VALUE);
+                            Toast.makeText(mContext, "NO-IP",
+                                    Toast.LENGTH_LONG).show();
+
+                        }
+
+                    }
+                },
+
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        String errorMessage = null;
+
+                        NetworkResponse response = error.networkResponse;
+                        if (response != null && response.data != null) {
+                            switch (response.statusCode) {
+
+                                // 400
+                                case ApplicationConstants.HTTP_BAD_REQUEST:
+                                    errorMessage = "400 Bad Request";
+                                    break;
+
+                                // 403
+                                case ApplicationConstants.HTTP_FORBIDDEN:
+                                    errorMessage = "Forbidden attempt to upload";
+                                    break;
+
+                                // 409
+                                case ApplicationConstants.HTTP_CONFLICT:
+                                    errorMessage = "MD5 not equal";
+                                    break;
+
+
+                            }
+
+                        } else if (error.getMessage() != null) {
+                            errorMessage = error.getMessage();
+                        }
+
+
+                        if (errorMessage != null) {
+                            Toast.makeText(mContext, errorMessage,
+                                    Toast.LENGTH_LONG).show();
+                        }
+
+                    }
+                });
+
+    }
+
 
 
 

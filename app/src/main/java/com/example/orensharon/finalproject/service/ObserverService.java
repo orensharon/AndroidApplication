@@ -11,8 +11,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 
-import com.example.orensharon.finalproject.service.managers.BaseManager;
-import com.example.orensharon.finalproject.service.upload.UploadManager;
 import com.example.orensharon.finalproject.service.observers.BaseContentObserver;
 import com.example.orensharon.finalproject.service.observers.ContactObserver;
 import com.example.orensharon.finalproject.service.observers.PhotoObserver;
@@ -32,14 +30,34 @@ import java.util.Observer;
  */
 public class ObserverService extends Service implements Observer {
 
-    // Constants
+
+
+    // Service Status
     public static final int STATUS_SERVICE_NOT_RUNNING = 0;
     public static final int STATUS_SERVICE_RUNNING = 1;
     public static final int STATUS_SERVICE_ERROR = 2;
 
-    // Broadcasting communication constants
-    public static final String MSG_TO_SERVICE = "to_service_msg";
-    public static final String MSG_FROM_SERVICE = "from_service_msg";
+
+    // Messaging with the settings activity constants
+    public static final String TYPE_OF_MESSAGE_FROM_SERVICE_KEY = "type_of_message"; // The type of the message
+    public static final String ERROR_CODE_FROM_SERVICE_KEY = "error_from_service_msg";
+    public static final String PROGRESS_CODE_FROM_SERVICE_KEY = "progress_from_service_msg";
+    public static final String EXTRA_MESSAGE_FROM_SERVICE_KEY = "extra_message_from_service_msg";
+
+    // Message types
+    public static final int MESSAGE_FROM_SERVICE_ERROR = 1;
+    public static final int MESSAGE_FROM_SERVICE_COMM = 2;
+    public static final int MESSAGE_FROM_SERVICE_PROGRESS = 3;
+
+    // Internal codes
+    public static final int SYNC_DONE = 20;
+    public static final int SYNC_MIGHT_DONE_WITH_ERROR = 21;
+
+    // Internal error code
+    public static final int SAFE_UNREACHABLE = 40;
+    public static final int NO_INTERNET = 30;
+
+
 
     // Service status constants
     private final String SERVICE_RUNNING_MSG = "Service is running";
@@ -62,6 +80,7 @@ public class ObserverService extends Service implements Observer {
     // Session
     private SettingsSession mSettingsSession;
 
+    private static boolean mIsInternetObserving = false;
 
     @Override
     public void onCreate() {
@@ -91,7 +110,7 @@ public class ObserverService extends Service implements Observer {
 
         mServiceStatus = STATUS_SERVICE_NOT_RUNNING;
 
-        sendResult(SERVICE_NOT_RUNNING_MSG);
+        sendResult(2, STATUS_SERVICE_NOT_RUNNING, SERVICE_NOT_RUNNING_MSG);
 
         // Unregister from services
         this.getApplicationContext().getContentResolver()
@@ -101,10 +120,12 @@ public class ObserverService extends Service implements Observer {
         this.getApplicationContext().getContentResolver()
                 .unregisterContentObserver(mContactsObserver);
 
-        if (mSettingsSession.getAutoSync()) {
+        if (mIsInternetObserving) {
             UnregisterNetworkObserver();
         }
 
+        mContactsObserver.Destroy();
+        mPhotosObserver.Destroy();
         Log.i("sharonlog","Service destroyed");
 
 
@@ -126,11 +147,6 @@ public class ObserverService extends Service implements Observer {
             mServiceStatus = STATUS_SERVICE_RUNNING;
             message = SERVICE_RUNNING_MSG;
 
-            // Register to internet connection observer
-            if (mSettingsSession.getAutoSync()) {
-                RegisterNetworkObserver();
-            }
-
             // TODO: read from session and register to observers
             // Init the concrete observers
             mContactsObserver = new ContactObserver(this, CONTACT_OBSERVER_URI);
@@ -145,13 +161,25 @@ public class ObserverService extends Service implements Observer {
         } else if (mServiceStatus == STATUS_SERVICE_RUNNING) {
 
             // If service is already running - manage the content
-            message = "Settings not yed but should saved on service";
+
+            Log.i("sharonlog","SERVICE UPDATING...");
+
+            mContactsObserver.Manage();
+            mPhotosObserver.Manage();
+
+        }
+
+        // Register to internet connection observer
+        if (!mIsInternetObserving) {
+            RegisterNetworkObserver();
+        } else {
+            UnregisterNetworkObserver();
         }
 
 
         // Set the status anyway
         mServiceStatus = STATUS_SERVICE_RUNNING;
-        sendResult(message);
+        sendResult(2, STATUS_SERVICE_RUNNING, message);
 
 
 
@@ -177,19 +205,58 @@ public class ObserverService extends Service implements Observer {
                         observer);
     }
 
-    private void sendResult(String message) {
+
+
+    public void sendResult(int resultType, int code, String message) {
 
         // Send a broadcast to the loader activity
 
         Intent intent;
 
         intent = new Intent(ObserverService.class.getName());
-        if (message != null) {
-            intent.putExtra(MSG_FROM_SERVICE, message);
+        if (message != null)
+        {
+            if (resultType == MESSAGE_FROM_SERVICE_ERROR) {
+                // Means error
+                intent.putExtra(ERROR_CODE_FROM_SERVICE_KEY, code);
+                intent.putExtra(TYPE_OF_MESSAGE_FROM_SERVICE_KEY, MESSAGE_FROM_SERVICE_ERROR);
+            } else if (resultType == MESSAGE_FROM_SERVICE_PROGRESS) {
+                // Means progress
+                intent.putExtra(PROGRESS_CODE_FROM_SERVICE_KEY, code);
+                intent.putExtra(TYPE_OF_MESSAGE_FROM_SERVICE_KEY, MESSAGE_FROM_SERVICE_PROGRESS);
+            //} else if (resultType == 2) {
+                // Means comm
+                //intent.putExtra(MSG_FROM_SERVICE, code);
+            }
+            intent.putExtra(EXTRA_MESSAGE_FROM_SERVICE_KEY, message);
         }
 
         // Send the broadcast message
         mBroadcaster.sendBroadcast(intent);
+    }
+
+    public void sendError(int errorCode) {
+
+        String message = "some error";
+
+
+        if (errorCode == SAFE_UNREACHABLE) {
+            message = "Check if safe in online..";
+        } else if (errorCode == NO_INTERNET) {
+            message = "Check internet connection..";
+        }
+        sendResult(MESSAGE_FROM_SERVICE_ERROR, errorCode, message);
+    }
+    public void sendProgress(int progressCode) {
+
+        String message = "some progress";
+
+        if (progressCode == SYNC_DONE) {
+            message = "Sync done";
+        } else if (progressCode == SYNC_MIGHT_DONE_WITH_ERROR) {
+            message = "Sync done, but was unable to locate some local resource";
+        }
+        sendResult(MESSAGE_FROM_SERVICE_PROGRESS, progressCode, message);
     }
 
     public static int getServiceStatus() {
@@ -207,6 +274,7 @@ public class ObserverService extends Service implements Observer {
 
         // Register to the internet connection observer
         NetworkChangeReceiver.getObservable().addObserver(this);
+        mIsInternetObserving = true;
         Log.i("sharonlog","Registered to internet observing");
     }
     public void UnregisterNetworkObserver() {
@@ -214,6 +282,7 @@ public class ObserverService extends Service implements Observer {
 
         Log.i("sharonlog","Unregistered from internet observing");
         NetworkChangeReceiver.getObservable().deleteObserver(this);
+        mIsInternetObserving = false;
     }
 
     @Override

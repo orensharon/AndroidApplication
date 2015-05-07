@@ -9,7 +9,7 @@ import android.support.v4.app.Fragment;
  */
 public interface IFragment {
 
-    public void LoadFragment(Fragment fragment, boolean isSupportBack);
+    public void LoadFragment(Fragment fragment,String tag, boolean isSupportBack);
 
     public void LoadActivity(Class cls, boolean isSupportBack);
 }

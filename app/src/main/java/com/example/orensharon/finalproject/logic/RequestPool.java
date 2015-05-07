@@ -44,8 +44,8 @@ public class RequestPool {
     }
 
     public <T> void addToRequestQueue(Request<T> req) {
-        Log.e(" +_+_+_+ request _+_+_+_+_",req.toString());
-        Request<T> requ = getRequestQueue().add(req);
+
+        getRequestQueue().add(req);
     }
 }
 

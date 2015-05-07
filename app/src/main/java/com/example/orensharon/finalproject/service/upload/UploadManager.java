@@ -11,23 +11,20 @@ import com.android.volley.VolleyError;
 import com.example.orensharon.finalproject.ApplicationConstants;
 import com.example.orensharon.finalproject.logic.RequestFactory;
 
+import com.example.orensharon.finalproject.service.ObserverService;
 import com.example.orensharon.finalproject.service.objects.BaseObject;
 import com.example.orensharon.finalproject.service.objects.Contact.MyContact;
 import com.example.orensharon.finalproject.service.objects.Photo.MyPhoto;
-import com.example.orensharon.finalproject.service.upload.helpers.SyncUpdateMessage;
 
-import com.example.orensharon.finalproject.service.upload.helpers.NetworkChangeReceiver;
 import com.example.orensharon.finalproject.sessions.ContentSession;
 import com.example.orensharon.finalproject.sessions.SettingsSession;
 import com.example.orensharon.finalproject.sessions.SystemSession;
 import com.example.orensharon.finalproject.utils.Connectivity;
-import com.example.orensharon.finalproject.utils.MD5Checksum;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Observable;
-import java.util.Observer;
+import java.util.List;
 
 /**
  * Created by orensharon on 12/30/14.
@@ -65,7 +62,7 @@ public class UploadManager {
 
 
 
-    public void DispatchRequest(BaseObject newContent) {
+    public void DispatchRequest(BaseObject newContent, boolean isSyncing) {
 
         String typeOfContent;
         String ip, url;
@@ -77,39 +74,36 @@ public class UploadManager {
         boolean isWifiOnly = mSettingsSession.getWIFIOnly();
         boolean connectedToWifi = Connectivity.isConnectedWifi(mContext);
 
-        if (mSettingsSession.getAutoSync()) {
 
-            Log.e("sharonlog", "Is auto sync ....");
-
-            if (Connectivity.isConnected(mContext) && (isWifiOnly && connectedToWifi) || !isWifiOnly) {
-                if (typeOfContent.equals(ApplicationConstants.TYPE_OF_CONTENT_PHOTO)) {
-
-                    Log.e("sharonlog", "All terms ok, Calling UploadPhoto()");
-
-                    url = "http://" + ip + ApplicationConstants.PHOTO_UPLOAD_STREAM_API_SUFFIX;
-
-                    final MyPhoto myPhoto = (MyPhoto) newContent;
-                    UploadPhoto(url, myPhoto);
+        if (Connectivity.isConnected(mContext) && (isWifiOnly && connectedToWifi) || !isWifiOnly) {
 
 
-                } else if (typeOfContent.equals(ApplicationConstants.TYPE_OF_CONTENT_CONTACT)) {
-                    url = "http://" + ip + ApplicationConstants.CONTACT_UPLOAD_API_SUFFIX;
+            if (typeOfContent.equals(ApplicationConstants.TYPE_OF_CONTENT_PHOTO)) {
 
-                    Log.e("sharonlog", "All terms ok, Calling UploadContact()");
-                    final MyContact myContact = (MyContact) newContent;
+                Log.e("sharonlog", "All terms ok, Calling UploadPhoto()");
 
-                    UploadContact(url, myContact);
-                }
+                url = "http://" + ip + ApplicationConstants.PHOTO_UPLOAD_STREAM_API_SUFFIX;
 
+                final MyPhoto myPhoto = (MyPhoto) newContent;
+                UploadPhoto(url, myPhoto, isSyncing);
+
+
+            } else if (typeOfContent.equals(ApplicationConstants.TYPE_OF_CONTENT_CONTACT)) {
+                url = "http://" + ip + ApplicationConstants.CONTACT_UPLOAD_API_SUFFIX;
+
+                Log.e("sharonlog", "All terms ok, Calling UploadContact()");
+                final MyContact myContact = (MyContact) newContent;
+
+                UploadContact(url, myContact);
             }
-        } else {
-            Log.e("sharonlog", "No auto sync .... nothing to do");
-        }
 
+        }
 
     }
 
-
+    public void Suspend() {
+        mRequestFactory.Suspend();
+    }
 
 
     private void UploadContact(String url, final MyContact myContact) {
@@ -195,6 +189,10 @@ public class UploadManager {
 
 
                             if (errorMessage != null) {
+
+                                mRequestFactory.Suspend();
+                                Log.i("sharonlog", "ERROR!");
+
                                 Toast.makeText(mContext, errorMessage,
                                         Toast.LENGTH_LONG).show();
                             }
@@ -204,61 +202,111 @@ public class UploadManager {
         }
     }
 
-    private void UploadPhoto(String url, final MyPhoto myPhoto) {
+    private void UploadPhoto(final String url, final BaseObject baseObject, final boolean isSyncing) {
 
-        mRequestFactory.createMultipartRequest(
-                url,
-                myPhoto.getTypeOfContent(),
-                myPhoto.getFile(),
-                myPhoto.getId(),
-                new Response.Listener() {
-                    @Override
-                    public void onResponse(Object response) {
-                        // Comparing the uploaded MD5 hash from response
-                        // With the one we just have sent
+            final MyPhoto myPhoto = (MyPhoto)baseObject;
 
-                        String uploadResult;
-                        JSONObject jsonResponse = (JSONObject) response;
+            mRequestFactory.createMultipartRequest(
+                    url,
+                    myPhoto.getTypeOfContent(),
+                    myPhoto.getFile(),
+                    myPhoto.getId(),
+                    new Response.Listener() {
+                        @Override
+                        public void onResponse(Object response) {
 
-                      //  try {
-                            //TODO: read from headers
-                            //uploadResult = jsonResponse.getString(ApplicationConstants.CONTENT_STREAM_UPLOAD_RESULT_KEY);
-                            //uploadResult = uploadResult.replace("\"","");
 
-                            String localFileHash = MD5Checksum.getMd5Hash(myPhoto.getFile());
+                            // Check if done with syncing
+                            if (isSyncing == true) {
+                                List<String> list = mContentSession.getUnsyncedList(mContentKeys.getUnsyncedListKey());
 
-                            Toast.makeText(mContext, localFileHash,
-                                    Toast.LENGTH_LONG).show();
+                                // Checking if working on the last item in list
+                                // Then it means done syncing...
+                                if (list.get(list.size() - 1) == baseObject.getId()) {
+                                    Toast.makeText(mContext, "Done Syncing",
+                                            Toast.LENGTH_LONG).show();
+                                }
+                            }
 
-                            //if (localFileHash.equals(uploadResult)) {
-                                // Means the content was successfully uploaded
-                                mContentSession.RemoveFromUnsyncedList(
-                                        mContentKeys.getUnsyncedListKey(),
-                                        myPhoto.getId()
-                                );
+                            // Means the content was successfully uploaded
+                            mContentSession.RemoveFromUnsyncedList(
+                                    mContentKeys.getUnsyncedListKey(),
+                                    myPhoto.getId()
+                            );
+                             //   ObserverService serviceInstance =
+                             //           (ObserverService)mContext;
+                             //   serviceInstance.sendProgress(ObserverService.SYNC_DONE);
 
-                            //} else {
-                                // TODO: the content didn't sent correctly
-                           // }
-                            Log.i("sharonlog","Unsyncned list: (after sending)");
-                            Log.i("sharonlog",mContentSession.getUnsyncedList(mContentKeys.getUnsyncedListKey()).toString());
 
-                            Log.i("sharonlog","toBackup list: (after sending)");
-                            Log.i("sharonlog",mContentSession.getToBackupList(mContentKeys.getBackupDataListKey()).toString());
-                        //} catch (JSONException e) {
-                        //    e.printStackTrace();
+                            Log.i("sharonlog", "Unsyncned list: (after sending)");
+                            Log.i("sharonlog", mContentSession.getUnsyncedList(mContentKeys.getUnsyncedListKey()).toString());
 
-                            // TODO: the content didn't sent correctly
-                       // }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
 
-                        if (error != null)
-                            Log.d("photo error", String.valueOf(error.getCause()));
-                    }
-                }) ;
+                            String errorMessage = null;
+
+                            Log.i("sharonlog", "ERROR!");
+
+
+
+
+                            NetworkResponse response = error.networkResponse;
+                            if (response != null && response.data != null) {
+                                switch (response.statusCode) {
+
+                                    // 400
+                                    case ApplicationConstants.HTTP_BAD_REQUEST:
+                                        errorMessage = "400 Bad Request";
+                                        break;
+
+                                    // 403
+                                    case ApplicationConstants.HTTP_FORBIDDEN:
+                                        errorMessage = "Forbidden attempt to upload";
+                                        break;
+
+                                    // 409
+                                    case ApplicationConstants.HTTP_CONFLICT:
+                                        errorMessage = "MD5 not equal";
+                                        break;
+
+
+                                }
+
+                            } else if (error.getMessage() != null) {
+                                errorMessage = error.getMessage();
+
+                            }
+
+                            if (errorMessage != null) {
+
+                                if (errorMessage.contains("unreachable")) {
+
+                                    mRequestFactory.Suspend();
+
+                                    ObserverService serviceInstance =
+                                            (ObserverService)mContext;
+                                    serviceInstance.sendError(ObserverService.SAFE_UNREACHABLE);
+                                } else if (errorMessage.contains("connectivity")) {
+
+                                    mRequestFactory.Suspend();
+
+                                    ObserverService serviceInstance =
+                                            (ObserverService)mContext;
+                                    serviceInstance.sendError(ObserverService.NO_INTERNET);
+                                }
+
+                                Toast.makeText(mContext, errorMessage,
+                                        Toast.LENGTH_LONG).show();
+                            }
+
+
+                        }
+                    });
+
     }
+
 }

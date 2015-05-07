@@ -4,7 +4,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import com.example.orensharon.finalproject.TempActivity;
+import com.example.orensharon.finalproject.gui.settings.SettingsActivity;
+import com.example.orensharon.finalproject.gui.settings.SettingsFragment;
 import com.example.orensharon.finalproject.service.ObserverService;
 
 // TODO: Service to update UI - is this the right approach?
@@ -28,14 +29,53 @@ public class ObserverServiceBroadcastReceiver extends BroadcastReceiver {
         // The service sends messages to the main thread
         // This method will be the receiver of the messages
 
+        int typeOfMessage;
+        int code;
+
+
         String message;
-        TempActivity main;
 
-        message = intent.getStringExtra(ObserverService.MSG_FROM_SERVICE);
-        main = (TempActivity)mMainContext;
+        SettingsActivity activity;
+        activity = (SettingsActivity)mMainContext;
 
-        main.WriteToLog(message);
-        main.UpdateUI();
+        SettingsFragment settingsFragment =
+                (SettingsFragment)activity.getSupportFragmentManager().findFragmentByTag("SETTINGS_FRAGMENT");
+
+
+        // Determine which kind of message the service send
+        typeOfMessage = intent.getIntExtra(ObserverService.TYPE_OF_MESSAGE_FROM_SERVICE_KEY, 0);
+        message = intent.getStringExtra(ObserverService.EXTRA_MESSAGE_FROM_SERVICE_KEY);
+
+        switch (typeOfMessage) {
+
+            case ObserverService.MESSAGE_FROM_SERVICE_ERROR:
+                // Get the error code
+                code = intent.getIntExtra(ObserverService.ERROR_CODE_FROM_SERVICE_KEY, 0);
+                if (code != 0 ) {
+                    if (settingsFragment != null) {
+
+                    }
+                }
+                break;
+
+            case ObserverService.MESSAGE_FROM_SERVICE_PROGRESS:
+                code = intent.getIntExtra(ObserverService.PROGRESS_CODE_FROM_SERVICE_KEY, 0);
+                if (code == ObserverService.SYNC_DONE || code == ObserverService.SYNC_MIGHT_DONE_WITH_ERROR) {
+
+                    // TODO: check all other lists
+
+                    if (settingsFragment != null) {
+                        // Hide Progress Dialog
+
+                    }
+                }
+                break;
+        }
+
+
+
+
+
 
     }
 }

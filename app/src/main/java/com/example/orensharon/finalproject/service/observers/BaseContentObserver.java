@@ -51,8 +51,10 @@ abstract public class BaseContentObserver extends ContentObserver {
                     if (content != null) {
                         Log.e("sharonlog", "Found (new/edit) content!" + content.getTypeOfContent() + " ID:" + content.getId());
 
+
+
                         // Sending the content into the upload pool
-                        mManager.getUploadManager().DispatchRequest(content);
+                        mManager.getUploadManager().DispatchRequest(content, false);
                     } else {
                         Log.e("sharonlog", "No content found");
                     }
@@ -72,6 +74,10 @@ abstract public class BaseContentObserver extends ContentObserver {
     public void Manage() {
 
         mManager.Manage();
+    }
+
+    public void Destroy() {
+        mManager.Destroy();
     }
 
 }

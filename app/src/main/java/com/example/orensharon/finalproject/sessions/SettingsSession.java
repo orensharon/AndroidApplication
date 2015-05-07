@@ -19,7 +19,6 @@ public class SettingsSession {
     // Preferences key constants
     private final String IS_SERVICE_ENABLED_BY_USER = "IS_SERVICE_ENABLED_BY_USER";
     private final String IS_WIFI_ONLY = "IS_WIFI_ONLY";
-    private final String IS_AUTO_SYNC = "IS_AUTO_SYNC";
     private final String SESSION_NAME = "SETTINGS_SESSION";
 
     public SettingsSession(Context context) {
@@ -70,14 +69,5 @@ public class SettingsSession {
         return mSharedPreferences.getBoolean(IS_WIFI_ONLY, true);
     }
 
-    // Setter and getter for the auto sync option
-    public void setAutoSync(boolean flag) {
-        // From a given state flag save the user preference
-        mEditor.putBoolean(IS_AUTO_SYNC, flag);
-        mEditor.apply();
-    }
-    public boolean getAutoSync() {
-        // Option is on (true) by default
-        return mSharedPreferences.getBoolean(IS_AUTO_SYNC, true);
-    }
+
 }

@@ -1,39 +1,64 @@
 package com.example.orensharon.finalproject.gui.settings;
 
+import android.app.Dialog;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.Window;
+import android.widget.Button;
+import android.widget.TextView;
 
 import com.example.orensharon.finalproject.gui.IFragment;
 
 import com.example.orensharon.finalproject.R;
+import com.example.orensharon.finalproject.service.ObserverService;
+import com.example.orensharon.finalproject.service.helpers.ObserverServiceBroadcastReceiver;
 
 public class SettingsActivity extends FragmentActivity implements IFragment {
 
-
-
+    private ObserverServiceBroadcastReceiver mBroadcastReceiver;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
+        mBroadcastReceiver = new ObserverServiceBroadcastReceiver(this);
+
         if (savedInstanceState == null) {
-            LoadFragment(new SettingsFragment(), false);
+            LoadFragment(new SettingsFragment(),"SETTINGS_FRAGMENT", false);
         }
 
 
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        LocalBroadcastManager.getInstance(this).registerReceiver((mBroadcastReceiver),
+                new IntentFilter(ObserverService.class.getName()));
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiver);
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.settings, menu);
+
+        //getMenuInflater().inflate(R.menu.settings, menu);
         return true;
     }
 
@@ -46,7 +71,7 @@ public class SettingsActivity extends FragmentActivity implements IFragment {
         switch (item.getItemId()) {
             case R.id.action_save:
 
-                LoadFragment(new AccountFragment(), true);
+                LoadFragment(new AccountFragment(),"ACCOUNT_FRAGMENT", true);
                 return true;
 
             default:
@@ -55,7 +80,7 @@ public class SettingsActivity extends FragmentActivity implements IFragment {
     }
 
     @Override
-    public void LoadFragment(Fragment fragment, boolean isSupportBack) {
+    public void LoadFragment(Fragment fragment, String tag, boolean isSupportBack) {
 
         // The implementation of the IFragment interface
 
@@ -68,9 +93,9 @@ public class SettingsActivity extends FragmentActivity implements IFragment {
 
 
         if (isSupportBack) {
-            fragmentTransaction.replace(R.id.fragment_container, fragment).addToBackStack(null).commit();
+            fragmentTransaction.replace(R.id.fragment_container, fragment,tag).addToBackStack(null).commit();
         } else {
-            fragmentTransaction.replace(R.id.fragment_container, fragment).commit();
+            fragmentTransaction.replace(R.id.fragment_container, fragment, tag).commit();
         }
 
     }
@@ -95,6 +120,8 @@ public class SettingsActivity extends FragmentActivity implements IFragment {
             finish();
         }
     }
+
+
 
 
 }

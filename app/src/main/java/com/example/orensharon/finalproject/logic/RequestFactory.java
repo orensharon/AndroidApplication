@@ -1,7 +1,10 @@
 package com.example.orensharon.finalproject.logic;
 
 import android.content.Context;
+import android.util.Log;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.example.orensharon.finalproject.logic.requests.MultipartRequest;
 import com.example.orensharon.finalproject.logic.requests.MyJsonRequest;
@@ -79,7 +82,18 @@ public class RequestFactory {
 
         // Adding request to queue
         RequestPool.getInstance(mContext).addToRequestQueue(request);
+    }
 
+    public void Suspend() {
+
+
+        Log.i("sharonlog", "canceling all request...");
+        RequestPool.getInstance(mContext).getRequestQueue().cancelAll(new RequestQueue.RequestFilter() {
+            @Override
+            public boolean apply(Request<?> request) {
+                return true;
+            }
+        });
     }
 
 }

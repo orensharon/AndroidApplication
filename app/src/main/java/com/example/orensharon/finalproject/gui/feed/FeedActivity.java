@@ -47,7 +47,7 @@ public class FeedActivity extends FragmentActivity implements IFragment {
 
         createCustomActionBarTitle();
 
-        LoadFragment(new FeedManagerFragment(), false);
+        LoadFragment(new FeedManagerFragment(), "FEED_MANAGER_FRAGMENT", false);
 
     }
 
@@ -72,7 +72,7 @@ public class FeedActivity extends FragmentActivity implements IFragment {
     }
 
     @Override
-    public void LoadFragment(Fragment fragment, boolean isSupportBack) {
+    public void LoadFragment(Fragment fragment,String tag, boolean isSupportBack) {
 
         // The implementation of the IFragment interface
 
@@ -85,9 +85,9 @@ public class FeedActivity extends FragmentActivity implements IFragment {
 
 
         if (isSupportBack) {
-            fragmentTransaction.replace(R.id.fragment_container, fragment).addToBackStack(null).commit();
+            fragmentTransaction.replace(R.id.fragment_container, fragment, tag).addToBackStack(null).commit();
         } else {
-            fragmentTransaction.replace(R.id.fragment_container, fragment).commit();
+            fragmentTransaction.replace(R.id.fragment_container, fragment, tag).commit();
         }
 
     }

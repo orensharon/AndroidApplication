@@ -19,7 +19,18 @@
             android:text="Online"
             android:textColor="@color/online"/>
     </RelativeLayout>-->
+    <!-- unsynced items row -->
+    <RelativeLayout
+        style="@style/activity_row"
+        android:gravity="center">
 
+        <TextView
+            android:id="@+id/text_view_unsync_title"
+            style="@style/text_item_small"
+            android:text="Unsynced content:" />
+
+
+    </RelativeLayout>
 
     <!-- Backup switch row -->
     <RelativeLayout
@@ -36,21 +47,6 @@
             android:checked="false" />
     </RelativeLayout>
 
-
-    <!-- auto sync row -->
-    <RelativeLayout
-        style="@style/activity_row">
-
-        <TextView
-            android:id="@+id/text_view_auto_sync_title"
-            style="@style/row_title"
-            android:text="Auto sync:" />
-
-        <Switch
-            style="@style/row_value"
-            android:id="@+id/switch_auto_sync"
-            android:checked="true" />
-    </RelativeLayout>
 
     <!-- Wifi only row -->
     <RelativeLayout

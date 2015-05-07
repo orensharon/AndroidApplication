@@ -1,26 +1,37 @@
 package com.example.orensharon.finalproject.gui.settings;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.os.AsyncTask;
+import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.example.orensharon.finalproject.ApplicationConstants;
 import com.example.orensharon.finalproject.R;
 import com.example.orensharon.finalproject.gui.IFragment;
 import com.example.orensharon.finalproject.gui.settings.controls.ContentListAdapter;
 import com.example.orensharon.finalproject.gui.settings.controls.Content;
 import com.example.orensharon.finalproject.service.ObserverService;
+import com.example.orensharon.finalproject.service.helpers.ObserverServiceBroadcastReceiver;
+import com.example.orensharon.finalproject.sessions.ContentSession;
 import com.example.orensharon.finalproject.sessions.SettingsSession;
+import com.example.orensharon.finalproject.utils.Connectivity;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by orensharon on 1/31/15.
@@ -31,7 +42,11 @@ public class SettingsFragment extends Fragment {
     private ContentListAdapter mContentListAdapter;
     private ListView mContentsListView;
     private TextView mListDescriptionTextView;
-    private Switch mServiceEnableSwitch, mWifiOnlySwitch, mAutoSyncSwitch;
+    private Switch mServiceEnableSwitch, mWifiOnlySwitch;
+
+    // Unsynced controls
+    public TextView mUnsyncedTextView;
+
 
     private SettingsSession mSettingsSession;
 
@@ -41,8 +56,11 @@ public class SettingsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+
 
     }
+
 
 
     @Override
@@ -54,6 +72,13 @@ public class SettingsFragment extends Fragment {
         // the callback interface. If not, it throws an exception
         mListener = (IFragment)activity;
 
+    }
+
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+
+        inflater.inflate(R.menu.settings, menu);
     }
 
     @Override
@@ -72,23 +97,44 @@ public class SettingsFragment extends Fragment {
 
         mServiceEnableSwitch = (Switch) view.findViewById(R.id.switch_enable_service);
         mWifiOnlySwitch = (Switch) view.findViewById(R.id.switch_wifi_only);
-        mAutoSyncSwitch = (Switch) view.findViewById(R.id.switch_auto_sync);
+
 
         // Set the switch according what the user saved options
         mServiceEnableSwitch.setChecked(mSettingsSession.getServiceIsEnabledByUser());
         mWifiOnlySwitch.setChecked(mSettingsSession.getWIFIOnly());
-        mAutoSyncSwitch.setChecked(mSettingsSession.getAutoSync());
+
+
+
+        mUnsyncedTextView = (TextView)view.findViewById(R.id.text_view_unsync_title);
+
 
         initServiceEnableListener();
         initWIFIOnlyListener();
-        initAutoSyncListener();
+
+
+        mUnsyncedTextView.setText("Unsynced contents: " + GetCountOfUnsyncedItems());
 
         // Check the current state before we display the list
         mListDescriptionTextView.setVisibility(((mServiceEnableSwitch.isChecked() == true) ? View.VISIBLE : View.INVISIBLE));
         mContentsListView.setVisibility(((mServiceEnableSwitch.isChecked() == true) ? View.VISIBLE : View.INVISIBLE));
+
+        mWifiOnlySwitch.setEnabled(mSettingsSession.getServiceIsEnabledByUser());
         LoadContentOptionsIntoListView();
 
         return view;
+    }
+
+    private int GetCountOfUnsyncedItems() {
+        // If there is some unsynced contents - show details
+
+        int result;
+
+        ContentSession contentSession = new ContentSession(getActivity());
+        List<String> list = contentSession.getUnsyncedList(ApplicationConstants.UNSYNCED_PHOTOS);
+
+        result = list.size();
+
+        return result;
     }
 
     // Switch listeners
@@ -103,14 +149,16 @@ public class SettingsFragment extends Fragment {
                 mListDescriptionTextView.setVisibility(((isChecked == true) ? View.VISIBLE : View.INVISIBLE));
                 mContentsListView.setVisibility(((isChecked == true) ? View.VISIBLE : View.INVISIBLE));
                 mWifiOnlySwitch.setEnabled(isChecked);
-                mAutoSyncSwitch.setEnabled(isChecked);
 
                 mSettingsSession.setServiceIsEnabledByUser(isChecked);
 
                 if (isChecked == true) {
                     startObservingService();
+
                 } else {
                     stopObservingService();
+
+                    mUnsyncedTextView.setText("Unsynced contents: " + GetCountOfUnsyncedItems());
                 }
             }
         });
@@ -131,21 +179,8 @@ public class SettingsFragment extends Fragment {
         });
 
     }
-    private void initAutoSyncListener() {
 
-        // Attach a listener to check for changes in state
-        mAutoSyncSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView,
-                                         boolean isChecked) {
-
-                mSettingsSession.setAutoSync(isChecked);
-
-            }
-        });
-
-    }
 
     private void startObservingService() {
 
@@ -157,6 +192,8 @@ public class SettingsFragment extends Fragment {
         // Service will start once, any call after that will only send
         // the intent to communicate with the service this way
         getActivity().startService(ServiceIntent);
+
+
     }
     private void stopObservingService() {
         // Stop the service

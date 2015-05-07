@@ -54,6 +54,7 @@ public class ApplicationConstants
     public static final String HEADER_CONTENT_MD5 = "Content-MD5";
     public static final String HEADER_AUTHORIZATION = "Authorization";
 
+    // Body Parameters of the upload content requests
     public static final String CONTENT_TYPE_OF_CONTENT_KEY = "TypeOfContent";
     public static final String CONTENT_ID_KEY = "Id";
 
@@ -71,7 +72,6 @@ public class ApplicationConstants
     // Session constants
     public static final String NO_IP_VALUE = "";
     public static final String NO_TOKEN_VALUE = "";
-
 
 
     // Content Keys

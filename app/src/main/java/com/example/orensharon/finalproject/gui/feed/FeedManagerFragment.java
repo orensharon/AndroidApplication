@@ -75,7 +75,7 @@ public class FeedManagerFragment extends Fragment {
             JSONObject body = new JSONObject();
 
             requestFactory.createJsonRequest(
-                    Request.Method.GET,
+                    Request.Method.POST,
                     ApplicationConstants.IP_GET_API, body.toString(), systemSession.getToken(),
                     new Response.Listener<String>() {
                         @Override
@@ -107,7 +107,7 @@ public class FeedManagerFragment extends Fragment {
                                 Toast.makeText(getActivity(), "NO-IP",
                                         Toast.LENGTH_LONG).show();
                             }
-                            mListener.LoadFragment(new FeedTabbedFragment(), false);
+                            mListener.LoadFragment(new FeedTabbedFragment(), "FEED_TABBED_FRAGMENT", false);
                         }
                     },
 
@@ -148,7 +148,7 @@ public class FeedManagerFragment extends Fragment {
 
         }  else {
             // Reload current fragment
-            mListener.LoadFragment(new FeedTabbedFragment(), false);
+            mListener.LoadFragment(new FeedTabbedFragment(),"FEED_TABBED_FRAGMENT", false);
         }
     }
 

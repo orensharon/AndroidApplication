@@ -20,6 +20,21 @@
     </RelativeLayout>
 
 
+    <!-- Safe IP row -->
+    <RelativeLayout
+        style="@style/activity_row">
+
+        <TextView
+            android:id="@+id/text_view_safe_ip_title"
+            style="@style/row_title"
+            android:text="Safe IP address:" />
+
+        <TextView
+            style="@style/row_value"
+            android:id="@+id/safe_ip_text_view" />
+    </RelativeLayout>
+
+
     <!-- Logout row -->
     <RelativeLayout
         style="@style/activity_row">
