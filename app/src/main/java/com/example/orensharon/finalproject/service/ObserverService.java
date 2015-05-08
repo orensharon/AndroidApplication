@@ -124,8 +124,8 @@ public class ObserverService extends Service implements Observer {
             UnregisterNetworkObserver();
         }
 
-        mContactsObserver.Destroy();
-        mPhotosObserver.Destroy();
+        mContactsObserver.CancelSyncing();
+        mPhotosObserver.CancelSyncing();
         Log.i("sharonlog","Service destroyed");
 
 

@@ -19,7 +19,8 @@ public class ContactObserver extends BaseContentObserver {
 
         // Create a manager for that content. The manager will monitor the change of the content
 
-        mManager = new ContactManager(mContext, uri, ApplicationConstants.ContentKeys.CONTACTS);
+        mContentType = ApplicationConstants.TYPE_OF_CONTENT_CONTACT;
+        mManager = new ContactManager(mContext, uri, mContentType);
         this.Manage();
 
         // Get the last contact

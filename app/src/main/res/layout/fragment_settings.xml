@@ -24,11 +24,12 @@
         style="@style/activity_row"
         android:gravity="center">
 
-        <TextView
-            android:id="@+id/text_view_unsync_title"
-            style="@style/text_item_small"
-            android:text="Unsynced content:" />
-
+        <Button
+            android:layout_width="match_parent"
+            android:id="@+id/sync_now_button"
+            android:layout_height="wrap_content"
+            android:background="@color/color_blue_5"
+            android:text="Sync now"/>
 
     </RelativeLayout>
 
@@ -39,7 +40,7 @@
 
         <TextView
             style="@style/row_title"
-            android:text="Enable backup:" />
+            android:text="Keep it safe:" />
 
         <Switch
             style="@style/row_value"

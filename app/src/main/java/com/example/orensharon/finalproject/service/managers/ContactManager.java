@@ -29,9 +29,10 @@ import java.util.List;
 public class ContactManager extends BaseManager {
 
 
-    public ContactManager(Context context, Uri uri, ApplicationConstants.ContentKeys contentKeys) {
+    public ContactManager(Context context, Uri uri, String contentType) {
 
-        super(context, uri,contentKeys);
+        super(context, uri, contentType);
+
 
     }
 
@@ -40,10 +41,11 @@ public class ContactManager extends BaseManager {
     public BaseObject getContent(Cursor cursor) {
         // From a given cursor - create a new MyContact and return it
 
-        String id, name, version;
+        int id;
+        String name, version;
         MyContact contact;
 
-        id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+        id = cursor.getInt(cursor.getColumnIndex(ContactsContract.Contacts._ID));
         name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
 
         // The version is the checksum in the case of contacts
@@ -72,10 +74,11 @@ public class ContactManager extends BaseManager {
 
     @Override
     public BaseObject getBaseContent(Cursor cursor) {
-        String id, version;
+        int id;
+        String version;
         BaseObject result;
 
-        id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+        id = cursor.getInt(cursor.getColumnIndex(ContactsContract.Contacts._ID));
 
 
         // The version is the checksum in the case of contacts
@@ -88,7 +91,7 @@ public class ContactManager extends BaseManager {
     }
 
     /* Used for internal usage - building the contact profile */
-    private List<MyPhone> requestPhoneNumbers(String idContact) {
+    private List<MyPhone> requestPhoneNumbers(int idContact) {
 
         // Request and return a list of the phone numbers of the given contact id
 
@@ -109,7 +112,7 @@ public class ContactManager extends BaseManager {
         // Getting all the phones of given contact id
 
         selection = ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?";
-        selectionArgs = new String[]{idContact};
+        selectionArgs = new String[]{ String.valueOf(idContact) };
 
         queryArgs = new QueryArgs(uri, null, selection, selectionArgs, null);
         cursor = getCursor(queryArgs);
@@ -136,7 +139,7 @@ public class ContactManager extends BaseManager {
 
         return phones;
     }
-    private List<MyEmail> requestEmails(String idContact) {
+    private List<MyEmail> requestEmails(int idContact) {
 
         // Request and return a list of the email addresses of the given contact id
 
@@ -150,7 +153,7 @@ public class ContactManager extends BaseManager {
         QueryArgs queryArgs;
 
         selection = ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = ?";
-        selectionArgs = new String[]{idContact};
+        selectionArgs = new String[]{String.valueOf(idContact) };
 
         uri = ContactsContract.CommonDataKinds.Email.CONTENT_URI;
 
@@ -180,7 +183,7 @@ public class ContactManager extends BaseManager {
 
         return emails;
     }
-    private List<MyAddress> requestAddresses(String idContact) {
+    private List<MyAddress> requestAddresses(int idContact) {
 
         String selection;
         //String poBox, street, city, state, postalCode, country,
@@ -195,7 +198,7 @@ public class ContactManager extends BaseManager {
         QueryArgs queryArgs;
 
         selection = ContactsContract.Data.CONTACT_ID + " = ? AND " + ContactsContract.Data.MIMETYPE + " = ?";
-        selectionArgs = new String[]{idContact,
+        selectionArgs = new String[]{String.valueOf(idContact),
                 ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE};
 
         uri = ContactsContract.Data.CONTENT_URI;
@@ -239,7 +242,7 @@ public class ContactManager extends BaseManager {
 
         return addresses;
     }
-    private MyOrganization requestOrganization(String idContact) {
+    private MyOrganization requestOrganization(int idContact) {
 
         String selection;
         String[] selectionArgs;
@@ -251,7 +254,7 @@ public class ContactManager extends BaseManager {
         organization = new MyOrganization();
 
         selection = ContactsContract.Data.CONTACT_ID + " = ? AND " + ContactsContract.Data.MIMETYPE + " = ?";
-        selectionArgs = new String[]{idContact,
+        selectionArgs = new String[]{String.valueOf(idContact),
                 ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE};
 
         uri = ContactsContract.Data.CONTENT_URI;
@@ -279,7 +282,7 @@ public class ContactManager extends BaseManager {
         cursor.close();
         return organization;
     }
-    private MyNotes requestNotes(String idContact) {
+    private MyNotes requestNotes(int idContact) {
 
         String selection;
         String[] selectionArgs;
@@ -292,7 +295,7 @@ public class ContactManager extends BaseManager {
 
         uri = ContactsContract.Data.CONTENT_URI;
         selection = ContactsContract.Data.CONTACT_ID + " = ? AND " + ContactsContract.Data.MIMETYPE + " = ?";
-        selectionArgs = new String[]{idContact,
+        selectionArgs = new String[]{String.valueOf(idContact),
                 ContactsContract.CommonDataKinds.Note.CONTENT_ITEM_TYPE};
 
         queryArgs = new QueryArgs(uri, null, selection, selectionArgs, null);
@@ -315,7 +318,7 @@ public class ContactManager extends BaseManager {
 
 
     //Available only for API level 11+
-    private Uri getPhotoThumbnailUri(String idContact, Uri contactUri){
+    private Uri getPhotoThumbnailUri(int idContact, Uri contactUri){
 
         Cursor cursor;
         String[] projection;
@@ -345,7 +348,7 @@ public class ContactManager extends BaseManager {
         cursor.close();
         return Uri.EMPTY;
     }
-    private Uri getDataUri(String idContact) {
+    private Uri getDataUri(int idContact) {
 
         // From given id of contact - get the data Uri and return it
 
@@ -354,7 +357,7 @@ public class ContactManager extends BaseManager {
         String[] projection;
         QueryArgs queryArgs;
 
-        contactUri = Uri.withAppendedPath(getObservingUri(), idContact);
+        contactUri = Uri.withAppendedPath(getObservingUri(), String.valueOf(idContact) );
         projection = new String[] { ContactsContract.Contacts.PHOTO_ID };
 
         queryArgs = new QueryArgs(contactUri, projection, null, null, null);
@@ -397,11 +400,11 @@ public class ContactManager extends BaseManager {
     }
 
 
-    private String getVersion(String id) {
+    private String getVersion(int id) {
         //specify which fields of RawContacts table to be retrieved.
         String[] projection = new String[]{ContactsContract.RawContacts.VERSION};
         String selection = ContactsContract.RawContacts.CONTACT_ID + " = ?";
-        String[] selectionArgs = new String[]{id};
+        String[] selectionArgs = new String[]{ String.valueOf(id) };
         //query the RawContacts.CONTENT_URI
         Cursor cur = mContext.getContentResolver().query(ContactsContract.RawContacts.CONTENT_URI, projection, selection, selectionArgs, null);
 

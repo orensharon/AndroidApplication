@@ -63,7 +63,7 @@ public class RequestFactory {
 
     }
 
-    public void createMultipartRequest(String url, String typeOfContent, File file, String id,
+    public void createMultipartRequest(String url, String typeOfContent, File file, int id,
                                        Response.Listener listener, Response.ErrorListener errorListener) {
 
 

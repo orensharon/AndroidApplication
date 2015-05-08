@@ -16,8 +16,9 @@ public class PhotoObserver extends BaseContentObserver {
     public PhotoObserver(Context context, Uri uri) {
         super(context);
 
+        mContentType = ApplicationConstants.TYPE_OF_CONTENT_PHOTO;
         // Create a manager for that content. The manager will monitor the change of the content
-        mManager = new PhotoManager(mContext, uri, ApplicationConstants.ContentKeys.PHOTOS);
+        mManager = new PhotoManager(mContext, uri, mContentType);
         this.Manage();
 
         // Get the last photo

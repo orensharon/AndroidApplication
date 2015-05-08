@@ -16,6 +16,7 @@ abstract public class BaseContentObserver extends ContentObserver {
 
     public Context mContext;
     protected BaseManager mManager;
+    protected String mContentType;
 
     private long mLastTimeOfCall = 0L;
     private long mLastTimeOfUpdate = 0L;
@@ -76,8 +77,8 @@ abstract public class BaseContentObserver extends ContentObserver {
         mManager.Manage();
     }
 
-    public void Destroy() {
-        mManager.Destroy();
+    public void CancelSyncing() {
+        mManager.CancelSyncing();
     }
 
 }

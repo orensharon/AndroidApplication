@@ -29,7 +29,7 @@ public class MyContact extends BaseObject {
 
 
 
-    public MyContact(String id, String objectType, String checksum) {
+    public MyContact(int id, String objectType, String checksum) {
         super(id, objectType, checksum);
     }
 

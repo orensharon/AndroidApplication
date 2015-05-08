@@ -16,7 +16,7 @@ public class MyPhoto extends BaseObject {
     @SuppressWarnings("unused")
     private String mType;
 
-    public MyPhoto(String id, String objectType, File file, String type, String title, String checksum) {
+    public MyPhoto(int id, String objectType, File file, String type, String title, String checksum) {
 
         super(id, objectType, checksum);
         mFile = file;

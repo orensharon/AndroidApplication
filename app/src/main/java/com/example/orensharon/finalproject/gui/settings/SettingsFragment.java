@@ -1,9 +1,6 @@
 package com.example.orensharon.finalproject.gui.settings;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
-import android.os.AsyncTask;
-import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -13,25 +10,21 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import com.example.orensharon.finalproject.ApplicationConstants;
 import com.example.orensharon.finalproject.R;
 import com.example.orensharon.finalproject.gui.IFragment;
 import com.example.orensharon.finalproject.gui.settings.controls.ContentListAdapter;
 import com.example.orensharon.finalproject.gui.settings.controls.Content;
 import com.example.orensharon.finalproject.service.ObserverService;
-import com.example.orensharon.finalproject.service.helpers.ObserverServiceBroadcastReceiver;
-import com.example.orensharon.finalproject.sessions.ContentSession;
+import com.example.orensharon.finalproject.service.db.ContentBL;
 import com.example.orensharon.finalproject.sessions.SettingsSession;
-import com.example.orensharon.finalproject.utils.Connectivity;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by orensharon on 1/31/15.
@@ -43,10 +36,9 @@ public class SettingsFragment extends Fragment {
     private ListView mContentsListView;
     private TextView mListDescriptionTextView;
     private Switch mServiceEnableSwitch, mWifiOnlySwitch;
+    private Button mSyncNowButton;
 
-    // Unsynced controls
-    public TextView mUnsyncedTextView;
-
+    private ContentBL mContentBL;
 
     private SettingsSession mSettingsSession;
 
@@ -59,6 +51,7 @@ public class SettingsFragment extends Fragment {
         setHasOptionsMenu(true);
 
 
+        mContentBL = new ContentBL(getActivity());
     }
 
 
@@ -91,9 +84,14 @@ public class SettingsFragment extends Fragment {
 
 
         mSettingsSession = new SettingsSession(getActivity());
+
         mContentsListView = (ListView) view.findViewById(R.id.content_list_view);
         mListDescriptionTextView = (TextView) view.findViewById(R.id.text_view_content_list_description);
 
+        mSyncNowButton = (Button)view.findViewById(R.id.sync_now_button);
+
+        toggleEnableSyncNowButton();
+        initSyncButtonListener();
 
         mServiceEnableSwitch = (Switch) view.findViewById(R.id.switch_enable_service);
         mWifiOnlySwitch = (Switch) view.findViewById(R.id.switch_wifi_only);
@@ -105,14 +103,12 @@ public class SettingsFragment extends Fragment {
 
 
 
-        mUnsyncedTextView = (TextView)view.findViewById(R.id.text_view_unsync_title);
-
 
         initServiceEnableListener();
         initWIFIOnlyListener();
 
 
-        mUnsyncedTextView.setText("Unsynced contents: " + GetCountOfUnsyncedItems());
+
 
         // Check the current state before we display the list
         mListDescriptionTextView.setVisibility(((mServiceEnableSwitch.isChecked() == true) ? View.VISIBLE : View.INVISIBLE));
@@ -124,18 +120,44 @@ public class SettingsFragment extends Fragment {
         return view;
     }
 
-    private int GetCountOfUnsyncedItems() {
-        // If there is some unsynced contents - show details
 
-        int result;
+    private void toggleEnableSyncNowButton() {
 
-        ContentSession contentSession = new ContentSession(getActivity());
-        List<String> list = contentSession.getUnsyncedList(ApplicationConstants.UNSYNCED_PHOTOS);
+        // create click listener
 
-        result = list.size();
 
-        return result;
+
+        if (mContentBL.getAllUnsyncedContents(null).size() > 0) {
+            // Means there is unsynced content
+            mSyncNowButton.setEnabled(true);
+        } else {
+            mSyncNowButton.setText("All synced :)");
+            mSyncNowButton.setEnabled(false);
+        }
+
+        mSyncNowButton.setEnabled(mSettingsSession.getServiceIsEnabledByUser());
+        mSyncNowButton.setEnabled(false);
+
     }
+
+    private void initSyncButtonListener() {
+        View.OnClickListener mSyncNowButton_onClick = new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                // Make sure service is running
+
+                if (ObserverService.getServiceStatus() == ObserverService.STATUS_SERVICE_RUNNING) {
+
+                   // TODO: send message to service
+                }
+            }
+        };
+        // Assign click listener to the Login button
+        mSyncNowButton.setOnClickListener(mSyncNowButton_onClick);
+    }
+
 
     // Switch listeners
     private void initServiceEnableListener() {
@@ -157,9 +179,9 @@ public class SettingsFragment extends Fragment {
 
                 } else {
                     stopObservingService();
-
-                    mUnsyncedTextView.setText("Unsynced contents: " + GetCountOfUnsyncedItems());
                 }
+
+                toggleEnableSyncNowButton();
             }
         });
 

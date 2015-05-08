@@ -45,75 +45,7 @@ public class ContentSession {
         return mSharedPreferences.getInt(contentType, 0);
     }
 
-    public void AddBackupedDataList(String contentKey, String itemKey, String itemValue) {
 
-        String temp;
-        Map<String, String> list;
-
-        temp = mSharedPreferences.getString(contentKey,"");
-        list = Helper.StringToMap(temp);
-        list.put(itemKey, itemValue);
-
-        mEditor.putString(contentKey, list.toString());
-        mEditor.apply();
-    }
-
-    public void UpdateContentFromData(String contentKey, String itemKey, String itemValue) {
-
-        String temp;
-        Map<String, String> list;
-
-        temp = mSharedPreferences.getString(contentKey,"");
-        list = Helper.StringToMap(temp);
-        list.remove(itemKey);
-        list.put(itemKey, itemValue);
-
-        mEditor.putString(contentKey, list.toString());
-        mEditor.apply();
-    }
-
-
-    public void AddToUnsyncedList(String contentKey, String id) {
-
-
-        List<String> list;
-
-        list = Helper.StringToList(mSharedPreferences.getString(contentKey,""));
-
-        // Check if the the id is already stored in the list
-        if (!list.contains(id)) {
-            list.add(id);
-
-            mEditor.putString(contentKey, list.toString());
-            mEditor.apply();
-        }
-
-
-
-    }
-
-    public void RemoveFromUnsyncedList(String contentKey, String id) {
-
-        List<String> list;
-
-        list = Helper.StringToList(mSharedPreferences.getString(contentKey,""));
-
-        // Check if the the id is already stored in the list
-        if (list.contains(id)) {
-            list.remove(id);
-
-            mEditor.putString(contentKey, list.toString());
-            mEditor.apply();
-        }
-    }
-
-    public Map<String,String> getToBackupList(String contentKey) {
-        return Helper.StringToMap(mSharedPreferences.getString(contentKey,""));
-    }
-
-    public List<String> getUnsyncedList(String contentKey) {
-        return Helper.StringToList(mSharedPreferences.getString(contentKey,""));
-    }
 
 
 

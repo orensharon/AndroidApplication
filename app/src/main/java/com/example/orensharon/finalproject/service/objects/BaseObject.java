@@ -5,18 +5,18 @@ package com.example.orensharon.finalproject.service.objects;
  */
 public class BaseObject {
 
-    private String mId;
+    private int mId;
     private String mTypeOfContent;
     private String mChecksum;
 
-    public BaseObject(String id, String type, String checksum) {
+    public BaseObject(int id, String type, String checksum) {
 
         mId = id;
         mTypeOfContent = type;
         mChecksum = checksum;
     }
 
-    public String getId() {
+    public int getId() {
         return mId;
     }
 

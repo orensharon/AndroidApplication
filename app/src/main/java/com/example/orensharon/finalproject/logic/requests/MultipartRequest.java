@@ -34,14 +34,15 @@ public class MultipartRequest<T> extends Request<T> {
     private MultipartEntityBuilder mBuilder = MultipartEntityBuilder.create();
     private final Response.Listener<T> mListener;
     private final File mImageFile;
-    private String mToken, mTypeOfContent, mId;
+    private String mToken, mTypeOfContent;
+    private int mId;
 
     public MultipartRequest(String url,
                                  Response.ErrorListener errorListener,
                                  Response.Listener<T> listener,
                                  File imageFile,
                                  String token,
-                                 String id,
+                                 int id,
                                  String typeOfContent)
     {
         super(Method.POST, url, errorListener);
@@ -75,7 +76,7 @@ public class MultipartRequest<T> extends Request<T> {
 
     private void buildMultipartEntity()
     {
-        mBuilder.addTextBody(ApplicationConstants.CONTENT_ID_KEY, mId);
+        mBuilder.addTextBody(ApplicationConstants.CONTENT_ID_KEY, String.valueOf(mId));
         mBuilder.addTextBody(ApplicationConstants.CONTENT_TYPE_OF_CONTENT_KEY, mTypeOfContent);
         mBuilder.addBinaryBody(
                 mImageFile.getName(),

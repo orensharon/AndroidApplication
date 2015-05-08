@@ -18,8 +18,10 @@ import java.io.File;
  */
 public class PhotoManager extends BaseManager {
 
-    public PhotoManager (Context context, Uri uri, ApplicationConstants.ContentKeys contentKeys) {
-        super(context, uri, contentKeys);
+    public PhotoManager (Context context, Uri uri, String contentType) {
+        super(context, uri, contentType);
+
+
     }
 
     @Override
@@ -42,7 +44,7 @@ public class PhotoManager extends BaseManager {
             checksum = MD5Checksum.getMd5HashFromFilePath(filePath);
 
             // Creating new Photo object with extracted data
-            photo = new MyPhoto(id, ApplicationConstants.TYPE_OF_CONTENT_PHOTO, new File(filePath), mimeType, title,checksum);
+            photo = new MyPhoto(Integer.parseInt(id), ApplicationConstants.TYPE_OF_CONTENT_PHOTO, new File(filePath), mimeType, title,checksum);
         }
         return photo;
     }
@@ -50,10 +52,11 @@ public class PhotoManager extends BaseManager {
     @Override
     public BaseObject getBaseContent(Cursor cursor) {
 
-        String id, checksum, filePath;
+        int id;
+        String checksum, filePath;
         BaseObject result;
 
-        id = cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns._ID));
+        id = cursor.getInt(cursor.getColumnIndex(MediaStore.MediaColumns._ID));
 
 
 
