@@ -13,6 +13,7 @@ import java.util.List;
 
 /**
  * Created by orensharon on 12/15/14.
+ * Contact class
  */
 public class MyContact extends BaseObject {
 

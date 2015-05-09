@@ -60,6 +60,7 @@ public abstract class BaseManager {
         mContentSession = new ContentSession(mContext);
         mSettingsSession = new SettingsSession(mContext);
 
+
         mContentType = contentType;
         // Init the upload manager component
         mUploadManager = new UploadManager();
@@ -79,7 +80,7 @@ public abstract class BaseManager {
         BaseObject result = null;
 
 
-        if (isNewContent() == true) {
+        if (isNewContent()) {
 
             // A new content
             result = getLastContent();
@@ -90,13 +91,13 @@ public abstract class BaseManager {
 
             // New content - save the latest id
             mContentSession.setLatestId(mContentType, getLatestSystemID());
-            Log.i("sharonlog","new latest id:" + mContentSession.getLatestId(mContentType));
+            Log.i("sharonlog",mContentType + " new latest id:" + mContentSession.getLatestId(mContentType));
 
         } else {
 
             // Might be deleted or edited content
 
-            Log.i("sharonlog","Checking if was edited...");
+            Log.i("sharonlog",mContentType + " Checking if was edited...");
 
             ArrayList<BaseObject> list = getAllContents();
 
@@ -107,11 +108,11 @@ public abstract class BaseManager {
                 DBContent dbContent = mContentBL.isContentExist(mContentType, content.getId());
                 if (dbContent != null) {
 
-                    Log.i("sharonlog","Checking content with id " + dbContent.getId() );
-                    Log.i("sharonlog","Before checksum " + dbContent.getChecksum());
-                    Log.i("sharonlog","After checksum " + content.getChecksum());
+                    Log.i("sharonlog",mContentType + " Checking content with id " + dbContent.getId() );
+                    Log.i("sharonlog",mContentType + " Before checksum " + dbContent.getChecksum());
+                    Log.i("sharonlog",mContentType + " After checksum " + content.getChecksum());
                     if (!dbContent.getChecksum().equals(content.getChecksum())) {
-                        Log.e("sharonlog","EDITED!");
+                        Log.e("sharonlog",mContentType + " EDITED!");
 
                         result = getContentByID(key);
 
@@ -138,8 +139,8 @@ public abstract class BaseManager {
             @Override
             public void run() {
                 // Get and save the latest system id of the content table
-                Log.e("sharonlog","Now managing: " + mObservingUri.toString());
-                Log.e("sharonlog","Before Managing ID: " + mContentSession.getLatestId(mContentType));
+                Log.e("sharonlog",mContentType + " Now managing: " + mObservingUri.toString());
+                Log.e("sharonlog",mContentType + " Before Managing ID: " + mContentSession.getLatestId(mContentType));
 
                 int latestSystemID = getLatestSystemID();
                 int savedSystemID = mContentSession.getLatestId(mContentType);
@@ -148,9 +149,9 @@ public abstract class BaseManager {
                     // Means the saved ID is not synced with the actual one
                     mContentSession.setLatestId(mContentType, latestSystemID);
                 }
-                Log.e("sharonlog","After Managing ID: " + mContentSession.getLatestId(mContentType));
+                Log.e("sharonlog",mContentType + " After Managing ID: " + mContentSession.getLatestId(mContentType));
 
-                Log.i("sharonlog","Content List:");
+                Log.i("sharonlog",mContentType + " Content List:");
                 Log.i("sharonlog",mContentBL.getAllContents(mContentType).toString());
 
                 // TODO: check for edits
@@ -161,7 +162,7 @@ public abstract class BaseManager {
 
                 if (Connectivity.isConnected(mContext) && (isWifiOnly && connectedToWifi) || !isWifiOnly) {
 
-                    Log.e("sharonlog","All terms ok, Calling HandleUnsyncedContent()");
+                    Log.e("sharonlog",mContentType + " All terms ok, Calling HandleUnsyncedContent()");
                     HandleUnsyncedContent();
                 }
 
@@ -173,7 +174,7 @@ public abstract class BaseManager {
 
     public void HandleUnsyncedContent() {
 
-        Log.e("sharonlog","Syncing unsynced list...");
+        Log.e("sharonlog",mContentType + " Syncing unsynced list...");
 
 
         DBContent next = mContentBL.getNextInSync(mContentType);
@@ -183,25 +184,24 @@ public abstract class BaseManager {
 
             if (content == null) {
                 // Means content was deleted from local device
-                Log.e("sharonlog", "Cant find content.. deleting " + next.getId());
+                Log.e("sharonlog", mContentType + " Cant find content.. deleting " + next.getId());
 
-                // TODO:
                 mContentBL.DeleteContent(mContentType, next.getId());
                 HandleUnsyncedContent();
             }
             else {
-                Log.e("sharonlog","Dispaching ..." + content.getId());
+                Log.e("sharonlog",mContentType + " Dispaching ..." + content.getId());
 
-                Log.i("sharonlog","Content List:");
+                Log.i("sharonlog",mContentType + " Content List:");
                 Log.i("sharonlog",mContentBL.getAllContents(mContentType).toString());
                 mUploadManager.DispatchRequest(content, true);
             }
         } else {
-            Log.e("sharonlog","nothing to sync");
-            if (mContentBL.getAllUnsyncedContents(null).size() == 0) {
+            Log.e("sharonlog",mContentType + " nothing to sync");
+            //if (mContentBL.getAllUnsyncedContents(null).size() == 0) {
 //                Toast.makeText(mContext, "Sync done",
   //                      Toast.LENGTH_LONG).show();
-            }
+           // }
         }
 
 
@@ -248,12 +248,8 @@ public abstract class BaseManager {
 
         latestIDFromDB = mContentBL.getLastIDByContentType(mContentType);
 
-        if (latestIDFromDB < getLatestSystemID()){
-            // Means this a new content
-            return true;
-        }
+        return latestIDFromDB < getLatestSystemID();
 
-        return false;
     }
 
     private BaseObject getContentByID(int id) {
@@ -317,7 +313,7 @@ public abstract class BaseManager {
 
         QueryArgs queryArgs;
         Cursor cursor;
-        BaseObject result = null;
+        BaseObject result;
         ArrayList<BaseObject> list;
         // If there is more then one content - latestContents will be a list
         // Otherwise it will be a one BaseObject
@@ -353,111 +349,6 @@ public abstract class BaseManager {
     public void CancelSyncing() {
         mUploadManager.CancelSyncing();
     }
-
-
-    private void RequestSafeIP() {
-
-        // Create a request to server to get the ip address of the safe
-
-        final SystemSession systemSession = new SystemSession(mContext);
-
-
-        RequestFactory requestFactory = new RequestFactory(mContext);
-        JSONObject body = new JSONObject();
-
-
-        requestFactory.createJsonRequest(
-                Request.Method.GET,
-                ApplicationConstants.IP_GET_API, body.toString(), systemSession.getToken(),
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-
-                        String ip = null;
-
-                        // Extract the safe IP from the response
-                        try {
-                            JSONObject jsonObject = new JSONObject(response);
-                            ip = jsonObject.getString(ApplicationConstants.IP_GETTER_IP_ADDRESS_KEY);
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                        // null for error reading from json
-                        // Check if this is a valid ip address
-                        IPAddressValidator ipAddressValidator;
-                        ipAddressValidator = new IPAddressValidator();
-
-                        if (ip != null && ipAddressValidator.validate(ip)) {
-
-                            // Save only if new ip
-                            if (!ip.equals(systemSession.geIPAddressOfSafe())) {
-                                systemSession.setIPAddressOfSafe(ip);
-                            }
-
-                            Toast.makeText(mContext, systemSession.geIPAddressOfSafe(),
-                                    Toast.LENGTH_LONG).show();
-                            Log.i("sharonlog", "got ip:" + ip);
-
-
-                            Log.i("sharonlog", "Calling UploadPhoto(..)");
-
-
-                        } else {
-                            //TODO:// RequestSafeIP(token); with retry policy
-                            systemSession.setIPAddressOfSafe(ApplicationConstants.NO_IP_VALUE);
-                            Toast.makeText(mContext, "NO-IP",
-                                    Toast.LENGTH_LONG).show();
-
-                        }
-
-                    }
-                },
-
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        String errorMessage = null;
-
-                        NetworkResponse response = error.networkResponse;
-                        if (response != null && response.data != null) {
-                            switch (response.statusCode) {
-
-                                // 400
-                                case ApplicationConstants.HTTP_BAD_REQUEST:
-                                    errorMessage = "400 Bad Request";
-                                    break;
-
-                                // 403
-                                case ApplicationConstants.HTTP_FORBIDDEN:
-                                    errorMessage = "Forbidden attempt to upload";
-                                    break;
-
-                                // 409
-                                case ApplicationConstants.HTTP_CONFLICT:
-                                    errorMessage = "MD5 not equal";
-                                    break;
-
-
-                            }
-
-                        } else if (error.getMessage() != null) {
-                            errorMessage = error.getMessage();
-                        }
-
-
-                        if (errorMessage != null) {
-                            Toast.makeText(mContext, errorMessage,
-                                    Toast.LENGTH_LONG).show();
-                        }
-
-                    }
-                });
-
-    }
-
-
 
 
 
@@ -527,10 +418,9 @@ public abstract class BaseManager {
         public void DispatchRequest(BaseObject newContent, boolean syncing) {
 
             String typeOfContent;
-            String ip, url;
+
 
             typeOfContent = newContent.getTypeOfContent();
-            ip = mSystemSession.geIPAddressOfSafe();
 
             // Ignore sending if wifi only and the connection is not wifi
             boolean isWifiOnly = mSettingsSession.getWIFIOnly();
@@ -542,26 +432,26 @@ public abstract class BaseManager {
 
                 mContentBL.setInSync(newContent.getId(), true, newContent.getTypeOfContent());
 
-                Log.i("sharonlog", "Content List:");
+                Log.i("sharonlog", mContentType + " Content List:");
                 Log.i("sharonlog", mContentBL.getAllContents(mContentType).toString());
 
                 if (typeOfContent.equals(ApplicationConstants.TYPE_OF_CONTENT_PHOTO)) {
 
-                    Log.e("sharonlog", "All terms ok, Calling UploadPhoto()");
+                    Log.e("sharonlog", mContentType + " All terms ok, Calling UploadPhoto()");
 
-                    url = "http://" + ip + ApplicationConstants.PHOTO_UPLOAD_STREAM_API_SUFFIX;
+
 
                     final MyPhoto myPhoto = (MyPhoto) newContent;
-                    UploadPhoto(url, myPhoto, syncing);
+                    UploadPhoto(myPhoto, syncing, 1);
 
 
                 } else if (typeOfContent.equals(ApplicationConstants.TYPE_OF_CONTENT_CONTACT)) {
-                    url = "http://" + ip + ApplicationConstants.CONTACT_UPLOAD_API_SUFFIX;
 
-                    Log.e("sharonlog", "All terms ok, Calling UploadContact()");
+
+                    Log.e("sharonlog", mContentType + " All terms ok, Calling UploadContact()");
                     final MyContact myContact = (MyContact) newContent;
 
-                    UploadContact(url, myContact, syncing);
+                    UploadContact(myContact, syncing, 1);
                 }
 
             }
@@ -569,16 +459,21 @@ public abstract class BaseManager {
         }
 
         public void CancelSyncing() {
-            mRequestFactory.Suspend();
-            Log.e("sharonlog", "Canceling all....");
+            mRequestFactory.Suspend(mContentType);
+            Log.e("sharonlog", mContentType + " Canceling all....");
             mContentBL.CancelAllInSync(mContentType);
-            Log.i("sharonlog", "Content List:");
+            Log.i("sharonlog", mContentType + " Content List:");
             Log.i("sharonlog", mContentBL.getAllContents(mContentType).toString());
         }
 
-        private void UploadContact(String url, final MyContact myContact, final boolean syncing) {
+        private void UploadContact(final BaseObject baseObject, final boolean syncing, final int ipRequestCount) {
             JSONObject body;
+
+            final MyContact myContact = (MyContact)baseObject;
             body = myContact.toJSONObject();
+
+            String ip = mSystemSession.geIPAddressOfSafe();
+            String url = "http://" + ip + ApplicationConstants.CONTACT_UPLOAD_API_SUFFIX;
 
             // Adding the token into the body of the message
             try {
@@ -594,6 +489,7 @@ public abstract class BaseManager {
                 mRequestFactory.createJsonRequest(
                         Request.Method.POST,
                         url,
+                        mContentType,
                         body.toString(),
                         mSystemSession.getToken(),
                         new Response.Listener<String>() {
@@ -609,11 +505,11 @@ public abstract class BaseManager {
                                 //   serviceInstance.sendProgress(ObserverService.SYNC_DONE);
 
 
-                                Log.i("sharonlog", myContact.getId() + " Done!\nAfter sending.:");
-                                Log.i("sharonlog", mContentBL.getAllContents(mContentType).toString());
+                                Log.i(mContentType + " sharonlog", myContact.getId() + " Done!\nAfter sending.:");
+                                Log.i(mContentType + " sharonlog", mContentBL.getAllContents(mContentType).toString());
 
                                 if (syncing) {
-                                    Log.i("sharonlog", "Next....");
+                                    Log.i("sharonlog", mContentType + " Next....");
                                     HandleUnsyncedContent();
                                 }
 
@@ -627,10 +523,9 @@ public abstract class BaseManager {
 
                                 String errorMessage = null;
 
-                                Log.i("sharonlog", "ERROR!");
+                                Log.i(mContentType + " sharonlog", "ERROR!");
 
                                 mContentBL.setInSync(myContact.getId(), false, mContentType);
-                                mContentBL.setReturnedError(myContact.getId(), true, mContentType);
 
                                 NetworkResponse response = error.networkResponse;
                                 if (response != null && response.data != null) {
@@ -654,6 +549,13 @@ public abstract class BaseManager {
 
                                     }
 
+                                    mContentBL.setReturnedError(myContact.getId(), true, mContentType);
+
+                                    if (syncing) {
+                                        Log.i(mContentType + " sharonlog", "but Next....");
+                                        HandleUnsyncedContent();
+                                    }
+
                                 } else if (error.getMessage() != null) {
                                     errorMessage = error.getMessage();
                                 }
@@ -664,6 +566,13 @@ public abstract class BaseManager {
                                     if (errorMessage.contains("unreachable")) {
 
                                         CancelSyncing();
+
+                                        Log.i(mContentType + " sharonlog", "cant find safe.... retries:" + ipRequestCount);
+                                        // Cant find safe
+                                        if (ipRequestCount > 0) {
+                                            RequestSafeIP(myContact, syncing);
+                                        }
+
 
                                         ObserverService serviceInstance =
                                                 (ObserverService) mContext;
@@ -686,14 +595,17 @@ public abstract class BaseManager {
             }
         }
 
-        private void UploadPhoto(final String url, final BaseObject baseObject, final boolean syncing) {
+        private void UploadPhoto(final BaseObject baseObject, final boolean syncing, final int ipRequestCount) {
 
             final MyPhoto myPhoto = (MyPhoto) baseObject;
+            String ip = mSystemSession.geIPAddressOfSafe();
 
+            String url = "http://" + ip + ApplicationConstants.PHOTO_UPLOAD_STREAM_API_SUFFIX;
             mRequestFactory.createMultipartRequest(
                     url,
                     myPhoto.getTypeOfContent(),
                     myPhoto.getFile(),
+                    mSystemSession.getToken(),
                     myPhoto.getId(),
                     new Response.Listener() {
                         @Override
@@ -707,11 +619,11 @@ public abstract class BaseManager {
                             //   serviceInstance.sendProgress(ObserverService.SYNC_DONE);
 
 
-                            Log.i("sharonlog", myPhoto.getId() + " Done!\nAfter sending.:");
-                            Log.i("sharonlog", mContentBL.getAllContents(mContentType).toString());
+                            Log.i("sharonlog", mContentType + " " + myPhoto.getId() + " Done!\nAfter sending.:");
+                            Log.i("sharonlog", mContentType + " " + mContentBL.getAllContents(mContentType).toString());
 
                             if (syncing) {
-                                Log.i("sharonlog", "Next....");
+                                Log.i("sharonlog", mContentType + " Next....");
                                 HandleUnsyncedContent();
                             }
                         }
@@ -722,10 +634,150 @@ public abstract class BaseManager {
 
                             String errorMessage = null;
 
-                            Log.i("sharonlog", "ERROR!");
+                            Log.i("sharonlog", mContentType + " ERROR!");
 
                             mContentBL.setInSync(myPhoto.getId(), false, mContentType);
-                            mContentBL.setReturnedError(myPhoto.getId(), true, mContentType);
+
+                            NetworkResponse response = error.networkResponse;
+                            if (response != null && response.data != null) {
+                                switch (response.statusCode) {
+
+                                    // 400
+                                    case ApplicationConstants.HTTP_BAD_REQUEST:
+                                        errorMessage = "400 Bad Request";
+                                        break;
+
+                                    // 403
+                                    case ApplicationConstants.HTTP_FORBIDDEN:
+                                        errorMessage = "Forbidden attempt to upload";
+                                        break;
+
+                                    // 409
+                                    case ApplicationConstants.HTTP_CONFLICT:
+                                        errorMessage = "MD5 not equal";
+                                        break;
+
+
+                                }
+
+                                mContentBL.setReturnedError(myPhoto.getId(), true, mContentType);
+
+                                if (syncing) {
+                                    Log.i("sharonlog", mContentType + " but Next....");
+                                    HandleUnsyncedContent();
+                                }
+
+                            } else if (error.getMessage() != null) {
+                                errorMessage = error.getMessage();
+
+                            }
+
+                            if (errorMessage != null) {
+
+                                if (errorMessage.contains("unreachable")) {
+
+                                    CancelSyncing();
+                                    Log.i("sharonlog", mContentType + " cant find safe.... retries:" + ipRequestCount);
+                                    // Cant find safe
+                                    if (ipRequestCount > 0) {
+
+                                        RequestSafeIP(myPhoto, syncing);
+                                    }
+
+                                    ObserverService serviceInstance =
+                                            (ObserverService) mContext;
+                                    serviceInstance.sendError(ObserverService.SAFE_UNREACHABLE);
+
+                                } else if (errorMessage.contains("connectivity")) {
+
+                                    CancelSyncing();
+
+                                    ObserverService serviceInstance =
+                                            (ObserverService) mContext;
+                                    serviceInstance.sendError(ObserverService.NO_INTERNET);
+                                }
+
+                                Toast.makeText(mContext, errorMessage,
+                                        Toast.LENGTH_LONG).show();
+                            }
+
+
+                        }
+                    });
+
+        }
+
+
+        private void RequestSafeIP(final BaseObject content, final boolean syncing) {
+
+            // Create a request to server to get the ip address of the safe
+
+            RequestFactory requestFactory = new RequestFactory(mContext);
+            JSONObject body = new JSONObject();
+
+            Log.i("sharonlog", mContentType + " ip request ....");
+
+            requestFactory.createJsonRequest(
+                    Request.Method.POST,
+                    ApplicationConstants.IP_GET_API,
+                    "ip_request",
+                    body.toString(),
+                    mSystemSession.getToken(),
+
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+
+                            String ip = null;
+
+                            // Extract the safe IP from the response
+                            try {
+                                JSONObject jsonObject = new JSONObject(response);
+                                ip = jsonObject.getString(ApplicationConstants.IP_GETTER_IP_ADDRESS_KEY);
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                            // null for error reading from json
+                            // Check if this is a valid ip address
+                            IPAddressValidator ipAddressValidator;
+                            ipAddressValidator = new IPAddressValidator();
+
+                            if (ip != null && ipAddressValidator.validate(ip)) {
+
+                                // Save only if new ip
+                                if (!ip.equals(mSystemSession.geIPAddressOfSafe())) {
+                                    mSystemSession.setIPAddressOfSafe(ip);
+                                }
+
+                                Toast.makeText(mContext, mSystemSession.geIPAddressOfSafe(),
+                                        Toast.LENGTH_LONG).show();
+                                Log.i("sharonlog", mContentType + " got ip:" + ip);
+
+                                // TODO: try to resend content
+                                if (content.getTypeOfContent().equals(ApplicationConstants.TYPE_OF_CONTENT_PHOTO)) {
+                                    UploadPhoto(content,syncing, 0);
+                                } else if (content.getTypeOfContent().equals(ApplicationConstants.TYPE_OF_CONTENT_CONTACT)) {
+                                    UploadContact(content, syncing, 0);
+                                }
+
+
+                            } else {
+
+                                mSystemSession.setIPAddressOfSafe(ApplicationConstants.NO_IP_VALUE);
+                                Toast.makeText(mContext, "NO-IP",
+                                        Toast.LENGTH_LONG).show();
+
+                            }
+
+                        }
+                    },
+
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            String errorMessage = null;
 
                             NetworkResponse response = error.networkResponse;
                             if (response != null && response.data != null) {
@@ -751,31 +803,13 @@ public abstract class BaseManager {
 
                             } else if (error.getMessage() != null) {
                                 errorMessage = error.getMessage();
-
                             }
 
+
                             if (errorMessage != null) {
-
-                                if (errorMessage.contains("unreachable")) {
-
-                                    CancelSyncing();
-
-                                    ObserverService serviceInstance =
-                                            (ObserverService) mContext;
-                                    serviceInstance.sendError(ObserverService.SAFE_UNREACHABLE);
-                                } else if (errorMessage.contains("connectivity")) {
-
-                                    CancelSyncing();
-
-                                    ObserverService serviceInstance =
-                                            (ObserverService) mContext;
-                                    serviceInstance.sendError(ObserverService.NO_INTERNET);
-                                }
-
                                 Toast.makeText(mContext, errorMessage,
                                         Toast.LENGTH_LONG).show();
                             }
-
 
                         }
                     });
@@ -783,4 +817,6 @@ public abstract class BaseManager {
         }
 
     }
+
+
 }

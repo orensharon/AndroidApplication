@@ -27,7 +27,7 @@ public class RequestFactory {
     }
 
 
-    public void createJsonRequest(int method, String url, String body, String token,
+    public void createJsonRequest(int method, String url, String typeOfContent, String body, String token,
                                   Response.Listener<String> listener, Response.ErrorListener errorListener) {
 
         MyJsonRequest request = new MyJsonRequest(
@@ -39,6 +39,7 @@ public class RequestFactory {
             errorListener
         );
 
+        request.setTag(typeOfContent);
         RequestPool.getInstance(mContext).addToRequestQueue(request);
 
     }
@@ -63,37 +64,32 @@ public class RequestFactory {
 
     }
 
-    public void createMultipartRequest(String url, String typeOfContent, File file, int id,
+    public void createMultipartRequest(String url, String typeOfContent, File file, String token, int id,
                                        Response.Listener listener, Response.ErrorListener errorListener) {
 
 
-        SystemSession systemSession = new SystemSession(mContext);
 
         MultipartRequest request = new MultipartRequest(
                 url,
                 errorListener,
                 listener,
                 file,
-                systemSession.getToken(),
+                token,
                 id,
                 typeOfContent
         );
 
+        request.setTag(typeOfContent);
 
         // Adding request to queue
         RequestPool.getInstance(mContext).addToRequestQueue(request);
     }
 
-    public void Suspend() {
+    public void Suspend(String tag) {
 
 
         Log.i("sharonlog", "canceling all request...");
-        RequestPool.getInstance(mContext).getRequestQueue().cancelAll(new RequestQueue.RequestFilter() {
-            @Override
-            public boolean apply(Request<?> request) {
-                return true;
-            }
-        });
+        RequestPool.getInstance(mContext).getRequestQueue().cancelAll(tag);
     }
 
 }

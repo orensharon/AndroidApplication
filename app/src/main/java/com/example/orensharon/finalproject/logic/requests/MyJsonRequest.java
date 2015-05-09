@@ -3,6 +3,7 @@ package com.example.orensharon.finalproject.logic.requests;
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
+import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
@@ -105,5 +106,10 @@ public class MyJsonRequest extends JsonRequest<String> {
             // Other errors
             return new VolleyError(errorMessage);
         }
+    }
+
+    @Override
+    public Request<?> setTag(Object tag) {
+        return super.setTag(tag);
     }
 }

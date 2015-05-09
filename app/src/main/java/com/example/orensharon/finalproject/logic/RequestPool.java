@@ -24,6 +24,7 @@ public class RequestPool {
         mContext = context;
         mRequestQueue = getRequestQueue();
 
+
     }
 
     public static synchronized RequestPool getInstance(Context context) {
@@ -40,6 +41,7 @@ public class RequestPool {
             // Activity or BroadcastReceiver if someone passes one in.
             mRequestQueue = Volley.newRequestQueue(mContext.getApplicationContext());
         }
+
         return mRequestQueue;
     }
 

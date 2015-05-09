@@ -8,6 +8,7 @@ import java.util.List;
 
 /**
  * Created by orensharon on 5/7/15.
+ * Content database business logic
  */
 public class ContentBL {
 

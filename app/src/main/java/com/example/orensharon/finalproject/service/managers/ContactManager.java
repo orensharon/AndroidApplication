@@ -409,8 +409,7 @@ public class ContactManager extends BaseManager {
         Cursor cur = mContext.getContentResolver().query(ContactsContract.RawContacts.CONTENT_URI, projection, selection, selectionArgs, null);
 
         if (cur.moveToNext()) {
-            String version = cur.getString(cur.getColumnIndex(ContactsContract.RawContacts.VERSION));
-            return version;
+            return cur.getString(cur.getColumnIndex(ContactsContract.RawContacts.VERSION));
         }
 
         //Always remember to close the cursor. Otherwise it leads to side-effects.

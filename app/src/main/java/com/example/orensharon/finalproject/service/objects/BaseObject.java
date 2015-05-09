@@ -2,6 +2,7 @@ package com.example.orensharon.finalproject.service.objects;
 
 /**
  * Created by orensharon on 12/27/14.
+ * Base object implementation
  */
 public class BaseObject {
 

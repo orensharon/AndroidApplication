@@ -11,6 +11,7 @@ import java.util.List;
 
 /**
  * Created by orensharon on 5/7/15.
+ * Content database link class
  */
 public class ContentDAL extends SQLiteOpenHelper {
 
@@ -191,9 +192,9 @@ public class ContentDAL extends SQLiteOpenHelper {
                 result = new DBContent(cursor.getInt(0),
                         cursor.getString(1),
                         cursor.getString(2),
-                        ((cursor.getInt(3)==1)?true:false),
-                        ((cursor.getInt(4)==1)?true:false),
-                        ((cursor.getInt(5)==1)?true:false));
+                        ((cursor.getInt(3) == 1)),
+                        ((cursor.getInt(4) == 1)),
+                        ((cursor.getInt(5) == 1)));
             }
             cursor.close();
         }
@@ -288,9 +289,9 @@ public class ContentDAL extends SQLiteOpenHelper {
                 dbContent = new DBContent(cursor.getInt(0),
                         cursor.getString(1),
                         cursor.getString(2),
-                        ((cursor.getInt(3)==1)?true:false),
-                        ((cursor.getInt(4)==1)?true:false),
-                        ((cursor.getInt(5)==1)?true:false));
+                        ((cursor.getInt(3) == 1)),
+                        ((cursor.getInt(4) == 1)),
+                        ((cursor.getInt(5) == 1)));
 
                 result.add(dbContent);
             }
@@ -330,9 +331,9 @@ public class ContentDAL extends SQLiteOpenHelper {
                 dbContent = new DBContent(cursor.getInt(0),
                         cursor.getString(1),
                         cursor.getString(2),
-                        ((cursor.getInt(3)==1)?true:false),
-                        ((cursor.getInt(4)==1)?true:false),
-                        ((cursor.getInt(5)==1)?true:false));
+                        ((cursor.getInt(3) == 1)),
+                        ((cursor.getInt(4) == 1)),
+                        ((cursor.getInt(5) == 1)));
 
                 result.add(dbContent);
 

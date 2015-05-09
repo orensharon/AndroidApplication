@@ -166,4 +166,9 @@ public class MultipartRequest<T> extends Request<T> {
     {
         mListener.onResponse(response);
     }
+
+    @Override
+    public Request<?> setTag(Object tag) {
+        return super.setTag(tag);
+    }
 }

@@ -13,7 +13,6 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -22,9 +21,7 @@ import com.example.orensharon.finalproject.ApplicationConstants;
 import com.example.orensharon.finalproject.R;
 import com.example.orensharon.finalproject.gui.feed.FeedActivity;
 import com.example.orensharon.finalproject.logic.RequestFactory;
-import com.example.orensharon.finalproject.sessions.SettingsSession;
 import com.example.orensharon.finalproject.sessions.SystemSession;
-import com.example.orensharon.finalproject.utils.IPAddressValidator;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -169,6 +166,7 @@ public class LoginActivity extends Activity {
             requestFactory.createJsonRequest(
                     Request.Method.POST,
                     ApplicationConstants.LOGIN_API,
+                    "login",
                     body.toString(),
                     null,
 
