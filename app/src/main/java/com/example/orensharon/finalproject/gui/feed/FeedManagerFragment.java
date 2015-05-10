@@ -76,8 +76,11 @@ public class FeedManagerFragment extends Fragment {
 
             requestFactory.createJsonRequest(
                     Request.Method.POST,
-                    ApplicationConstants.IP_GET_API, body.toString(), systemSession.getToken(),
+                    ApplicationConstants.IP_GET_API,
                     "ip_request",
+                    body.toString(),
+                    systemSession.getToken(),
+
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {

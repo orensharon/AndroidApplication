@@ -403,6 +403,8 @@ public abstract class BaseManager {
 
     public class UploadManager {
 
+
+
         private SystemSession mSystemSession;
         private RequestFactory mRequestFactory;
 
@@ -459,11 +461,13 @@ public abstract class BaseManager {
         }
 
         public void CancelSyncing() {
-            mRequestFactory.Suspend(mContentType);
+
+            mRequestFactory.CancelByTag(mContentType);
             Log.e("sharonlog", mContentType + " Canceling all....");
             mContentBL.CancelAllInSync(mContentType);
             Log.i("sharonlog", mContentType + " Content List:");
             Log.i("sharonlog", mContentBL.getAllContents(mContentType).toString());
+
         }
 
         private void UploadContact(final BaseObject baseObject, final boolean syncing, final int ipRequestCount) {
@@ -755,7 +759,8 @@ public abstract class BaseManager {
                                         Toast.LENGTH_LONG).show();
                                 Log.i("sharonlog", mContentType + " got ip:" + ip);
 
-                                // TODO: try to resend content
+
+                                // Resend the content
                                 if (content.getTypeOfContent().equals(ApplicationConstants.TYPE_OF_CONTENT_PHOTO)) {
                                     UploadPhoto(content,syncing, 0);
                                 } else if (content.getTypeOfContent().equals(ApplicationConstants.TYPE_OF_CONTENT_CONTACT)) {

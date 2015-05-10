@@ -85,11 +85,20 @@ public class RequestFactory {
         RequestPool.getInstance(mContext).addToRequestQueue(request);
     }
 
-    public void Suspend(String tag) {
+    public void CancelByTag(String tag) {
 
-
-        Log.i("sharonlog", "canceling all request...");
+        Log.i("sharonlog", "canceling " + tag +  " request...");
         RequestPool.getInstance(mContext).getRequestQueue().cancelAll(tag);
+    }
+
+    public void CancelAll() {
+        Log.i("sharonlog", "canceling all request...");
+        RequestPool.getInstance(mContext).getRequestQueue().cancelAll(new RequestQueue.RequestFilter() {
+            @Override
+            public boolean apply(Request<?> request) {
+                return true;
+            }
+        });
     }
 
 }
