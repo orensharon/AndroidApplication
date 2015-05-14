@@ -7,29 +7,37 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.example.orensharon.finalproject.R;
-import com.squareup.picasso.Picasso;
+import com.example.orensharon.finalproject.logic.CustomPicasso;
+import com.squareup.picasso.Callback;
 
 /**
  * Created by orensharon on 5/3/15.
  */
-public class FeedItemAdapter extends ArrayAdapter<FeedItem> {
+public class FeedContactAdapter extends ArrayAdapter<FeedContactItem> {
 
     private Context mContext;
     private int mLayoutInflater;
-    private FeedItem data[] = null;
+    private FeedContactItem data[] = null;
+    String mToken;
 
-    public FeedItemAdapter(Context context, int layoutResId, FeedItem[] data) {
+
+    public FeedContactAdapter(Context context, int layoutResId, FeedContactItem[] data, String token) {
         super(context, layoutResId, data);
         this.mLayoutInflater = layoutResId;
         this.mContext = context;
         this.data = data;
+        mToken = token;
+
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         FeedItemHolder holder = null;
+
 
         if(convertView == null)
         {
@@ -38,7 +46,7 @@ public class FeedItemAdapter extends ArrayAdapter<FeedItem> {
 
             holder = new FeedItemHolder();
             holder.imageIcon = (ImageView)convertView.findViewById(R.id.icon);
-            //holder.textTitle = (TextView)convertView.findViewById(R.id.gameType);
+            holder.textTitle = (TextView)convertView.findViewById(R.id.contact_feed_text_view);
             //holder.textScore = (TextView)convertView.findViewById(R.id.score);
 
             convertView.setTag(holder);
@@ -48,11 +56,11 @@ public class FeedItemAdapter extends ArrayAdapter<FeedItem> {
             holder = (FeedItemHolder)convertView.getTag();
         }
 
-        FeedItem feedItem = data[position];
-        //holder.textScore.setText(feedItem.score);
+        FeedContactItem feedItem = data[position];
+        holder.textTitle.setText(feedItem.getDisplayName());
         //holder.textTitle.setText(feedItem.gametype);
         //holder.imageIcon.setImageResource(feedItem.getPhoto());
-        Picasso.with(this.mContext).load(feedItem.getPhoto()).into(holder.imageIcon);
+
 
         return convertView;
     }
@@ -60,7 +68,27 @@ public class FeedItemAdapter extends ArrayAdapter<FeedItem> {
     static class FeedItemHolder
     {
         ImageView imageIcon;
-        //TextView textTitle;
+        TextView textTitle;
         //TextView textScore;
     }
+
+    private class ImageLoadedCallback implements Callback {
+        ProgressBar progressBar;
+
+        public  ImageLoadedCallback(ProgressBar progBar){
+            progressBar = progBar;
+        }
+
+        @Override
+        public void onSuccess() {
+
+        }
+
+        @Override
+        public void onError() {
+
+        }
+    }
+
+
 }

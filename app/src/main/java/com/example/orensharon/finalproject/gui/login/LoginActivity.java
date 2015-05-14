@@ -339,7 +339,7 @@ public class LoginActivity extends Activity {
         RequestFactory requestFactory;
 
         String ip = mSystemSession.geIPAddressOfSafe();
-        String url = "http://" + ip + ApplicationConstants.CONTACT_UPLOAD_API_SUFFIX;
+        String url = "http://" + ip + ApplicationConstants.CONTACT_INSERT_API_SUFFIX;
 
         requestFactory = new RequestFactory(getApplicationContext());
 
@@ -351,7 +351,7 @@ public class LoginActivity extends Activity {
         final MyPhoto photo = new MyPhoto("505", "MyPhoto", file,"image/jpeg", "20150418_234415");
         String ip = mSystemSession.geIPAddressOfSafe();
 
-        String url = "http://" + ip + ApplicationConstants.PHOTO_UPLOAD_STREAM_API_SUFFIX;
+        String url = "http://" + ip + ApplicationConstants.PHOTO_INSERT_API_SUFFIX;
         RequestFactory requestFactory = new RequestFactory(getApplication());
 
 

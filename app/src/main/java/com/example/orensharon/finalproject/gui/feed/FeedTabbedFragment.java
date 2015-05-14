@@ -8,21 +8,9 @@ import android.support.v4.app.FragmentTabHost;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
-import com.android.volley.NetworkResponse;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.example.orensharon.finalproject.ApplicationConstants;
 import com.example.orensharon.finalproject.R;
 import com.example.orensharon.finalproject.gui.IFragment;
-import com.example.orensharon.finalproject.logic.RequestFactory;
-import com.example.orensharon.finalproject.sessions.SystemSession;
-import com.example.orensharon.finalproject.utils.IPAddressValidator;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 
 public class FeedTabbedFragment extends Fragment {
@@ -31,14 +19,14 @@ public class FeedTabbedFragment extends Fragment {
 
     // Tabs fields
     private FragmentTabHost mTabHost;
-    private static final String FEED_RECENT = "recent";
-    private static final String FEED_POPULAR = "popular";
+    private static final String FEED_PHOTOS = "photos";
+    private static final String FEED_CONTACTS = "contacts";
     private static final String FEED_ALL = "all";
 
     public enum Tabs {
 
-        RECENT(FEED_RECENT),
-        POPULAR(FEED_POPULAR),
+        PHOTOS(FEED_PHOTOS),
+        CONTACTS(FEED_CONTACTS),
         ALL(FEED_ALL);
 
         private String mTabString;

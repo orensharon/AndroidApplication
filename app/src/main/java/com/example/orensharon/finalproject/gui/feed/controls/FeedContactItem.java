@@ -3,28 +3,28 @@ package com.example.orensharon.finalproject.gui.feed.controls;
 /**
  * Created by orensharon on 5/3/15.
  */
-public class FeedItem {
+public class FeedContactItem {
 
     private int mID;
-    private String mPhoto;
+    private String mDisplayName;
 
-    public FeedItem() {
+    public FeedContactItem() {
         super();
     }
 
-    public FeedItem(int id, String photo) {
+    public FeedContactItem(int id, String displayName) {
         super();
 
         mID = id;
-        mPhoto = photo;
+        mDisplayName = displayName;
     }
 
     public int getID() {
         return mID;
     }
 
-    public String getPhoto() {
-        return mPhoto;
+    public String getDisplayName() {
+        return mDisplayName;
     }
 
 }

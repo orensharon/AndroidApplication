@@ -477,7 +477,7 @@ public abstract class BaseManager {
             body = myContact.toJSONObject();
 
             String ip = mSystemSession.geIPAddressOfSafe();
-            String url = "http://" + ip + ApplicationConstants.CONTACT_UPLOAD_API_SUFFIX;
+            String url = "http://" + ip + ApplicationConstants.CONTACT_INSERT_API_SUFFIX;
 
             // Adding the token into the body of the message
             try {
@@ -604,7 +604,7 @@ public abstract class BaseManager {
             final MyPhoto myPhoto = (MyPhoto) baseObject;
             String ip = mSystemSession.geIPAddressOfSafe();
 
-            String url = "http://" + ip + ApplicationConstants.PHOTO_UPLOAD_STREAM_API_SUFFIX;
+            String url = "http://" + ip + ApplicationConstants.PHOTO_INSERT_API_SUFFIX;
             mRequestFactory.createMultipartRequest(
                     url,
                     myPhoto.getTypeOfContent(),

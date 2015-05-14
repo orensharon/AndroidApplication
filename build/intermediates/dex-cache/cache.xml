@@ -2,6 +2,27 @@
 <items version="2" >
 
     <item
+        jar="/Users/orensharon/.gradle/caches/modules-2/files-2.1/com.squareup.picasso/picasso/2.3.2/d6b7f0093cec6c9faf65dbfd6a6a345d0ed25e27/picasso-2.3.2.jar"
+        jumboMode="false"
+        revision="20.0.0"
+        sha1="d6b7f0093cec6c9faf65dbfd6a6a345d0ed25e27">
+        <dex dex="/Users/orensharon/AndroidStudioProjects/FinalProject/AndroidApplication/app/build/intermediates/pre-dexed/debug/picasso-2.3.2-a4d97239ca7e4d7482b0f59d8adc53119d662048.jar" />
+    </item>
+    <item
+        jar="/Users/orensharon/.gradle/caches/modules-2/files-2.1/com.squareup.okhttp/okhttp-urlconnection/2.0.0/afe8399d352713b66e597e9670c741d1e60ae923/okhttp-urlconnection-2.0.0.jar"
+        jumboMode="false"
+        revision="20.0.0"
+        sha1="afe8399d352713b66e597e9670c741d1e60ae923">
+        <dex dex="/Users/orensharon/AndroidStudioProjects/FinalProject/AndroidApplication/app/build/intermediates/pre-dexed/debug/okhttp-urlconnection-2.0.0-1a0f328ba67194aa8d2df6e2243c7e1021aa58ef.jar" />
+    </item>
+    <item
+        jar="/Users/orensharon/.gradle/caches/modules-2/files-2.1/com.mcxiaoke.volley/library/1.0.6/b2e6988baeea1aed656995f973aaa2fc3feaf447/library-1.0.6.jar"
+        jumboMode="false"
+        revision="20.0.0"
+        sha1="b2e6988baeea1aed656995f973aaa2fc3feaf447">
+        <dex dex="/Users/orensharon/AndroidStudioProjects/FinalProject/AndroidApplication/app/build/intermediates/pre-dexed/debug/library-1.0.6-182a626d9943185c68cb4b3c40937b435a8b84cd.jar" />
+    </item>
+    <item
         jar="/Users/orensharon/sdk/extras/android/m2repository/com/android/support/support-v4/19.1.0/support-v4-19.1.0.jar"
         jumboMode="false"
         revision="20.0.0"
@@ -16,11 +37,11 @@
         <dex dex="/Users/orensharon/AndroidStudioProjects/FinalProject/AndroidApplication/app/build/intermediates/pre-dexed/debug/httpmime-4.3-c9618dce02cf998aef711633d2b3e011b138a173.jar" />
     </item>
     <item
-        jar="/Users/orensharon/.gradle/caches/modules-2/files-2.1/com.squareup.picasso/picasso/2.5.2/7446d06ec8d4f7ffcc53f1da37c95f200dcb9387/picasso-2.5.2.jar"
+        jar="/Users/orensharon/.gradle/caches/modules-2/files-2.1/com.squareup.okio/okio/1.0.0/2534c458682c73f5b9871131ab3098d3f987ca3/okio-1.0.0.jar"
         jumboMode="false"
         revision="20.0.0"
-        sha1="7446d06ec8d4f7ffcc53f1da37c95f200dcb9387">
-        <dex dex="/Users/orensharon/AndroidStudioProjects/FinalProject/AndroidApplication/app/build/intermediates/pre-dexed/debug/picasso-2.5.2-82acadc7a55887c0b4fd5f3b37821a480e08d1ae.jar" />
+        sha1="02534c458682c73f5b9871131ab3098d3f987ca3">
+        <dex dex="/Users/orensharon/AndroidStudioProjects/FinalProject/AndroidApplication/app/build/intermediates/pre-dexed/debug/okio-1.0.0-b34f1ce8a03a7e1298e77a551a2e208462ddbd03.jar" />
     </item>
     <item
         jar="/Users/orensharon/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpcore/4.3/11393498b38e9695d0850cac26fde5613ae268b9/httpcore-4.3.jar"
@@ -30,11 +51,11 @@
         <dex dex="/Users/orensharon/AndroidStudioProjects/FinalProject/AndroidApplication/app/build/intermediates/pre-dexed/debug/httpcore-4.3-74ef03a49949771fcc0cc8fb3812dd00d5414a16.jar" />
     </item>
     <item
-        jar="/Users/orensharon/.gradle/caches/modules-2/files-2.1/com.mcxiaoke.volley/library/1.0.6/b2e6988baeea1aed656995f973aaa2fc3feaf447/library-1.0.6.jar"
+        jar="/Users/orensharon/.gradle/caches/modules-2/files-2.1/com.squareup.okhttp/okhttp/2.0.0/4c8d1536dba3812cc1592090dc20c47a4ed3c35e/okhttp-2.0.0.jar"
         jumboMode="false"
         revision="20.0.0"
-        sha1="b2e6988baeea1aed656995f973aaa2fc3feaf447">
-        <dex dex="/Users/orensharon/AndroidStudioProjects/FinalProject/AndroidApplication/app/build/intermediates/pre-dexed/debug/library-1.0.6-182a626d9943185c68cb4b3c40937b435a8b84cd.jar" />
+        sha1="4c8d1536dba3812cc1592090dc20c47a4ed3c35e">
+        <dex dex="/Users/orensharon/AndroidStudioProjects/FinalProject/AndroidApplication/app/build/intermediates/pre-dexed/debug/okhttp-2.0.0-54ada85ec0a87bffd54f296ba9b6a31d77e06865.jar" />
     </item>
 
 </items>

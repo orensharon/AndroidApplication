@@ -11,8 +11,16 @@ public class ApplicationConstants
     // Routing server API endpoints
     public static final String LOGIN_API = ROUTING_SERVER_URL + ":9004/Login/auth/json";
     public static final String IP_GET_API = ROUTING_SERVER_URL + ":9002/IPGetterService/json";
-    public static final String PHOTO_UPLOAD_STREAM_API_SUFFIX = ":9003/StreamService/Upload/Photo";
-    public static final String CONTACT_UPLOAD_API_SUFFIX = ":9003/StreamService/Upload/Contact";
+
+
+    public static final String PHOTO_INSERT_API_SUFFIX = ":9003/StreamService/Photo/Insert";
+    public static final String PHOTO_UPDATE_API_SUFFIX = ":9003/StreamService/Photo/Update";
+    public static final String PHOTO_GET_LIST_API_SUFFIX = ":9003/StreamService/Photo/Get";
+    public static final String PHOTO_GET_API_SUFFIX = ":9003/StreamService/Photo/Get/";
+    public static final String CONTACT_INSERT_API_SUFFIX = ":9003/StreamService/Contact/Insert";
+    public static final String CONTACT_UPDATE_API_SUFFIX = ":9003/StreamService/Contact/Update";
+    public static final String CONTACT_GET_API_SUFFIX = ":9003/StreamService/Contact/Get";
+
 
     /* JSON parameters keys */
 
@@ -82,28 +90,25 @@ public class ApplicationConstants
     public static final String BACK_UP_LIST_PHOTOS = "BACK_UP_LIST_PHOTOS";
     public static final String UNSYNCED_PHOTOS = "UNSYNCED_PHOTOS";
 
-    public static enum ContentKeys {
-        CONTACTS(LAST_ID_CONTACTS, BACK_UP_LIST_CONTACTS, UNSYNCED_CONTACTS),
-        PHOTOS(LAST_ID_PHOTOS, BACK_UP_LIST_PHOTOS, UNSYNCED_PHOTOS);
+    public static enum FeedContentKeys {
+        PHOTOS(PHOTO_GET_API_SUFFIX, PHOTO_GET_LIST_API_SUFFIX),
+        CONTACTS(CONTACT_GET_API_SUFFIX, CONTACT_GET_API_SUFFIX);
 
-        private String mLastID, mBackupData, mUnsynced;
+        private String mContentAPI, mContentListAPI;
 
-        private ContentKeys(String lastID, String backupData, String unsynced) {
-            mLastID = lastID;
-            mBackupData = backupData;
-            mUnsynced = unsynced;
+        private FeedContentKeys(String contentAPI, String listAPI) {
+            mContentAPI = contentAPI;
+            mContentListAPI = listAPI;
         }
 
-        public String getLastIDKey() {
-            return mLastID;
+        public String getContentAPI() {
+            return mContentAPI;
         }
 
-        public String getBackupDataListKey() {
-            return mBackupData;
+        public String getContentListAPI() {
+            return mContentListAPI;
         }
 
-        public String getUnsyncedListKey() {
-            return mUnsynced;
-        }
+
     }
 }

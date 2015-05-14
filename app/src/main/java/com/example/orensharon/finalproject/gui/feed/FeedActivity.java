@@ -47,7 +47,7 @@ public class FeedActivity extends FragmentActivity implements IFragment {
 
         createCustomActionBarTitle();
 
-        LoadFragment(new FeedManagerFragment(), "FEED_MANAGER_FRAGMENT", false);
+        LoadFragment(new FeedTabbedFragment(), "FEED_MANAGER_FRAGMENT", false);
 
     }
 
@@ -85,9 +85,9 @@ public class FeedActivity extends FragmentActivity implements IFragment {
 
 
         if (isSupportBack) {
-            fragmentTransaction.replace(R.id.fragment_container, fragment, tag).addToBackStack(null).commit();
+            fragmentTransaction.replace(R.id.fragment_container, fragment, tag).addToBackStack(null).commitAllowingStateLoss();
         } else {
-            fragmentTransaction.replace(R.id.fragment_container, fragment, tag).commit();
+            fragmentTransaction.replace(R.id.fragment_container, fragment, tag).commitAllowingStateLoss();
         }
 
     }

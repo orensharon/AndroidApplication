@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content"
+    android:layout_width="fill_parent"
+    android:gravity="center"
+    android:background="@color/color_blue_1"
+    android:layout_gravity="center_horizontal">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:padding="16dp"
+        android:background="@color/color_blue_0">
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/time_title_layout">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/icon_time"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@+id/feed_time_text_view"
+                android:id="@+id/time_image_view"/>
+
+            <TextView
+                style="@style/text_item"
+                android:layout_alignParentRight="true"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_centerVertical="true"
+                android:id="@+id/feed_time_text_view"
+                android:textSize="14sp"
+                android:layout_marginBottom="8dp"
+                android:text="2h"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/time_title_layout">
+
+            <ProgressBar
+                android:id="@+id/feed_item_progress_Bar"
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_width="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_height="wrap_content"
+                />
+
+            <ImageView
+                android:id="@+id/icon"
+                android:layout_width="fill_parent"
+
+                android:layout_height="wrap_content"
+                android:contentDescription="TODO"
+                android:layout_centerInParent="true"
+                android:src="@drawable/ic_launcher" />
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+</RelativeLayout>
