@@ -4,21 +4,24 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="wrap_content"
     android:layout_width="fill_parent"
-    android:gravity="center"
-    android:background="@color/color_blue_1"
+    android:background="@color/color_blue_0"
+    android:orientation="vertical"
     android:layout_gravity="center_horizontal">
 
-    <RelativeLayout
+    <com.example.orensharon.finalproject.gui.RoundedImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:background="@color/color_blue_5">
+        android:src="@drawable/icon_person"
+        android:padding="12dp"
+        android:id="@+id/contact_icon_image_view"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/contact_feed_text_view"/>
-
-    </RelativeLayout>
-
+    <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:id="@+id/contact_name_text_view"
+        android:textSize="20sp"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/contact_icon_image_view"
+        android:text="Sharon oren"/>
 </RelativeLayout>

@@ -11,9 +11,11 @@ import android.view.ViewGroup;
 
 import com.example.orensharon.finalproject.R;
 import com.example.orensharon.finalproject.gui.IFragment;
+import com.example.orensharon.finalproject.gui.feed.sections.containers.ContainerContactsFragment;
+import com.example.orensharon.finalproject.gui.feed.sections.containers.ContainerPhotosFragment;
 
 
-public class FeedTabbedFragment extends Fragment {
+public class TabContainerFragment extends Fragment {
 
     private IFragment mListener;
 
@@ -25,29 +27,28 @@ public class FeedTabbedFragment extends Fragment {
 
     public enum Tabs {
 
-        PHOTOS(FEED_PHOTOS),
-        CONTACTS(FEED_CONTACTS),
-        ALL(FEED_ALL);
+        PHOTOS(FEED_PHOTOS, ContainerPhotosFragment.class),
+        CONTACTS(FEED_CONTACTS, ContainerContactsFragment.class),
+        ALL(FEED_ALL, null);
 
         private String mTabString;
+        private Class mClass;
 
-        private Tabs(String str) {
+        private Tabs(String str, Class cls) {
             this.mTabString = str;
+            this.mClass = cls;
         }
 
         public String getTabString() { return mTabString; }
+
+        public Class getTabClass() { return mClass; }
     }
 
 
-    public FeedTabbedFragment() {
+    public TabContainerFragment() {
         // Empty constructor
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-    }
 
     @Override
     public void onAttach(Activity activity) {
@@ -78,6 +79,7 @@ public class FeedTabbedFragment extends Fragment {
         mTabHost = (FragmentTabHost) view.findViewById(android.R.id.tabhost);
         mTabHost.setup(getActivity(), getChildFragmentManager(), android.R.id.tabcontent);
 
+        // Adding each tab
         for (Tabs tab : Tabs.values()) {
 
             String tabString;
@@ -85,10 +87,8 @@ public class FeedTabbedFragment extends Fragment {
 
             mTabHost.addTab(
                     mTabHost.newTabSpec(tabString).setIndicator(tabString, null),
-                    FeedSectionFragment.class, null);
+                    tab.getTabClass(), null);
         }
     }
-
-
 
 }

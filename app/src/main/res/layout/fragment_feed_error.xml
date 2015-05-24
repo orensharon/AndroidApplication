@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:id="@+id/fragment_feed_tab_section_error_container">
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/fragment_feed_message_container">
+
+        <!-- Feed message-->
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/feed_section_message_image_view"
+            android:layout_above="@+id/feed_section_message_text_view"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:id="@+id/feed_section_message_text_view" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/feed_section_message_text_view"
+            android:text="Retry"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/color_blue_7"
+            android:id="@+id/retry_load_content_text_view"/>
+    </RelativeLayout>
+
+    </LinearLayout>

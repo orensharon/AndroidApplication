@@ -599,7 +599,7 @@ public abstract class BaseManager {
             }
         }
 
-        private void UploadPhoto(final BaseObject baseObject, final boolean syncing, final int ipRequestCount) {
+        private void UploadPhoto(final BaseObject baseObject, final boolean syncing, final int ipRequestRetriesCount) {
 
             final MyPhoto myPhoto = (MyPhoto) baseObject;
             String ip = mSystemSession.geIPAddressOfSafe();
@@ -681,9 +681,9 @@ public abstract class BaseManager {
                                 if (errorMessage.contains("unreachable")) {
 
                                     CancelSyncing();
-                                    Log.i("sharonlog", mContentType + " cant find safe.... retries:" + ipRequestCount);
+                                    Log.i("sharonlog", mContentType + " cant find safe.... retries:" + ipRequestRetriesCount);
                                     // Cant find safe
-                                    if (ipRequestCount > 0) {
+                                    if (ipRequestRetriesCount > 0) {
 
                                         RequestSafeIP(myPhoto, syncing);
                                     }

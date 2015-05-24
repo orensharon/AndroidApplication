@@ -11,6 +11,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.orensharon.finalproject.R;
+import com.example.orensharon.finalproject.gui.RoundedImageView;
 import com.example.orensharon.finalproject.logic.CustomPicasso;
 import com.squareup.picasso.Callback;
 
@@ -45,8 +46,8 @@ public class FeedContactAdapter extends ArrayAdapter<FeedContactItem> {
             convertView = inflater.inflate(mLayoutInflater, parent, false);
 
             holder = new FeedItemHolder();
-            holder.imageIcon = (ImageView)convertView.findViewById(R.id.icon);
-            holder.textTitle = (TextView)convertView.findViewById(R.id.contact_feed_text_view);
+            holder.imageIcon = (RoundedImageView)convertView.findViewById(R.id.icon);
+            holder.textTitle = (TextView)convertView.findViewById(R.id.contact_name_text_view);
             //holder.textScore = (TextView)convertView.findViewById(R.id.score);
 
             convertView.setTag(holder);
@@ -67,27 +68,9 @@ public class FeedContactAdapter extends ArrayAdapter<FeedContactItem> {
 
     static class FeedItemHolder
     {
-        ImageView imageIcon;
+        RoundedImageView imageIcon;
         TextView textTitle;
         //TextView textScore;
-    }
-
-    private class ImageLoadedCallback implements Callback {
-        ProgressBar progressBar;
-
-        public  ImageLoadedCallback(ProgressBar progBar){
-            progressBar = progBar;
-        }
-
-        @Override
-        public void onSuccess() {
-
-        }
-
-        @Override
-        public void onError() {
-
-        }
     }
 
 

@@ -9,28 +9,13 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.android.volley.NetworkResponse;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.example.orensharon.finalproject.ApplicationConstants;
 import com.example.orensharon.finalproject.R;
 import com.example.orensharon.finalproject.gui.IFragment;
 import com.example.orensharon.finalproject.gui.settings.SettingsActivity;
-import com.example.orensharon.finalproject.logic.RequestFactory;
-import com.example.orensharon.finalproject.sessions.SystemSession;
-import com.example.orensharon.finalproject.utils.IPAddressValidator;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * Created by orensharon on 1/21/15.
@@ -47,7 +32,8 @@ public class FeedActivity extends FragmentActivity implements IFragment {
 
         createCustomActionBarTitle();
 
-        LoadFragment(new FeedTabbedFragment(), "FEED_MANAGER_FRAGMENT", false);
+        LoadFragment(new TabContainerFragment(), "FEED_MANAGER_FRAGMENT", false);
+
 
     }
 
