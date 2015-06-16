@@ -1,20 +1,23 @@
 package com.example.orensharon.finalproject.gui.settings;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.Switch;
-import android.widget.TextView;
 
 import com.example.orensharon.finalproject.R;
 import com.example.orensharon.finalproject.gui.IFragment;
@@ -23,6 +26,7 @@ import com.example.orensharon.finalproject.gui.settings.controls.Content;
 import com.example.orensharon.finalproject.service.ObserverService;
 import com.example.orensharon.finalproject.service.db.ContentBL;
 import com.example.orensharon.finalproject.sessions.SettingsSession;
+import com.example.orensharon.finalproject.sessions.SystemSession;
 
 import java.util.ArrayList;
 
@@ -34,13 +38,16 @@ public class SettingsFragment extends Fragment {
     private IFragment mListener;
     private ContentListAdapter mContentListAdapter;
     private ListView mContentsListView;
-    private TextView mListDescriptionTextView;
     private Switch mServiceEnableSwitch, mWifiOnlySwitch;
     private Button mSyncNowButton;
+    private RelativeLayout mSyncButtonContainer;
+    private ProgressDialog mProgressDialog;
 
     private ContentBL mContentBL;
 
     private SettingsSession mSettingsSession;
+    private SystemSession mSystemSession;
+
 
     public SettingsFragment() {
 
@@ -84,13 +91,14 @@ public class SettingsFragment extends Fragment {
 
 
         mSettingsSession = new SettingsSession(getActivity());
+        mSystemSession = new SystemSession(getActivity());
 
         mContentsListView = (ListView) view.findViewById(R.id.content_list_view);
-        mListDescriptionTextView = (TextView) view.findViewById(R.id.text_view_content_list_description);
 
         mSyncNowButton = (Button)view.findViewById(R.id.sync_now_button);
+        mSyncButtonContainer = (RelativeLayout)view.findViewById(R.id.sync_now_button_container);
 
-        toggleEnableSyncNowButton();
+        initSyncButton();
         initSyncButtonListener();
 
         mServiceEnableSwitch = (Switch) view.findViewById(R.id.switch_enable_service);
@@ -102,41 +110,47 @@ public class SettingsFragment extends Fragment {
         mWifiOnlySwitch.setChecked(mSettingsSession.getWIFIOnly());
 
 
-
-
         initServiceEnableListener();
         initWIFIOnlyListener();
 
 
-
-
         // Check the current state before we display the list
-        mListDescriptionTextView.setVisibility(((mServiceEnableSwitch.isChecked() == true) ? View.VISIBLE : View.INVISIBLE));
-        mContentsListView.setVisibility(((mServiceEnableSwitch.isChecked() == true) ? View.VISIBLE : View.INVISIBLE));
+
+        mContentsListView.setEnabled(mServiceEnableSwitch.isChecked());
 
         mWifiOnlySwitch.setEnabled(mSettingsSession.getServiceIsEnabledByUser());
         LoadContentOptionsIntoListView();
+
+
+        if (mSystemSession.getInSync(null)) {
+
+            // Show progress dialog
+        }
 
         return view;
     }
 
 
-    private void toggleEnableSyncNowButton() {
+    private void initSyncButton() {
 
-        // create click listener
+        // Init the sync now button according system state
+        int count;
 
+        // With null parameters means check all the lists
+        count = mContentBL.getAllUnsyncedContents(null).size();
 
+        // Hiding the button if in the middle of sync or service if off or nothing to sync
+        if (!mSystemSession.getInSync(null) &&
+                mSettingsSession.getServiceIsEnabledByUser() && count > 0) {
 
-        if (mContentBL.getAllUnsyncedContents(null).size() > 0) {
             // Means there is unsynced content
-            mSyncNowButton.setEnabled(true);
+            mSyncButtonContainer.setVisibility(View.VISIBLE);
+            mSyncNowButton.setText("Sync now");
         } else {
-            mSyncNowButton.setText("All synced :)");
-            mSyncNowButton.setEnabled(false);
-        }
 
-        mSyncNowButton.setEnabled(mSettingsSession.getServiceIsEnabledByUser());
-        mSyncNowButton.setEnabled(false);
+            // Means service is turned off or nothing to sync
+            mSyncButtonContainer.setVisibility(View.GONE);
+        }
 
     }
 
@@ -147,10 +161,14 @@ public class SettingsFragment extends Fragment {
             public void onClick(View v) {
 
                 // Make sure service is running
-
                 if (ObserverService.getServiceStatus() == ObserverService.STATUS_SERVICE_RUNNING) {
 
-                   // TODO: send message to service
+                    // Make sure that not in a middle of sync
+                    if (!mSystemSession.getInSync(null)) {
+                        // Start the sync
+                        startSyncFromService();
+                    }
+
                 }
             }
         };
@@ -168,24 +186,38 @@ public class SettingsFragment extends Fragment {
             public void onCheckedChanged(CompoundButton buttonView,
                                          boolean isChecked) {
 
-                mListDescriptionTextView.setVisibility(((isChecked == true) ? View.VISIBLE : View.INVISIBLE));
-                mContentsListView.setVisibility(((isChecked == true) ? View.VISIBLE : View.INVISIBLE));
-                mWifiOnlySwitch.setEnabled(isChecked);
-
                 mSettingsSession.setServiceIsEnabledByUser(isChecked);
 
-                if (isChecked == true) {
-                    startObservingService();
+                mContentsListView.setEnabled(isChecked);
+                mWifiOnlySwitch.setEnabled(isChecked);
 
+                toggleCheckBoxEnable(isChecked);
+
+
+                if (isChecked == true) {
+                    startObservingService(false);
+                    Log.e("sharonlog", "SHOULD START");
                 } else {
+                    Log.e("sharonlog", "SHOULD STOP");
                     stopObservingService();
+                    initSyncButton();
                 }
 
-                toggleEnableSyncNowButton();
+             //   initSyncButton();
             }
+
+
         });
 
     }
+
+    private void toggleCheckBoxEnable(boolean isChecked) {
+        for(int i=0 ; i< mContentsListView.getCount() ; i++){
+            CheckBox cb = (CheckBox)mContentsListView.getChildAt(i).findViewById(R.id.list_view_check_box);
+            cb.setEnabled(isChecked);
+        }
+    }
+
     private void initWIFIOnlyListener() {
 
         // Attach a listener to check for changes in state
@@ -202,15 +234,19 @@ public class SettingsFragment extends Fragment {
 
     }
 
+    private void startSyncFromService() {
+        startObservingService(true);
+    }
 
-
-    private void startObservingService() {
+    private void startObservingService(boolean flag) {
 
         // Creating an intent with the selected values of the user
         Intent ServiceIntent;
         ServiceIntent = new Intent(getActivity(), ObserverService.class);
 
-
+        if (flag == true) {
+            ServiceIntent.putExtra("SYNC_COMMAND", 1);
+        }
         // Service will start once, any call after that will only send
         // the intent to communicate with the service this way
         getActivity().startService(ServiceIntent);

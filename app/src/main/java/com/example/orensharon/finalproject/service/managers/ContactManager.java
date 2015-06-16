@@ -5,7 +5,6 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.provider.ContactsContract;
 
 import com.example.orensharon.finalproject.ApplicationConstants;
@@ -14,6 +13,7 @@ import com.example.orensharon.finalproject.service.objects.BaseObject;
 import com.example.orensharon.finalproject.service.objects.Contact.MyAddress;
 import com.example.orensharon.finalproject.service.objects.Contact.MyContact;
 import com.example.orensharon.finalproject.service.objects.Contact.MyEmail;
+import com.example.orensharon.finalproject.service.objects.Contact.MyInstantMessenger;
 import com.example.orensharon.finalproject.service.objects.Contact.MyNotes;
 import com.example.orensharon.finalproject.service.objects.Contact.MyOrganization;
 import com.example.orensharon.finalproject.service.objects.Contact.MyPhone;
@@ -322,7 +322,6 @@ public class ContactManager extends BaseManager {
 
         Cursor cursor;
         String[] projection;
-        Uri returnUri;
         QueryArgs queryArgs;
 
         projection = new String[] { ContactsContract.Contacts.PHOTO_THUMBNAIL_URI };
@@ -348,7 +347,7 @@ public class ContactManager extends BaseManager {
         cursor.close();
         return Uri.EMPTY;
     }
-    private Uri getDataUri(int idContact) {
+    private int getDataUri(int idContact) {
 
         // From given id of contact - get the data Uri and return it
 
@@ -365,16 +364,17 @@ public class ContactManager extends BaseManager {
 
         if (cursor == null){
             // Cursor reading error
-            return Uri.EMPTY;
+            return 0;
         }
 
 
+        int id = 0;
         // Make sure this specific contact has image by checking if the PHOTO_ID column is not null
         if (cursor.moveToFirst()
                 && !cursor.isNull(cursor.getColumnIndex(ContactsContract.Contacts.PHOTO_ID))){
 
-            long id;
-            id = cursor.getLong(cursor.getColumnIndex(ContactsContract.Contacts.PHOTO_ID));
+
+            id = cursor.getInt(cursor.getColumnIndex(ContactsContract.Contacts.PHOTO_ID));
 
             /**http://developer.android.com/reference/android/provider/ContactsContract.ContactsColumns.html#PHOTO_ID
              * If PHOTO_ID is null, consult PHOTO_URI or PHOTO_THUMBNAIL_URI,
@@ -382,21 +382,10 @@ public class ContactManager extends BaseManager {
              * especially for contacts returned by non-local directories (see ContactsContract.Directory).
              */
 
-            if (id == 0){
-                if (Build.VERSION.SDK_INT < 11){
-                    return Uri.EMPTY;
-                }
-
-                // Return the data uri according to thumbnail of the contact
-                return getPhotoThumbnailUri(idContact, contactUri);
-            }
-
-            // Return the data uri according to photo of the contact
-            return ContentUris.withAppendedId(ContactsContract.Data.CONTENT_URI, id);
         }
 
         cursor.close();
-        return Uri.EMPTY;
+        return id;
     }
 
 
@@ -451,28 +440,7 @@ public class ContactManager extends BaseManager {
     }
     */
 
-    /*
-    public List<MyInstantMessenger> requestInstantMessenger(String idContact) {
-        String[] columns = { Contacts.ContactMethodsColumns.DATA, Contacts.ContactMethodsColumns.TYPE };
-        String imWhere = Contacts.ContactMethods.PERSON_ID + " = ? AND "
-                + Contacts.ContactMethods.KIND + " = ?";
-        String[] imWhereParams = new String[] { idContact,
-                Integer.toString(Contacts.KIND_IM) };
-        Cursor imCur = mContentResolver.query(Contacts.ContactMethods.CONTENT_URI, columns,
-                imWhere, imWhereParams, null);
-        List<MyInstantMessenger> instantMessengers = new ArrayList<MyInstantMessenger>();
-        MyInstantMessenger im;
-        String imName;
-        String imType;
-        if (imCur.moveToFirst()) {
-            imName = imCur.getString(imCur.getColumnIndex(Contacts.ContactMethodsColumns.DATA));
-            imType = imCur.getString(imCur.getColumnIndex(Contacts.ContactMethodsColumns.TYPE));
-            im = new MyInstantMessenger(imName, imType);
-            instantMessengers.add(im);
-        }
-        imCur.close();
-        return instantMessengers;
-    }
 
-    */
+
+
 }

@@ -46,7 +46,6 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
 
         if (netInfo != null) {
 
-            // TODO: When internet is available - learn more about connection type
             if (netInfo.isConnected()) {
                 mConnectionStatus = netInfo.getType();
             } else {

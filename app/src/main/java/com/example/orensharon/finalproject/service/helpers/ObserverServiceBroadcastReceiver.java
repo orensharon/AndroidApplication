@@ -1,14 +1,21 @@
 package com.example.orensharon.finalproject.service.helpers;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.view.View;
+import android.widget.Button;
+import android.widget.RelativeLayout;
 
+import com.example.orensharon.finalproject.R;
 import com.example.orensharon.finalproject.gui.settings.SettingsActivity;
 import com.example.orensharon.finalproject.gui.settings.SettingsFragment;
 import com.example.orensharon.finalproject.service.ObserverService;
 
-// TODO: Service to update UI - is this the right approach?
+
 
 /**
  * Created by orensharon on 12/11/14.
@@ -17,12 +24,13 @@ import com.example.orensharon.finalproject.service.ObserverService;
  */
 public class ObserverServiceBroadcastReceiver extends BroadcastReceiver {
 
-    private Context mMainContext;
+    private Context mContext;
+
 
     public ObserverServiceBroadcastReceiver(Context context) {
 
 
-        mMainContext = context;
+        mContext = context;
     }
     public void onReceive(Context context, Intent intent) {
 
@@ -36,7 +44,7 @@ public class ObserverServiceBroadcastReceiver extends BroadcastReceiver {
         String message;
 
         SettingsActivity activity;
-        activity = (SettingsActivity)mMainContext;
+        activity = (SettingsActivity) mContext;
 
         SettingsFragment settingsFragment =
                 (SettingsFragment)activity.getSupportFragmentManager().findFragmentByTag("SETTINGS_FRAGMENT");
@@ -45,13 +53,15 @@ public class ObserverServiceBroadcastReceiver extends BroadcastReceiver {
         // Determine which kind of message the service send
         typeOfMessage = intent.getIntExtra(ObserverService.TYPE_OF_MESSAGE_FROM_SERVICE_KEY, 0);
         message = intent.getStringExtra(ObserverService.EXTRA_MESSAGE_FROM_SERVICE_KEY);
+        Button syncNowButton = (Button) activity.findViewById(R.id.sync_now_button);
+        RelativeLayout syncNowButtonContainer = (RelativeLayout) activity.findViewById(R.id.sync_now_button_container);
 
         switch (typeOfMessage) {
 
             case ObserverService.MESSAGE_FROM_SERVICE_ERROR:
                 // Get the error code
                 code = intent.getIntExtra(ObserverService.ERROR_CODE_FROM_SERVICE_KEY, 0);
-                if (code != 0 ) {
+                if (code != 0) {
                     if (settingsFragment != null) {
 
                     }
@@ -60,22 +70,37 @@ public class ObserverServiceBroadcastReceiver extends BroadcastReceiver {
 
             case ObserverService.MESSAGE_FROM_SERVICE_PROGRESS:
                 code = intent.getIntExtra(ObserverService.PROGRESS_CODE_FROM_SERVICE_KEY, 0);
-                if (code == ObserverService.SYNC_DONE || code == ObserverService.SYNC_MIGHT_DONE_WITH_ERROR) {
 
-                    // TODO: check all other lists
-
+                if (code == ObserverService.SYNC_START) {
+                    // The sync is started
                     if (settingsFragment != null) {
-                        // Hide Progress Dialog
+
+                        syncNowButtonContainer.setVisibility(View.GONE);
 
                     }
                 }
+
+                if (code == ObserverService.SYNC_DONE) {
+
+
+                    if (settingsFragment != null) {
+
+                    }
+                }
+                if (code == ObserverService.SYNC_ERROR) {
+
+
+                    if (settingsFragment != null) {
+                        syncNowButtonContainer.setVisibility(View.VISIBLE);
+                    }
+                }
+
+
                 break;
         }
-
-
-
-
-
-
     }
+
+
+
+
 }

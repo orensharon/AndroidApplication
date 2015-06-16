@@ -7,17 +7,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.orensharon.finalproject.R;
-import com.example.orensharon.finalproject.gui.RoundedImageView;
-import com.example.orensharon.finalproject.logic.CustomPicasso;
-import com.squareup.picasso.Callback;
 
-/**
- * Created by orensharon on 5/3/15.
- */
 public class FeedContactAdapter extends ArrayAdapter<FeedContactItem> {
 
     private Context mContext;
@@ -37,7 +30,7 @@ public class FeedContactAdapter extends ArrayAdapter<FeedContactItem> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        FeedItemHolder holder = null;
+        FeedItemHolder holder;
 
 
         if(convertView == null)
@@ -46,7 +39,7 @@ public class FeedContactAdapter extends ArrayAdapter<FeedContactItem> {
             convertView = inflater.inflate(mLayoutInflater, parent, false);
 
             holder = new FeedItemHolder();
-            holder.imageIcon = (RoundedImageView)convertView.findViewById(R.id.icon);
+            holder.imageIcon = (ImageView)convertView.findViewById(R.id.icon);
             holder.textTitle = (TextView)convertView.findViewById(R.id.contact_name_text_view);
             //holder.textScore = (TextView)convertView.findViewById(R.id.score);
 
@@ -66,9 +59,13 @@ public class FeedContactAdapter extends ArrayAdapter<FeedContactItem> {
         return convertView;
     }
 
+    public FeedContactItem getData(int i) {
+        return data[i];
+    }
+
     static class FeedItemHolder
     {
-        RoundedImageView imageIcon;
+        ImageView imageIcon;
         TextView textTitle;
         //TextView textScore;
     }

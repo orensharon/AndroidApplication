@@ -2,8 +2,10 @@ package com.example.orensharon.finalproject.gui.feed.sections.containers;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.orensharon.finalproject.R;
 import com.example.orensharon.finalproject.gui.feed.sections.Photos;
@@ -16,6 +18,7 @@ public class ContainerPhotosFragment extends BaseContainerFragment {
 
     private boolean mIsViewInited;
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -23,6 +26,18 @@ public class ContainerPhotosFragment extends BaseContainerFragment {
 
 
         return view;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+        if (id == R.id.action_refresh) {
+            initView();
+
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

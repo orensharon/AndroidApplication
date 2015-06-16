@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTabHost;
 import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,6 +16,9 @@ import android.widget.TextView;
 
 import com.example.orensharon.finalproject.R;
 import com.example.orensharon.finalproject.gui.IFragment;
+import com.example.orensharon.finalproject.gui.feed.sections.containers.BaseContainerFragment;
+import com.example.orensharon.finalproject.gui.feed.sections.containers.ContainerContactsFragment;
+import com.example.orensharon.finalproject.gui.feed.sections.containers.ContainerPhotosFragment;
 import com.example.orensharon.finalproject.gui.settings.SettingsActivity;
 
 /**
@@ -24,6 +28,34 @@ import com.example.orensharon.finalproject.gui.settings.SettingsActivity;
  */
 public class FeedActivity extends FragmentActivity implements IFragment {
 
+    // Tabs fields
+    private FragmentTabHost mTabHost;
+    private static final String FEED_PHOTOS = "photos";
+    private static final String FEED_CONTACTS = "contacts";
+
+    public enum Tabs {
+
+        PHOTOS(FEED_PHOTOS, ContainerPhotosFragment.class),
+        CONTACTS(FEED_CONTACTS, ContainerContactsFragment.class);
+
+        private String mTabString;
+        private Class mClass;
+
+        private Tabs(String str, Class cls) {
+            this.mTabString = str;
+            this.mClass = cls;
+        }
+
+        public String getTabString() { return mTabString; }
+
+        public Class getTabClass() { return mClass; }
+    }
+
+
+
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +64,7 @@ public class FeedActivity extends FragmentActivity implements IFragment {
 
         createCustomActionBarTitle();
 
-        LoadFragment(new TabContainerFragment(), "FEED_MANAGER_FRAGMENT", false);
+        initView();
 
 
     }
@@ -116,12 +148,48 @@ public class FeedActivity extends FragmentActivity implements IFragment {
         actionBarTitleView.setTextColor(Color.WHITE);
         Typeface font = Typeface.createFromAsset(getAssets(), "fonts/LHANDW.TTF");
 
-        if(actionBarTitleView != null){
-            actionBarTitleView.setTypeface(font);
-        }
+        //if(actionBarTitleView != null){
+        actionBarTitleView.setTypeface(font);
+        //}
 
     }
 
+    private void initView() {
+        AddTabs();
+    }
+
+    private void AddTabs() {
+
+        // Adding the tabs
+        mTabHost = (FragmentTabHost) findViewById(android.R.id.tabhost);
+        mTabHost.setup(this, getSupportFragmentManager(), android.R.id.tabcontent);
+
+        // Adding each tab
+        for (Tabs tab : Tabs.values()) {
+
+            String tabString;
+            tabString = tab.getTabString();
+
+            mTabHost.addTab(
+                    mTabHost.newTabSpec(tabString).setIndicator(tabString, null),
+                    tab.getTabClass(), null);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        boolean isPopFragment = false;
+        String currentTabTag = mTabHost.getCurrentTabTag();
+        if (currentTabTag.equals(FEED_PHOTOS)) {
+            isPopFragment = ((BaseContainerFragment)getSupportFragmentManager().findFragmentByTag(FEED_PHOTOS)).popFragment();
+        } else if (currentTabTag.equals(FEED_CONTACTS)) {
+            isPopFragment = ((BaseContainerFragment)getSupportFragmentManager().findFragmentByTag(FEED_CONTACTS)).popFragment();
+        }
+
+        if (!isPopFragment) {
+            finish();
+        }
+    }
 
 
 }

@@ -12,74 +12,90 @@ import java.util.List;
  */
 public class ContentBL {
 
-    private ContentDAL mHistoryDAL;
+    private ContentDAL mContentBL;
 
     public ContentBL(Context context) {
 
-        mHistoryDAL = new ContentDAL(context);
+        mContentBL = new ContentDAL(context);
     }
 
     public void InsertContent(BaseObject baseObject) {
-        mHistoryDAL.InsertContent(baseObject.getTypeOfContent(), baseObject.getId(), baseObject.getChecksum());
+        mContentBL.InsertContent(baseObject.getTypeOfContent(),
+                baseObject.getId(), baseObject.getChecksum());
     }
 
     public void DeleteContent(String type, int id) {
-        mHistoryDAL.DeleteContent(type, id);
+        mContentBL.DeleteContent(type, id);
     }
 
     public void CancelAllInSync(String type) {
-        mHistoryDAL.CancelAllInSync(type);
+        mContentBL.CancelAllInSync(type);
     }
 
     public void setInSync(int id, boolean flag, String type) {
-        mHistoryDAL.setInSync(id, flag, type);
+        mContentBL.setInSync(id, flag, type);
     }
 
 
 
     public void setChecksum(int id, String checksum, String type) {
-        mHistoryDAL.setChecksum(id, checksum, type);
+        mContentBL.setChecksum(id, checksum, type);
     }
     public void setReturnedError(int id, boolean flag, String type) {
-        mHistoryDAL.setReturnedError(id, flag, type);
+        mContentBL.setReturnedError(id, flag, type);
     }
 
     public void setSynced(int id, boolean flag, String type) {
-        mHistoryDAL.setSynced(id, flag, type);
+        mContentBL.setSynced(id, flag, type);
     }
 
+    public void setDateModified(int id, long timeStamp, String type) {
+        mContentBL.setDateModified(id, timeStamp, type);
+    }
+
+    public void setDirty(int id, boolean flag, String type) {
+        mContentBL.setDirty(id, flag, type);
+    }
+
+    public boolean getDirty(int id, String type) {
+        return mContentBL.getDirty(id,type);
+    }
+
+    public DBContent getById(int id,String type) {
+        return mContentBL.getById(id, type);
+    }
     public DBContent getNextInSync(String type) {
-        return mHistoryDAL.getNextToSync(type);
+        return mContentBL.getNextToSync(type);
     }
 
     public int getLastIDByContentType(String type) {
-        return mHistoryDAL.getLastIDByContentType(type);
+        return mContentBL.getLastIDByContentType(type);
     }
 
 
     public DBContent isContentExist(String type, int id) {
-        return mHistoryDAL.getContentIfExist(type, id);
+        return mContentBL.getContentIfExist(type, id);
     }
 
 
     public List<DBContent> getAllContents(String type) {
-        return mHistoryDAL.getAllContents(type);
+        return mContentBL.getAllContents(type);
     }
 
     public List<DBContent> getAllUnsyncedContents(String type) {
-        return mHistoryDAL.getAllUnsyncedContents(type);
+        return mContentBL.getAllUnsyncedContents(type);
     }
     /*
     public List<Integer> getAllErrorContents(String type) {
-        return mHistoryDAL.getAllErrorContents(type);
+        return mContentBL.getAllErrorContents(type);
     }
 
     public List<Integer> getAllInSyncContents(String type) {
-        return mHistoryDAL.getAllInSyncContents(type);
+        return mContentBL.getAllInSyncContents(type);
     }
 
     public List<Integer> getAllSyncedContents(String type) {
-        return mHistoryDAL.getAllSyncedContents(type);
+        return mContentBL.getAllSyncedContents(type);
     }
 
     */

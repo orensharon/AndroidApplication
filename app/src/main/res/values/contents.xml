@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="contenttypes" translatable="false">
-        <item>Phone book</item>
+        <item>Contacts</item>
         <item>Photos</item>
-        <item>Videos</item>
-        <item>Call history</item>
-        <item>Calendar</item>
-        <item>SMS messages</item>
     </string-array>
 </resources>

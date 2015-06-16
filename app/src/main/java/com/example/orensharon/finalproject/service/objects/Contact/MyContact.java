@@ -22,10 +22,9 @@ public class MyContact extends BaseObject {
     private List<MyPhone> mPhones;
     private List<MyEmail> mEmails;
     private List<MyAddress> mAddresses;
-    private List<MyInstantMessenger> mInstantMessengers;
     private MyOrganization mOrganization;
     private MyNotes mNotes;
-    private Uri mPhotoUri;
+    private int mPhotoId;
 
 
 
@@ -74,14 +73,6 @@ public class MyContact extends BaseObject {
         this.mAddresses = addresses;
     }
 
-    public List<MyInstantMessenger> getInstantMessengers() {
-        return mInstantMessengers;
-    }
-
-    public void setInstantMessengers(List<MyInstantMessenger> instantMessengers) {
-        this.mInstantMessengers = instantMessengers;
-    }
-
     public MyOrganization getOrganization() {
         return mOrganization;
     }
@@ -90,12 +81,12 @@ public class MyContact extends BaseObject {
         this.mOrganization = organization;
     }
 
-    public Uri getPhotoUri() {
-        return mPhotoUri;
+    public int getPhotoId() {
+        return mPhotoId;
     }
 
-    public void setPhoto(Uri photo) {
-        this.mPhotoUri = photo;
+    public void setPhoto(int photo) {
+        this.mPhotoId = photo;
     }
 
 
@@ -103,9 +94,8 @@ public class MyContact extends BaseObject {
     @Override
     public String toString() {
         return "MyContact [id=" + getId() + ", display name=" + mDisplayName
-                + ", photo uri=" + mPhotoUri.toString() + ", phones=" + mPhones
+                + ", photo id=" + mPhotoId + ", phones=" + mPhones
                 + ", emails=" + mEmails + ", addresses=" + mAddresses
-                + ", instantMessengers=" + mInstantMessengers
                 + ", organization=" + mOrganization + ", notes=" + mNotes + "]";
     }
 
@@ -114,11 +104,11 @@ public class MyContact extends BaseObject {
         // From class members building JSON object and returns it
 
         JSONObject jsonObject = new JSONObject();
-        // TODO: enum
+
         try {
             jsonObject.put(ApplicationConstants.CONTACT_ID_KEY, getId());
             jsonObject.put(ApplicationConstants.CONTACT_DISPLAY_NAME_KEY, mDisplayName);
-            jsonObject.put(ApplicationConstants.CONTACT_PHOTO_URI_KEY, mPhotoUri.toString());
+            jsonObject.put(ApplicationConstants.CONTACT_PHOTO_URI_KEY, mPhotoId);
 
             // Add list of phones
             JSONArray phones = new JSONArray();
@@ -154,17 +144,6 @@ public class MyContact extends BaseObject {
             }
             jsonObject.put(ApplicationConstants.CONTACT_ADDRESSES_KEY, addresses);
 
-            // Add list of instant messengers
-            JSONArray instantMessengers = new JSONArray();
-
-            if (mInstantMessengers != null) {
-                for (MyInstantMessenger im : mInstantMessengers) {
-                    JSONObject singleIM = new JSONObject(im.toJSONString());
-                    instantMessengers.put(singleIM);
-                }
-            }
-            jsonObject.put(ApplicationConstants.CONTACT_INSTANT_MESSENGERS_KEY, instantMessengers);
-
             if (mOrganization != null) {
                 jsonObject.put(ApplicationConstants.CONTACT_ORGANIZATION_KEY, mOrganization.toJSONObject());
             }
@@ -175,7 +154,7 @@ public class MyContact extends BaseObject {
             return jsonObject;
         } catch (JSONException e) {
             e.printStackTrace();
-            // TODO: means error building json object from data from db
+
             return null;
         }
     }

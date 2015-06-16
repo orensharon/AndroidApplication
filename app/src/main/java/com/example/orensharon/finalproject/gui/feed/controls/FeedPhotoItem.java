@@ -7,18 +7,20 @@ public class FeedPhotoItem {
 
     private int mID;
     private String mPhoto;
-    private String mDateCreated;
+    private long mDateCreated;
+    private String mGeoLocation;
 
     public FeedPhotoItem() {
         super();
     }
 
-    public FeedPhotoItem(int id, String photo, String dateCreated) {
+    public FeedPhotoItem(int id, String photo, String dateCreated, String geoLocation) {
         super();
 
         mID = id;
         mPhoto = photo;
-        mDateCreated = dateCreated;
+        mDateCreated = Long.parseLong(dateCreated);
+        mGeoLocation = geoLocation;
     }
 
     public int getID() {
@@ -29,6 +31,8 @@ public class FeedPhotoItem {
         return mPhoto;
     }
 
-    public String getDateCreated() { return mDateCreated; }
+    public long getDateCreated() { return mDateCreated; }
+
+    public String getGeoLocation() { return mGeoLocation; }
 
 }

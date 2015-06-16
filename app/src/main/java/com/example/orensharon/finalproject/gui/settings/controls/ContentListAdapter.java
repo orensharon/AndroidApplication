@@ -1,6 +1,7 @@
 package com.example.orensharon.finalproject.gui.settings.controls;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.orensharon.finalproject.R;
+import com.example.orensharon.finalproject.service.ObserverService;
 import com.example.orensharon.finalproject.sessions.SettingsSession;
 
 import java.util.ArrayList;
@@ -37,6 +39,7 @@ public class ContentListAdapter extends BaseAdapter {
 
         mLayoutInflater = (LayoutInflater) mContext
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
     }
 
     @Override
@@ -102,10 +105,11 @@ public class ContentListAdapter extends BaseAdapter {
 
         // Set the checkbox and its listener
         final CheckBox checkBox = (CheckBox) view.findViewById(R.id.list_view_check_box);
-        checkBox.setOnCheckedChangeListener(myCheckChangList);
 
         checkBox.setTag(position);
+        checkBox.setEnabled(mSettingsSession.getServiceIsEnabledByUser());
         checkBox.setChecked(mSettingsSession.getUserContentItem(c.getTitle()));
+        checkBox.setOnCheckedChangeListener(myCheckChangList);
 
     }
 
@@ -118,11 +122,32 @@ public class ContentListAdapter extends BaseAdapter {
                                      boolean isChecked) {
 
             Content content;
+            CheckBox myCheckBox = (CheckBox)buttonView;
 
-            content = getContent((Integer) buttonView.getTag());
-            mSettingsSession.setUserContentItem(content.getTitle(), isChecked);
+            if (myCheckBox.isPressed()) {
+                content = getContent((Integer) buttonView.getTag());
+                mSettingsSession.setUserContentItem(content.getTitle(), isChecked);
+                updateObservingService();
+            }
         }
     };
+
+    private void updateObservingService() {
+
+        // Creating an intent with the selected values of the user
+        Intent ServiceIntent;
+        ServiceIntent = new Intent(mContext.getApplicationContext(), ObserverService.class);
+
+
+        // Service will start once, any call after that will only send
+        // the intent to communicate with the service this way
+        mContext.getApplicationContext().startService(ServiceIntent);
+
+
+    }
+
+
+
 }
 
 

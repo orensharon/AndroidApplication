@@ -6,17 +6,19 @@ package com.example.orensharon.finalproject.gui.feed.controls;
 public class FeedContactItem {
 
     private int mID;
-    private String mDisplayName;
+    private String mDisplayName, mData;
 
     public FeedContactItem() {
         super();
     }
 
-    public FeedContactItem(int id, String displayName) {
+    public FeedContactItem(int id, String displayName, String data) {
         super();
 
         mID = id;
         mDisplayName = displayName;
+        mData = data;
+
     }
 
     public int getID() {
@@ -25,6 +27,9 @@ public class FeedContactItem {
 
     public String getDisplayName() {
         return mDisplayName;
+    }
+    public String getData() {
+        return mData;
     }
 
 }

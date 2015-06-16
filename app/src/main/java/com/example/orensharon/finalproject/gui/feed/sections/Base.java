@@ -19,9 +19,6 @@ import com.example.orensharon.finalproject.utils.IPAddressValidator;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-/**
- * Created by orensharon on 5/23/15.
- */
 public class Base extends Fragment {
 
     protected SystemSession mSystemSession;
@@ -107,7 +104,7 @@ public class Base extends Fragment {
                                     // Request safe IP
                                     if (ipRequestRetriesCount > 0) {
 
-                                        RequestSafeIP(reqResponse, url);
+                                        RequestSafeIP(reqResponse, apiSuffix);
                                     }
                                 } else if (errorMessage.contains("connectivity")) {
                                     // mProgressBar.setVisibility( View.GONE );
@@ -130,14 +127,17 @@ public class Base extends Fragment {
     protected void ShowErrorMessage(String message, int icon) {
         Message fragment = new Message();
         Bundle bundle = new Bundle();
-        bundle.putString("section",getParentFragment().getTag().toString());
-        bundle.putString("message",message);
-        bundle.putInt("icon", icon);
 
-        fragment.setArguments(bundle);
+        if (getParentFragment().getTag() != null) {
+            bundle.putString("section", getParentFragment().getTag().toString());
+            bundle.putString("message", message);
+            bundle.putInt("icon", icon);
+
+            fragment.setArguments(bundle);
 
 
-        ((BaseContainerFragment)getParentFragment()).replaceFragment(fragment, "message", true);
+            ((BaseContainerFragment) getParentFragment()).replaceFragment(fragment, "message", false);
+        }
     }
 
     protected void RequestSafeIP(final Response.Listener reqResponse, final String api) {

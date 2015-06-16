@@ -5,24 +5,10 @@
     android:id="@+id/fragment_settings_container"
     style="@style/body">
 
-    <!-- Network status row
-    <RelativeLayout
-        style="@style/activity_row">
-
-        <TextView
-            android:id="@+id/text_view_system_status_title"
-            style="@style/row_title"
-            android:text="Network status:" />
-
-        <TextView
-            style="@style/row_value"
-            android:text="Online"
-            android:textColor="@color/online"/>
-    </RelativeLayout>-->
-    <!-- unsynced items row -->
     <RelativeLayout
         style="@style/activity_row"
-        android:gravity="center">
+        android:gravity="center"
+        android:id="@+id/sync_now_button_container">
 
         <Button
             android:layout_width="match_parent"

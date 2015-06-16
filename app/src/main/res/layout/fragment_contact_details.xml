@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/color_blue_1">
+
+    <LinearLayout
+        android:layout_height="fill_parent"
+        android:layout_width="fill_parent"
+        android:orientation="vertical"
+        android:layout_gravity="center_horizontal">
+
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="24dp"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:paddingTop="24dp"
+            android:orientation="horizontal">
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:layout_weight="0.3">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/icon_person"
+                    android:id="@+id/contact_icon_image_view" />
+            </RelativeLayout>
+
+            <TextView
+
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:id="@+id/contact_name_value_text_view"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="0.7"
+                android:textSize="24sp"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:orientation="horizontal"
+            android:background="@color/color_blue_0">
+
+            <TextView
+                style="@style/text_item"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="0.3"
+                android:id="@+id/contact_phones_text_view"
+                android:textSize="14sp"
+                android:text="Phones:"/>
+
+            <TextView
+
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="0.7"
+                android:id="@+id/contact_phones_value_text_view"
+                android:textSize="14sp"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:orientation="horizontal"
+            android:background="@color/color_blue_0">
+
+            <TextView
+                style="@style/text_item"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="0.3"
+                android:id="@+id/contact_emails_text_view"
+                android:textSize="14sp"
+                android:text="Emails:"/>
+
+            <TextView
+
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="0.7"
+                android:id="@+id/contact_emails_value_text_view"
+                android:textSize="14sp"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:orientation="horizontal"
+            android:background="@color/color_blue_0">
+
+            <TextView
+                style="@style/text_item"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="0.3"
+                android:id="@+id/contact_addresses_text_view"
+                android:textSize="14sp"
+                android:text="Addresses:"/>
+
+            <TextView
+
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="0.7"
+                android:id="@+id/contact_addresses_value_text_view"
+                android:textSize="14sp"
+                />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:orientation="horizontal"
+            android:background="@color/color_blue_0">
+
+            <TextView
+                style="@style/text_item"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="0.3"
+                android:id="@+id/contact_organization_text_view"
+                android:textSize="14sp"
+                android:text="Organization:"/>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="0.7"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="0.35"
+                        android:id="@+id/contact_organization_company_text_view"
+                        android:textSize="14sp"
+                        android:text="Company:"/>
+
+                    <TextView
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="0.65"
+                        android:id="@+id/contact_organization_company_value_text_view"
+                        android:textSize="14sp"
+                        />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="0.35"
+                        android:id="@+id/contact_organization_title_text_view"
+                        android:textSize="14sp"
+                        android:text="Title:"/>
+
+                    <TextView
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="0.65"
+                        android:id="@+id/contact_organization_title_value_text_view"
+                        android:textSize="14sp"
+                        />
+
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:orientation="horizontal"
+            android:background="@color/color_blue_0">
+
+            <TextView
+                style="@style/text_item"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="0.3"
+                android:id="@+id/contact_notes_text_view"
+                android:textSize="14sp"
+                android:text="Notes:"/>
+
+            <TextView
+
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="0.7"
+                android:id="@+id/contact_notes_value_text_view"
+                android:textSize="14sp"
+                android:text=""/>
+
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

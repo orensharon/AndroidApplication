@@ -47,6 +47,11 @@ public class BaseContainerFragment extends Fragment {
 
     private IFragment mListener;
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
 
     @Override
     public void onAttach(Activity activity) {
@@ -69,7 +74,7 @@ public class BaseContainerFragment extends Fragment {
     }
 
     public boolean popFragment() {
-        Log.e("test", "pop fragment: " + getChildFragmentManager().getBackStackEntryCount());
+
         boolean isPop = false;
         if (getChildFragmentManager().getBackStackEntryCount() > 0) {
             isPop = true;

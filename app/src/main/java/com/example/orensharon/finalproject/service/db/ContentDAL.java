@@ -15,6 +15,8 @@ import java.util.List;
  */
 public class ContentDAL extends SQLiteOpenHelper {
 
+
+
     public class DBConstants {
 
         public static final String TABLE_NAME = "Contents";
@@ -25,6 +27,9 @@ public class ContentDAL extends SQLiteOpenHelper {
         public static final String COLUMN_SYNCED = "synced";
         public static final String COLUMN_IS_SYNCING = "is_syncing";
         public static final String COLUMN_IS_RETURNED_ERROR = "is_returned_error";
+        public static final String COLUMN_IS_DIRTY = "is_dirty";
+        public static final String COLUMN_DATE_CREATED = "date_created";
+        public static final String COLUMN_DATE_MODIFIED = "date_modified";
     }
 
     private SQLiteDatabase mDB;
@@ -48,7 +53,10 @@ public class ContentDAL extends SQLiteOpenHelper {
                         DBConstants.COLUMN_CHECKSUM + " TEXT_TYPE," +
                         DBConstants.COLUMN_SYNCED +" INTEGER,"+
                         DBConstants.COLUMN_IS_SYNCING +" INTEGER,"+
-                        DBConstants.COLUMN_IS_RETURNED_ERROR +" INTEGER)"
+                        DBConstants.COLUMN_IS_RETURNED_ERROR +" INTEGER,"+
+                        DBConstants.COLUMN_IS_DIRTY +" INTEGER,"+
+                        DBConstants.COLUMN_DATE_CREATED +" LONG,"+
+                        DBConstants.COLUMN_DATE_MODIFIED +" LONG)"
         );
 
     }
@@ -78,7 +86,9 @@ public class ContentDAL extends SQLiteOpenHelper {
             values.put(DBConstants.COLUMN_SYNCED, 0);
             values.put(DBConstants.COLUMN_IS_SYNCING, 0);
             values.put(DBConstants.COLUMN_IS_RETURNED_ERROR, 0);
-
+            values.put(DBConstants.COLUMN_IS_DIRTY, 0);
+            values.put(DBConstants.COLUMN_DATE_CREATED, System.currentTimeMillis());
+            values.put(DBConstants.COLUMN_DATE_MODIFIED, System.currentTimeMillis());
 
             mDB = getWritableDatabase();
             mDB.insertOrThrow(DBConstants.TABLE_NAME, null, values);
@@ -100,7 +110,7 @@ public class ContentDAL extends SQLiteOpenHelper {
     public void CancelAllInSync(String type) {
         mDB  = this.getWritableDatabase();
 
-        mDB.execSQL("UPDATE " + DBConstants.TABLE_NAME + " SET "+
+        mDB.execSQL("UPDATE " + DBConstants.TABLE_NAME + " SET " +
                 DBConstants.COLUMN_IS_SYNCING + " = 0 " +
                 " WHERE " + DBConstants.COLUMN_TYPE + " = '" + type + "'");
 
@@ -116,7 +126,7 @@ public class ContentDAL extends SQLiteOpenHelper {
 
         mDB  = this.getWritableDatabase();
 
-        mDB.execSQL("UPDATE " + DBConstants.TABLE_NAME + " SET "+
+        mDB.execSQL("UPDATE " + DBConstants.TABLE_NAME + " SET " +
                 DBConstants.COLUMN_IS_SYNCING + " = " + value +
                 " WHERE " + DBConstants.COLUMN_TYPE + " = '" + type +
                 "' AND " + DBConstants.COLUMN_ID + " = '" + id + "'");
@@ -130,7 +140,7 @@ public class ContentDAL extends SQLiteOpenHelper {
 
         mDB  = this.getWritableDatabase();
 
-        mDB.execSQL("UPDATE " + DBConstants.TABLE_NAME + " SET "+
+        mDB.execSQL("UPDATE " + DBConstants.TABLE_NAME + " SET " +
                 DBConstants.COLUMN_CHECKSUM + " = " + checksum +
                 " WHERE " + DBConstants.COLUMN_TYPE + " = '" + type +
                 "' AND " + DBConstants.COLUMN_ID + " = '" + id + "'");
@@ -144,7 +154,7 @@ public class ContentDAL extends SQLiteOpenHelper {
 
         mDB  = this.getWritableDatabase();
 
-        mDB.execSQL("UPDATE " + DBConstants.TABLE_NAME + " SET "+
+        mDB.execSQL("UPDATE " + DBConstants.TABLE_NAME + " SET " +
                 DBConstants.COLUMN_IS_RETURNED_ERROR + " = " + value +
                 " WHERE " + DBConstants.COLUMN_TYPE + " = '" + type +
                 "' AND " + DBConstants.COLUMN_ID + " = '" + id + "'");
@@ -158,14 +168,40 @@ public class ContentDAL extends SQLiteOpenHelper {
 
         mDB  = this.getWritableDatabase();
 
-        mDB.execSQL("UPDATE " + DBConstants.TABLE_NAME + " SET "+
+        mDB.execSQL("UPDATE " + DBConstants.TABLE_NAME + " SET " +
                 DBConstants.COLUMN_SYNCED + " = " + value +
                 " WHERE " + DBConstants.COLUMN_TYPE + " = '" + type +
-                "' AND " + DBConstants.COLUMN_ID + " = '" + id +"'");
+                "' AND " + DBConstants.COLUMN_ID + " = '" + id + "'");
 
         mDB.close();
     }
 
+    public void setDirty(int id, boolean flag, String type) {
+        int value;
+        value = ((flag) ? 1 : 0);
+
+        mDB  = this.getWritableDatabase();
+
+        mDB.execSQL("UPDATE " + DBConstants.TABLE_NAME + " SET " +
+                DBConstants.COLUMN_IS_DIRTY + " = " + value +
+                " WHERE " + DBConstants.COLUMN_TYPE + " = '" + type +
+                "' AND " + DBConstants.COLUMN_ID + " = '" + id + "'");
+
+        mDB.close();
+    }
+
+    public void setDateModified(int id, long timeStamp, String type) {
+
+
+        mDB  = this.getWritableDatabase();
+
+        mDB.execSQL("UPDATE " + DBConstants.TABLE_NAME + " SET " +
+                DBConstants.COLUMN_DATE_MODIFIED + " = " + timeStamp +
+                " WHERE " + DBConstants.COLUMN_TYPE + " = '" + type +
+                "' AND " + DBConstants.COLUMN_ID + " = '" + id + "'");
+
+        mDB.close();
+    }
 
     // ID Getters
     public DBContent getNextToSync(String type) {
@@ -194,7 +230,47 @@ public class ContentDAL extends SQLiteOpenHelper {
                         cursor.getString(2),
                         ((cursor.getInt(3) == 1)),
                         ((cursor.getInt(4) == 1)),
-                        ((cursor.getInt(5) == 1)));
+                        ((cursor.getInt(5) == 1)),
+                        ((cursor.getInt(6) == 1)),
+                        cursor.getLong(7),
+                        cursor.getLong(8));
+            }
+            cursor.close();
+        }
+
+        mDB.close();
+
+        return result;
+    }
+
+    public DBContent getById(int id,String type) {
+
+        DBContent result = null;
+
+        Cursor cursor;
+
+        mDB = getReadableDatabase();
+        cursor = mDB.rawQuery(
+                "SELECT * " +
+                        " FROM "+ DBConstants.TABLE_NAME +
+                        " WHERE " + DBConstants.COLUMN_TYPE + " = '" + type +
+                        "' AND " + DBConstants.COLUMN_ID + " = '" + id + "'"
+                ,null
+        );
+
+        if (cursor != null) {
+            // Make sure the query is not empty result
+            if (cursor.getCount() > 0 && cursor.moveToNext()) {
+
+                result = new DBContent(cursor.getInt(0),
+                        cursor.getString(1),
+                        cursor.getString(2),
+                        ((cursor.getInt(3) == 1)),
+                        ((cursor.getInt(4) == 1)),
+                        ((cursor.getInt(5) == 1)),
+                        ((cursor.getInt(6) == 1)),
+                        cursor.getLong(7),
+                        cursor.getLong(8));
             }
             cursor.close();
         }
@@ -263,6 +339,36 @@ public class ContentDAL extends SQLiteOpenHelper {
     }
 
 
+    public boolean getDirty(int id, String type) {
+
+        Cursor cursor;
+        boolean result = false;
+
+        mDB = getReadableDatabase();
+        cursor = mDB.rawQuery(
+                "SELECT " + DBConstants.COLUMN_IS_DIRTY +
+                        " FROM " + DBConstants.TABLE_NAME +
+                        " WHERE " + DBConstants.COLUMN_TYPE + " = '" + type + "'" +
+                        " AND " + DBConstants.COLUMN_ID + " = '" + id + "'"
+                ,null
+        );
+
+        if (cursor != null) {
+            // Make sure the query is not empty result
+            if (cursor.moveToNext()) {
+
+                result = cursor.getInt(0) == 1;
+
+            }
+
+            cursor.close();
+        }
+
+        mDB.close();
+
+        return result;
+
+    }
 
 
     public List<DBContent> getAllContents(String type) {
@@ -291,7 +397,10 @@ public class ContentDAL extends SQLiteOpenHelper {
                         cursor.getString(2),
                         ((cursor.getInt(3) == 1)),
                         ((cursor.getInt(4) == 1)),
-                        ((cursor.getInt(5) == 1)));
+                        ((cursor.getInt(5) == 1)),
+                        ((cursor.getInt(6) == 1)),
+                        cursor.getLong(7),
+                        cursor.getLong(8));
 
                 result.add(dbContent);
             }
@@ -333,7 +442,10 @@ public class ContentDAL extends SQLiteOpenHelper {
                         cursor.getString(2),
                         ((cursor.getInt(3) == 1)),
                         ((cursor.getInt(4) == 1)),
-                        ((cursor.getInt(5) == 1)));
+                        ((cursor.getInt(5) == 1)),
+                        ((cursor.getInt(6) == 1)),
+                        cursor.getLong(7),
+                        cursor.getLong(8));
 
                 result.add(dbContent);
 

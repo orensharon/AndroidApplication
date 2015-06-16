@@ -49,7 +49,7 @@ public class MyJsonRequest extends JsonRequest<String> {
             headers = new HashMap<String, String>();
         }
 
-        // TODO: prevent from login request, ip get request from hash functioning
+        // Inserting MD5 content hash parameter
         String localHash = MD5Checksum.getMd5Hash(mBody);
 
         //headers.put("Accept", "application/json");

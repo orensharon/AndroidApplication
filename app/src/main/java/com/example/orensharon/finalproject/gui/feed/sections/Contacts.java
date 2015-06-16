@@ -9,6 +9,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -20,6 +21,7 @@ import com.example.orensharon.finalproject.gui.feed.controls.FeedContactAdapter;
 import com.example.orensharon.finalproject.gui.feed.controls.FeedContactItem;
 import com.example.orensharon.finalproject.gui.feed.controls.FeedPhotoAdapter;
 import com.example.orensharon.finalproject.gui.feed.controls.FeedPhotoItem;
+import com.example.orensharon.finalproject.gui.feed.sections.containers.BaseContainerFragment;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -29,6 +31,7 @@ import org.json.JSONObject;
  * Created by orensharon on 5/23/15.
  */
 public class Contacts extends Base {
+
     private FeedContactAdapter mFeedContactAdapter;
     private ListView mFeedItemListView;
 
@@ -45,6 +48,27 @@ public class Contacts extends Base {
         view = inflater.inflate(R.layout.fragment_feed_tab_section, container, false);
 
         mFeedItemListView = (ListView) view.findViewById(R.id.feed_items_list_view);
+        mFeedItemListView.setClickable(true);
+        mFeedItemListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+
+                Object o = mFeedItemListView.getItemAtPosition(position);
+
+                ContactDetails fragment = new ContactDetails();
+                // if U need to pass some data
+                Bundle bundle = new Bundle();
+
+                FeedContactItem feedContactItem = mFeedContactAdapter.getData(position);
+                bundle.putString("data", feedContactItem.getData());
+
+
+                fragment.setArguments(bundle);
+                ((BaseContainerFragment)getParentFragment()).replaceFragment(fragment, "contacts", true);
+            }
+        });
+
         mProgressBar = (ProgressBar) view.findViewById(R.id.feed_loading_progress);
 
         mProgressBar.setVisibility(View.VISIBLE);
@@ -108,10 +132,10 @@ public class Contacts extends Base {
 
                     try {
                         String displayName = jsonArray.getJSONObject(i).get("DisplayName").toString();
-                        feedItems[i] = new FeedContactItem(i, displayName);
+                        feedItems[i] = new FeedContactItem(i, displayName, jsonArray.getJSONObject(i).toString());
                     } catch (JSONException e) {
                         e.printStackTrace();
-                        feedItems[i] = new FeedContactItem(i, "");
+                        feedItems[i] = new FeedContactItem(i, "","");
                     }
 
 

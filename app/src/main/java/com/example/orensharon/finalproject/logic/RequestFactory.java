@@ -9,7 +9,6 @@ import com.android.volley.Response;
 import com.example.orensharon.finalproject.logic.requests.MultipartRequest;
 import com.example.orensharon.finalproject.logic.requests.MyJsonRequest;
 import com.example.orensharon.finalproject.logic.requests.MyStringRequest;
-import com.example.orensharon.finalproject.sessions.SystemSession;
 
 import org.json.JSONObject;
 
@@ -17,6 +16,7 @@ import java.io.File;
 
 /**
  * Created by orensharon on 1/27/15.
+ * Request Factory
  */
 public class RequestFactory {
 
@@ -29,6 +29,8 @@ public class RequestFactory {
 
     public void createJsonRequest(int method, String url, String typeOfContent, String body, String token,
                                   Response.Listener<String> listener, Response.ErrorListener errorListener) {
+
+        // Creating JSON request and add it to pool
 
         MyJsonRequest request = new MyJsonRequest(
             method,
@@ -47,7 +49,7 @@ public class RequestFactory {
     public void createStringRequest(int method, String url, JSONObject body,
                                     Response.Listener<String> listener, Response.ErrorListener errorListener) {
 
-
+        // Creating String request and add it to pool
 
         MyStringRequest request = new MyStringRequest(
                 method,
@@ -64,34 +66,37 @@ public class RequestFactory {
 
     }
 
-    public void createMultipartRequest(String url, String typeOfContent, File file, String token, int id,
-                                       Response.Listener listener, Response.ErrorListener errorListener) {
+    public void createMultipartRequest(String url, String typeOfContent, File file, JSONObject body,
+                                       String token, Response.Listener listener, Response.ErrorListener errorListener) {
 
+        // Creating Multipart request and add it to pool
+        if (listener != null && errorListener != null) {
+            MultipartRequest request = new MultipartRequest(
+                    url,
+                    file,
+                    body,
+                    token,
+                    errorListener,
+                    listener
+            );
 
+            request.setTag(typeOfContent);
 
-        MultipartRequest request = new MultipartRequest(
-                url,
-                errorListener,
-                listener,
-                file,
-                token,
-                id,
-                typeOfContent
-        );
-
-        request.setTag(typeOfContent);
-
-        // Adding request to queue
-        RequestPool.getInstance(mContext).addToRequestQueue(request);
+            // Adding request to queue
+            RequestPool.getInstance(mContext).addToRequestQueue(request);
+        }
     }
 
     public void CancelByTag(String tag) {
 
+        // Cancel all queued requests by given tag
         Log.i("sharonlog", "canceling " + tag +  " request...");
         RequestPool.getInstance(mContext).getRequestQueue().cancelAll(tag);
     }
 
     public void CancelAll() {
+
+        // Cancel all queued requests
         Log.i("sharonlog", "canceling all request...");
         RequestPool.getInstance(mContext).getRequestQueue().cancelAll(new RequestQueue.RequestFilter() {
             @Override
@@ -100,6 +105,8 @@ public class RequestFactory {
             }
         });
     }
+
+
 
 }
 

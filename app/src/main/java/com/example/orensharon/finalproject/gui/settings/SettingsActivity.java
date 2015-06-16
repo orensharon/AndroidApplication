@@ -3,6 +3,9 @@ package com.example.orensharon.finalproject.gui.settings;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Resources;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -29,6 +32,7 @@ public class SettingsActivity extends FragmentActivity implements IFragment {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+        createCustomActionBarTitle();
 
         mBroadcastReceiver = new ObserverServiceBroadcastReceiver(this);
 
@@ -121,7 +125,24 @@ public class SettingsActivity extends FragmentActivity implements IFragment {
         }
     }
 
+    private void createCustomActionBarTitle(){
 
+        // Customize the action bar title, fonts and alignments
+
+        int actionBarTitle;
+        TextView actionBarTitleView;
+
+        actionBarTitle = Resources.getSystem().getIdentifier("action_bar_title", "id", "android");
+
+        actionBarTitleView = (TextView) getWindow().findViewById(actionBarTitle);
+        actionBarTitleView.setTextColor(Color.WHITE);
+        Typeface font = Typeface.createFromAsset(getAssets(), "fonts/LHANDW.TTF");
+
+        //if(actionBarTitleView != null){
+        actionBarTitleView.setTypeface(font);
+        //}
+
+    }
 
 
 }

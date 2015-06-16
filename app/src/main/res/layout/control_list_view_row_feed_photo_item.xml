@@ -15,42 +15,51 @@
         android:padding="16dp"
         android:background="@color/color_blue_0">
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/time_title_layout">
+            android:orientation="vertical"
+            android:id="@+id/feed_title_container">
 
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/icon_time"
-                android:layout_centerVertical="true"
-                android:layout_toLeftOf="@+id/feed_time_text_view"
-                android:id="@+id/time_image_view"/>
 
-            <TextView
-                style="@style/text_item"
-                android:layout_alignParentRight="true"
+            <RelativeLayout
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:layout_centerVertical="true"
-                android:id="@+id/feed_time_text_view"
-                android:textSize="14sp"
-                android:layout_marginBottom="8dp"
-                android:text="2h"/>
+                android:id="@+id/time_title_layout">
 
-        </RelativeLayout>
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/icon_time"
+                    android:layout_centerVertical="true"
+                    android:layout_toLeftOf="@+id/feed_time_text_view"
+                    android:id="@+id/time_image_view"/>
 
+                <TextView
+                    style="@style/text_item"
+                    android:layout_alignParentRight="true"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:id="@+id/feed_time_text_view"
+                    android:textSize="14sp"
+                    android:layout_marginBottom="8dp"
+                    android:text=""/>
+            </RelativeLayout>
+
+        </LinearLayout>
         <RelativeLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/time_title_layout">
+            android:id="@+id/feed_image_container"
+            android:layout_below="@+id/feed_title_container">
 
             <ProgressBar
                 android:id="@+id/feed_item_progress_Bar"
                 style="?android:attr/progressBarStyleLarge"
                 android:layout_width="wrap_content"
                 android:layout_centerInParent="true"
+                android:visibility="gone"
                 android:layout_height="wrap_content"
                 />
 
@@ -62,7 +71,34 @@
                 android:contentDescription="TODO"
                 android:layout_centerInParent="true"
                 android:src="@drawable/ic_launcher" />
+
         </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/feed_image_container"
+            android:id="@+id/location_title_layout">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/icon_location"
+                android:layout_centerVertical="true"
+                android:id="@+id/location_image_view"/>
+
+            <TextView
+                style="@style/text_item"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_centerVertical="true"
+                android:id="@+id/feed_location_text_view"
+                android:textSize="14sp"
+                android:layout_marginBottom="8dp"
+                android:layout_toRightOf="@id/location_image_view"
+                android:text=""/>
+
+        </RelativeLayout>
+
 
     </RelativeLayout>
 

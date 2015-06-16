@@ -30,6 +30,7 @@
     <string name="login_details1"></string>
     <string name="save">Save</string>
     <string name="account">Account</string>
+    <string name="action_refresh">Refresh feed</string>
 
 
 </resources>

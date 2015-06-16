@@ -1,6 +1,7 @@
 package com.example.orensharon.finalproject.gui.feed.sections;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -102,22 +103,28 @@ public class Photos extends Base {
                     try {
                         String id = jsonArray.getJSONObject(i).get("Id").toString();
                         String dateCreated = jsonArray.getJSONObject(i).get("DateCreated").toString();
+                        String geoLocation = jsonArray.getJSONObject(i).get("GeoLocation").toString();
                         String photoUrl = url + id;
-                        feedItems[i] = new FeedPhotoItem(i, photoUrl, dateCreated);
+                        feedItems[i] = new FeedPhotoItem(i, photoUrl, dateCreated,geoLocation);
                     } catch (JSONException e) {
                         e.printStackTrace();
-                        feedItems[i] = new FeedPhotoItem(i, "", "");
+                        feedItems[i] = new FeedPhotoItem(i, "", "", "");
                     }
 
 
 
                 }
+                try {
+                    if (getActivity() != null) {
+                        mFeedPhotoAdapter = new FeedPhotoAdapter(getActivity(),
+                                R.layout.control_list_view_row_feed_photo_item,
+                                feedItems, mSystemSession.getToken());
 
-                mFeedPhotoAdapter = new FeedPhotoAdapter(getActivity(),
-                        R.layout.control_list_view_row_feed_photo_item,
-                        feedItems, mSystemSession.getToken());
-
-                mFeedItemListView.setAdapter(mFeedPhotoAdapter);
+                        mFeedItemListView.setAdapter(mFeedPhotoAdapter);
+                    }
+                } catch (Exception e) {
+                    Log.e("","");
+                }
 
             } else {
 

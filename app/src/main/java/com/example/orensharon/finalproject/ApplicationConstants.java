@@ -39,11 +39,10 @@ public class ApplicationConstants
     // Contact properties
     public static final String CONTACT_ID_KEY = "Id";
     public static final String CONTACT_DISPLAY_NAME_KEY = "DisplayName";
-    public static final String CONTACT_PHOTO_URI_KEY = "PhotoURI";
+    public static final String CONTACT_PHOTO_URI_KEY = "PhotoId";
     public static final String CONTACT_PHONES_KEY = "Phones";
     public static final String CONTACT_EMAIL_KEY = "Emails";
     public static final String CONTACT_ADDRESSES_KEY = "Addresses";
-    public static final String CONTACT_INSTANT_MESSENGERS_KEY = "InstantMessengers";
     public static final String CONTACT_ORGANIZATION_KEY = "Organization";
     public static final String CONTACT_NOTES_KEY = "Notes";
 
@@ -65,6 +64,9 @@ public class ApplicationConstants
     // Body Parameters of the upload content requests
     public static final String CONTENT_TYPE_OF_CONTENT_KEY = "TypeOfContent";
     public static final String CONTENT_ID_KEY = "Id";
+    public static final String CONTENT_CREATED_TIME_STAMP_KEY = "CreatedTimeStamp";
+    public static final String CONTENT_MODIFIED_TIME_STAMP_KEY = "ModifiedTimeStamp";
+    public static final String DEVICE_PHYSICAL_ADDRESS_TOKEN = "PhysicalAddress";
 
     // Type of contents (photos, contacts, videos etc...)
     public static final String TYPE_OF_CONTENT_PHOTO = "Photo";

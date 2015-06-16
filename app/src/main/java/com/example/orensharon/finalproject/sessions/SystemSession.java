@@ -25,6 +25,7 @@ public class SystemSession {
     private final String PASSWORD_KEY = "PASSWORD_KEY";
     private final String IP_ADDRESS_KEY = "IP_ADDRESS_KEY";
     private final String AUTH_TOKEN_KEY = "AUTH_TOKEN_KEY";
+    private final String IN_SYNC_KEY = "IN_SYNC_KEY";
 
 
     public SystemSession(Context context) {
@@ -112,4 +113,29 @@ public class SystemSession {
 
         return mSharedPreferences.getString(PASSWORD_KEY, "");
     }
+
+
+    public boolean getInSync(String contentType) {
+
+        String str = IN_SYNC_KEY;
+        if (contentType != null) {
+            // null means for both
+            str = contentType + "_" + str;
+        }
+        return mSharedPreferences.getBoolean(str, false);
+    }
+    public void setInSync(String contentType, boolean state) {
+
+        String str = IN_SYNC_KEY;
+        if (contentType != null) {
+            // null means for both
+            str = contentType + "_" + str;
+        } else if (state == false) {
+            setInSync("Photo",false);
+            setInSync("Contact",false);
+        }
+        mEditor.putBoolean(str, state);
+        mEditor.apply();
+    }
+
 }

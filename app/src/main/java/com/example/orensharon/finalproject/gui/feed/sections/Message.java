@@ -72,13 +72,8 @@ public class Message extends Fragment {
                 }
 
                 if (fragment != null) {
-                    ((BaseContainerFragment) getParentFragment()).replaceFragment(fragment, section, true);
+                    ((BaseContainerFragment) getParentFragment()).replaceFragment(fragment, section, false);
                 }
-                Toast.makeText(
-                        getActivity(),
-                        getParentFragment().getTag().toString(),
-                        Toast.LENGTH_LONG
-                ).show();
 
 
 

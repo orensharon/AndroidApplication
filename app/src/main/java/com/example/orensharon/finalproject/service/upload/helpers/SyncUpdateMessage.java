@@ -16,7 +16,6 @@ public final class SyncUpdateMessage {
     // Data will contain the result data
     private Object data;
 
-    // TODO: not good
     private int messageType;
 
     public SyncUpdateMessage(int messageCode, int type, Object data){

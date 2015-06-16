@@ -3,7 +3,6 @@ package com.example.orensharon.finalproject.service.managers;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.provider.ContactsContract;
 import android.provider.MediaStore;
 
 import com.example.orensharon.finalproject.ApplicationConstants;

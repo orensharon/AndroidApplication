@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -34,30 +35,32 @@ public class MultipartRequest<T> extends Request<T> {
     private MultipartEntityBuilder mBuilder = MultipartEntityBuilder.create();
     private final Response.Listener<T> mListener;
     private final File mImageFile;
-    private String mToken, mTypeOfContent;
-    private int mId;
+    private String mToken;
+    JSONObject mBody;
 
     public MultipartRequest(String url,
-                                 Response.ErrorListener errorListener,
-                                 Response.Listener<T> listener,
-                                 File imageFile,
-                                 String token,
-                                 int id,
-                                 String typeOfContent)
+                            File imageFile,
+                            JSONObject body,
+                            String token,
+                            Response.ErrorListener errorListener,
+                            Response.Listener<T> listener)
     {
         super(Method.POST, url, errorListener);
 
         mListener = listener;
         mImageFile = imageFile;
         mToken = token;
-        mTypeOfContent = typeOfContent;
-        mId = id;
+
+        mBody = body;
 
         buildMultipartEntity();
     }
 
     @Override
     public Map<String, String> getHeaders() throws AuthFailureError {
+
+        // Adding headers parameters
+
         Map<String, String> headers = super.getHeaders();
 
         if (headers == null
@@ -76,8 +79,21 @@ public class MultipartRequest<T> extends Request<T> {
 
     private void buildMultipartEntity()
     {
-        mBuilder.addTextBody(ApplicationConstants.CONTENT_ID_KEY, String.valueOf(mId));
-        mBuilder.addTextBody(ApplicationConstants.CONTENT_TYPE_OF_CONTENT_KEY, mTypeOfContent);
+        // Adding body parameters
+
+        Iterator<String> iterator = mBody.keys();
+        while (iterator.hasNext()) {
+            String key = iterator.next();
+            try {
+                String value = mBody.getString(key);
+                mBuilder.addTextBody(key, value);
+
+            } catch (JSONException e) {
+                // Something went wrong!
+            }
+        }
+
+
         mBuilder.addBinaryBody(
                 mImageFile.getName(),
                 mImageFile,
