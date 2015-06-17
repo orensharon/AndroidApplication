@@ -73,8 +73,11 @@ abstract public class BaseContentObserver extends ContentObserver {
     }
 
     public void Manage() {
-
         mManager.Manage();
+    }
+
+    public void Sync() {
+        mManager.Sync();
     }
 
     public void CancelSyncing() {

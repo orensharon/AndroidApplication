@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.os.Binder;
 import android.os.IBinder;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
@@ -75,6 +76,8 @@ public class ObserverService extends Service implements Observer {
     private static final Uri PHOTO_OBSERVER_URI = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
     private static final Uri CONTACT_OBSERVER_URI = ContactsContract.Contacts.CONTENT_URI;
 
+    // Binder given to clients
+    private final IBinder mBinder = new ServiceBinder();
 
      // Service status is not running (as default)
     private static int mServiceStatus = STATUS_SERVICE_NOT_RUNNING;
@@ -108,7 +111,7 @@ public class ObserverService extends Service implements Observer {
                 .getSystemService(Context.NOTIFICATION_SERVICE);
 
         mSystemSession = new SystemSession(this);
-        mSystemSession.setInSync(null,false);
+        //mSystemSession.setInSync(null, false);
         Log.e("sharontest","Service OnCreate: [" + mSystemSession.getInSync(null) +
         "," + mSystemSession.getInSync("Photo") + "," + mSystemSession.getInSync("Contact") + "]");
 
@@ -123,29 +126,35 @@ public class ObserverService extends Service implements Observer {
 
         mServiceStatus = STATUS_SERVICE_NOT_RUNNING;
         sendResult(2, STATUS_SERVICE_NOT_RUNNING, SERVICE_NOT_RUNNING_MSG);
-        //mSystemSession.setInSync(null,false);
-
-        // Canceling sync notification is exist
-        cancelNotification(SYNC_NOTIFICATION);
-
-
-
 
 
         // Unregister from observers
-        UnregisterFromObserver(mContactsObserver);
-        UnregisterFromObserver(mPhotosObserver);
+        StopObservers();
 
-        mPhotosObserver = null;
-        mContactsObserver = null;
+        // Wait for sync to complete before destroy ends
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                while (mSystemSession.getInSync(null));
+                cancelNotification(SYNC_NOTIFICATION);
+                mSystemSession.setInSync(null,false);
+            }
+        }).start();
+
+        //if (mPhotosObserver != null) {
+        //    mPhotosObserver.CancelSyncing();
+       // }
+
+        //if (mContactsObserver != null) {
+        //    mContactsObserver.CancelSyncing();
+        //}
 
 
         // Unregister from internet connection observer
         if (mIsInternetObserving) {
             UnregisterNetworkObserver();
         }
-
-
 
         Log.i("sharonlog","Service destroyed");
 
@@ -159,7 +168,7 @@ public class ObserverService extends Service implements Observer {
 
         if (contentObserver != null) {
 
-            contentObserver.CancelSyncing();
+            //contentObserver.CancelSyncing();
 
             Log.e("sharonlog","UnregisterFromObserver ");
             this.getApplicationContext().getContentResolver()
@@ -174,19 +183,28 @@ public class ObserverService extends Service implements Observer {
         // Service was started
         boolean sync = false;
         String message = null;
+
+
         mSettingsSession = new SettingsSession(getApplicationContext());
-
-
-
 
         super.onStartCommand(intent, flags, startId);
 
-        // Read from intent, if a sync command then start the sync process
-        if (intent != null && intent.getIntExtra("SYNC_COMMAND", 0) == 1) {
-            sync = true;
-            sendProgress(SYNC_START);
-        }
+        // If the service is started at the first time - send message its running
+        if (mServiceStatus == STATUS_SERVICE_NOT_RUNNING) {
+            mServiceStatus = STATUS_SERVICE_RUNNING;
+            message = SERVICE_RUNNING_MSG;
 
+            // Register to internet connection observer
+            if (!mIsInternetObserving) {
+                RegisterNetworkObserver();
+            }
+        }
+        // Set the status anyway
+        mServiceStatus = STATUS_SERVICE_RUNNING;
+
+        StartObservers();
+
+        /*
         if (mSettingsSession.getUserContentItem("Contacts")) {
 
             // Phone book observing selected by user
@@ -270,7 +288,7 @@ public class ObserverService extends Service implements Observer {
                 mPhotosObserver = null;
             }
 
-        }
+        }*/
 
         // Hide the notification status
         Log.e("sharontest","Service before fix: [" + mSystemSession.getInSync(null) +
@@ -287,26 +305,9 @@ public class ObserverService extends Service implements Observer {
 
 
         if (!mSystemSession.getInSync(null)) {
-            cancelNotification(SYNC_NOTIFICATION);
+            //cancelNotification(SYNC_NOTIFICATION);
         }
 
-        // If the service is started at the first time - send message its running
-        if (mServiceStatus == STATUS_SERVICE_NOT_RUNNING) {
-            mServiceStatus = STATUS_SERVICE_RUNNING;
-            message = SERVICE_RUNNING_MSG;
-
-            // Register to internet connection observer
-            if (!mIsInternetObserving) {
-                RegisterNetworkObserver();
-            }
-
-
-            //Log.i("sharonlog","SERVICE STARTED");
-        }
-
-
-        // Set the status anyway
-        mServiceStatus = STATUS_SERVICE_RUNNING;
         sendResult(2, STATUS_SERVICE_RUNNING, message);
 
 
@@ -316,11 +317,55 @@ public class ObserverService extends Service implements Observer {
     }
 
     @Override
-    public IBinder onBind(Intent arg0) {
-        return null;
+    public IBinder onBind(Intent intent) {
+        return mBinder;
     }
 
 
+    private void StartObservers() {
+
+        StartObserver("Contacts");
+        StartObserver("Photos");
+
+    }
+    public void StartObserver(String type) {
+
+        mContactsObserver = new ContactObserver(this, CONTACT_OBSERVER_URI);
+        mPhotosObserver = new PhotoObserver(this, PHOTO_OBSERVER_URI);
+
+        if (mSettingsSession.getUserContentItem(type)) {
+
+            if (type.equals("Contacts")) {
+                RegisterToObserver(CONTACT_OBSERVER_URI, mContactsObserver);
+            } else if (type.equals("Photos")) {
+                RegisterToObserver(PHOTO_OBSERVER_URI, mPhotosObserver);
+            }
+
+            Log.i("sharonlog","register " + type);
+        }
+    }
+    private void StopObservers() {
+        StopObserver("Contacts");
+        StopObserver("Photos");
+    }
+    public void StopObserver(String type) {
+
+        if (type.equals("Contacts")) {
+            UnregisterFromObserver(mContactsObserver);
+        } else if (type.equals("Photos")) {
+            UnregisterFromObserver(mPhotosObserver);
+        }
+
+        Log.i("sharonlog", "unregister " + type);
+
+    }
+
+    public void Sync() {
+
+        sendProgress(SYNC_START);
+        mPhotosObserver.Sync();
+        mContactsObserver.Sync();
+    }
 
     private void RegisterToObserver(Uri uri, BaseContentObserver observer) {
 
@@ -385,9 +430,12 @@ public class ObserverService extends Service implements Observer {
 
         if (progressCode == SYNC_ERROR) {
 
+            if (mSystemSession.getInSync(null)) {
+                cancelNotification(ObserverService.SYNC_NOTIFICATION);
+                showSyncDetailsNotification("Sync error :(", android.R.drawable.stat_notify_error);
+            }
+
             mSystemSession.setInSync(null, false);
-            cancelNotification(ObserverService.SYNC_NOTIFICATION);
-            showSyncDetailsNotification("Sync error :(", android.R.drawable.stat_notify_error);
         } else if (progressCode == SYNC_DONE) {
             cancelNotification(ObserverService.SYNC_NOTIFICATION);
             showSyncDetailsNotification("Sync complete", android.R.drawable.stat_sys_download_done);
@@ -404,19 +452,18 @@ public class ObserverService extends Service implements Observer {
 
 
 
-    // Internet observer
-
+    // Network observer
     public void RegisterNetworkObserver() {
 
         // Register to the internet connection observer
         NetworkChangeReceiver.getObservable().addObserver(this);
         mIsInternetObserving = true;
-        Log.i("sharonlog","Registered to internet observing");
+        Log.i("sharonlog", "Registered to internet observing");
     }
     public void UnregisterNetworkObserver() {
         // Unregister to the internet connection observer
 
-        Log.i("sharonlog","Unregistered from internet observing");
+        Log.i("sharonlog", "Unregistered from internet observing");
         NetworkChangeReceiver.getObservable().deleteObserver(this);
         mIsInternetObserving = false;
     }
@@ -440,7 +487,7 @@ public class ObserverService extends Service implements Observer {
         if (internetStatus == NetworkChangeReceiver.NOT_CONNECTED) {
 
             if (mSystemSession.getInSync(null)) {
-                sendProgress(SYNC_PAUSE);
+                sendProgress(SYNC_ERROR);
             }
         } else {
             // Internet is connected
@@ -457,8 +504,6 @@ public class ObserverService extends Service implements Observer {
                     mPhotosObserver.Manage();
                 }
 
-                // TODO
-                sendProgress(SYNC_START);
             }
         }
 
@@ -483,7 +528,10 @@ public class ObserverService extends Service implements Observer {
     }
 
 
-    // Sync notification
+
+
+
+    // Sync notifications
     public void showSyncNotification() {
 
 
@@ -498,15 +546,10 @@ public class ObserverService extends Service implements Observer {
         //noti.flags |= Notification.FLAG_ONLY_ALERT_ONCE;
         mNotificationManager.notify(SYNC_NOTIFICATION, noti);
     }
-
-
-
     public void cancelNotification(int id) {
 
         mNotificationManager.cancel(id);
     }
-
-
     public void showSyncDetailsNotification(String message, int res) {
 
         cancelNotification(DETAILS_NOTIFICATION);
@@ -525,5 +568,20 @@ public class ObserverService extends Service implements Observer {
         //noti.flags |= Notification.FLAG_ONLY_ALERT_ONCE;
         mNotificationManager.notify(DETAILS_NOTIFICATION, noti);
     }
+
+
+
+    /**
+     * Class used for the client Binder.  Because we know this service always
+     * runs in the same process as its clients, we don't need to deal with IPC.
+     */
+    public class ServiceBinder extends Binder {
+        public ObserverService getService() {
+            // Return this instance of LocalService so clients can call public methods
+            return ObserverService.this;
+        }
+    }
+
+
 
 }

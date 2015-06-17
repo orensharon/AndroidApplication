@@ -1,5 +1,6 @@
 package com.example.orensharon.finalproject.gui.settings.controls;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -12,6 +13,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.orensharon.finalproject.R;
+import com.example.orensharon.finalproject.gui.settings.SettingsActivity;
+import com.example.orensharon.finalproject.gui.settings.SettingsFragment;
 import com.example.orensharon.finalproject.service.ObserverService;
 import com.example.orensharon.finalproject.sessions.SettingsSession;
 
@@ -124,24 +127,36 @@ public class ContentListAdapter extends BaseAdapter {
             Content content;
             CheckBox myCheckBox = (CheckBox)buttonView;
 
+            content = getContent((Integer) buttonView.getTag());
+
             if (myCheckBox.isPressed()) {
-                content = getContent((Integer) buttonView.getTag());
                 mSettingsSession.setUserContentItem(content.getTitle(), isChecked);
-                updateObservingService();
+                updateObservingService(isChecked, content.getTitle());
             }
+
+
+
         }
     };
 
-    private void updateObservingService() {
+    private void updateObservingService(boolean state, String type) {
 
-        // Creating an intent with the selected values of the user
-        Intent ServiceIntent;
-        ServiceIntent = new Intent(mContext.getApplicationContext(), ObserverService.class);
+        SettingsActivity activity;
 
+        activity = (SettingsActivity)mContext;
 
-        // Service will start once, any call after that will only send
-        // the intent to communicate with the service this way
-        mContext.getApplicationContext().startService(ServiceIntent);
+        if (activity != null) {
+
+            if (activity.mBound) {
+                if (state) {
+                    activity.mObserverService.StartObserver(type);
+                } else {
+                    activity.mObserverService.StopObserver(type);
+                }
+            }
+
+        }
+
 
 
     }

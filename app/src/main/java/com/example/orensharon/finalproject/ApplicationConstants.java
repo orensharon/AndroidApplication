@@ -52,6 +52,7 @@ public class ApplicationConstants
     public static final int HTTP_BAD_REQUEST = 400;
     public static final int HTTP_FORBIDDEN = 403;
     public static final int HTTP_CONFLICT = 409;
+    public static final int HTTP_INTERNAL_SERVER_ERROR = 500;
 
 
     // HTTP Posts constants

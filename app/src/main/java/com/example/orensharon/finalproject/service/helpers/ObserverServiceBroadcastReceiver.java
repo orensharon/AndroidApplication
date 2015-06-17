@@ -14,7 +14,7 @@ import com.example.orensharon.finalproject.R;
 import com.example.orensharon.finalproject.gui.settings.SettingsActivity;
 import com.example.orensharon.finalproject.gui.settings.SettingsFragment;
 import com.example.orensharon.finalproject.service.ObserverService;
-
+import com.example.orensharon.finalproject.sessions.SystemSession;
 
 
 /**
@@ -40,7 +40,7 @@ public class ObserverServiceBroadcastReceiver extends BroadcastReceiver {
         int typeOfMessage;
         int code;
 
-
+        SystemSession systemSession = new SystemSession(mContext);
         String message;
 
         SettingsActivity activity;
@@ -75,7 +75,7 @@ public class ObserverServiceBroadcastReceiver extends BroadcastReceiver {
                     // The sync is started
                     if (settingsFragment != null) {
 
-                        syncNowButtonContainer.setVisibility(View.GONE);
+                        syncNowButton.setEnabled(false);
 
                     }
                 }
@@ -84,14 +84,15 @@ public class ObserverServiceBroadcastReceiver extends BroadcastReceiver {
 
 
                     if (settingsFragment != null) {
-
+                        syncNowButton.setBackgroundColor(mContext.getResources().getColor(R.color.online));
                     }
                 }
                 if (code == ObserverService.SYNC_ERROR) {
 
 
                     if (settingsFragment != null) {
-                        syncNowButtonContainer.setVisibility(View.VISIBLE);
+                        //syncNowButton.setEnabled(true);
+                        settingsFragment.initSyncButton();
                     }
                 }
 

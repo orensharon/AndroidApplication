@@ -2,6 +2,9 @@ package com.example.orensharon.finalproject.gui.settings;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ComponentName;
+import android.content.ServiceConnection;
+import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -36,12 +39,14 @@ import java.util.ArrayList;
 public class SettingsFragment extends Fragment {
 
     private IFragment mListener;
+
+
     private ContentListAdapter mContentListAdapter;
     private ListView mContentsListView;
     private Switch mServiceEnableSwitch, mWifiOnlySwitch;
     private Button mSyncNowButton;
     private RelativeLayout mSyncButtonContainer;
-    private ProgressDialog mProgressDialog;
+
 
     private ContentBL mContentBL;
 
@@ -59,6 +64,8 @@ public class SettingsFragment extends Fragment {
 
 
         mContentBL = new ContentBL(getActivity());
+        mSettingsSession = new SettingsSession(getActivity());
+        mSystemSession = new SystemSession(getActivity());
     }
 
 
@@ -68,12 +75,19 @@ public class SettingsFragment extends Fragment {
 
         super.onAttach(activity);
 
+
         // This makes sure that the container activity has implemented
         // the callback interface. If not, it throws an exception
         mListener = (IFragment)activity;
 
     }
 
+    @Override
+    public void onDetach() {
+        super.onDetach();
+
+
+    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -88,10 +102,6 @@ public class SettingsFragment extends Fragment {
         View view;
 
         view = inflater.inflate(R.layout.fragment_settings, container, false);
-
-
-        mSettingsSession = new SettingsSession(getActivity());
-        mSystemSession = new SystemSession(getActivity());
 
         mContentsListView = (ListView) view.findViewById(R.id.content_list_view);
 
@@ -131,7 +141,7 @@ public class SettingsFragment extends Fragment {
     }
 
 
-    private void initSyncButton() {
+    public void initSyncButton() {
 
         // Init the sync now button according system state
         int count;
@@ -144,12 +154,18 @@ public class SettingsFragment extends Fragment {
                 mSettingsSession.getServiceIsEnabledByUser() && count > 0) {
 
             // Means there is unsynced content
-            mSyncButtonContainer.setVisibility(View.VISIBLE);
+            mSyncNowButton.setEnabled(true);
             mSyncNowButton.setText("Sync now");
         } else {
 
+            if (count == 0) {
+                // All Synced
+                mSyncNowButton.setBackgroundColor(getResources().getColor(R.color.online));
+                mSyncNowButton.setText("All Synced");
+            }
+
             // Means service is turned off or nothing to sync
-            mSyncButtonContainer.setVisibility(View.GONE);
+            mSyncNowButton.setEnabled(false);
         }
 
     }
@@ -166,7 +182,7 @@ public class SettingsFragment extends Fragment {
                     // Make sure that not in a middle of sync
                     if (!mSystemSession.getInSync(null)) {
                         // Start the sync
-                        startSyncFromService();
+                        ((SettingsActivity)mListener).mObserverService.Sync();
                     }
 
                 }
@@ -195,15 +211,14 @@ public class SettingsFragment extends Fragment {
 
 
                 if (isChecked == true) {
-                    startObservingService(false);
+                    ((SettingsActivity)getActivity()).startObservingService();
                     Log.e("sharonlog", "SHOULD START");
                 } else {
                     Log.e("sharonlog", "SHOULD STOP");
-                    stopObservingService();
-                    initSyncButton();
+                    ((SettingsActivity)getActivity()).stopObservingService();
                 }
 
-             //   initSyncButton();
+                initSyncButton();
             }
 
 
@@ -234,31 +249,7 @@ public class SettingsFragment extends Fragment {
 
     }
 
-    private void startSyncFromService() {
-        startObservingService(true);
-    }
 
-    private void startObservingService(boolean flag) {
-
-        // Creating an intent with the selected values of the user
-        Intent ServiceIntent;
-        ServiceIntent = new Intent(getActivity(), ObserverService.class);
-
-        if (flag == true) {
-            ServiceIntent.putExtra("SYNC_COMMAND", 1);
-        }
-        // Service will start once, any call after that will only send
-        // the intent to communicate with the service this way
-        getActivity().startService(ServiceIntent);
-
-
-    }
-    private void stopObservingService() {
-        // Stop the service
-        Intent mServiceIntent;
-        mServiceIntent = new Intent(getActivity(), ObserverService.class);
-        getActivity().stopService(mServiceIntent);
-    }
 
 
     private void LoadContentOptionsIntoListView() {
@@ -288,5 +279,7 @@ public class SettingsFragment extends Fragment {
         mContentsListView.setAdapter(mContentListAdapter);
 
     }
+
+
 
 }

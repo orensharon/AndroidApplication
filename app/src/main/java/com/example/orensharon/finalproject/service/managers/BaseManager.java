@@ -74,7 +74,7 @@ public abstract class BaseManager {
         mServiceInstance =
                 (ObserverService)mContext;
 
-        mSystemSession.setInSync(mContentType, false);
+        //mSystemSession.setInSync(mContentType, false);
         Log.e("sharontest",mContentType + " BaseManager Construector: [" + mSystemSession.getInSync(null) +
                 "," + mSystemSession.getInSync("Photo") + "," + mSystemSession.getInSync("Contact") + "]");
     }
@@ -166,9 +166,9 @@ public abstract class BaseManager {
 
         // Make sure syncing is not in process
         if (!mSystemSession.getInSync(null)) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
+           // new Thread(new Runnable() {
+           //     @Override
+           //     public void run() {
 
                     Log.e("sharonlog", mContentType + " Now managing: " + mObservingUri.toString());
                     Log.e("sharonlog", mContentType + " Before Managing ID: " + mContentSession.getLatestId(mContentType));
@@ -188,13 +188,13 @@ public abstract class BaseManager {
 
                     // TODO: check for edits
                     if (mServiceInstance.getServiceStatus() == ObserverService.STATUS_SERVICE_RUNNING) {
-                        Sync();
+                        //Sync();
                     }
 
 
                 }
-            }).start();
-        }
+            // }).start();
+        //}
     }
 
     public void Sync()
@@ -217,7 +217,7 @@ public abstract class BaseManager {
         } else {
             // Means that need to pause the sync
 
-            mServiceInstance.sendProgress(ObserverService.SYNC_PAUSE);
+            mServiceInstance.sendProgress(ObserverService.SYNC_ERROR);
 
             Log.e("sharontest",mContentType + " Sync no internet: [" + mSystemSession.getInSync(null) +
                     "," + mSystemSession.getInSync("Photo") + "," + mSystemSession.getInSync("Contact") + "]");
@@ -709,6 +709,11 @@ public abstract class BaseManager {
                                             errorMessage = "MD5 not equal";
                                             break;
 
+                                        // 500
+                                        case ApplicationConstants.HTTP_INTERNAL_SERVER_ERROR:
+                                            errorMessage = "Internal Server Error";
+                                            break;
+
 
                                     }
 
@@ -741,10 +746,10 @@ public abstract class BaseManager {
                                             RequestSafeIP(myContact, syncing);
                                         } else {
 
-                                            if (syncing) {
+                                            //if (syncing) {
                                                 // If in a middle of sync notify by error
                                                 mServiceInstance.sendProgress(ObserverService.SYNC_ERROR);
-                                            }
+                                            //}
                                         }
 
 
@@ -753,10 +758,10 @@ public abstract class BaseManager {
                                         // Some issue with the network connectivity
                                         CancelAllSyncing();
 
-                                        if (syncing) {
+                                       // if (syncing) {
                                             // If in a middle of sync notify by error
                                             mServiceInstance.sendProgress(ObserverService.SYNC_ERROR);
-                                        }
+                                       // }
 
                                     }
 
@@ -871,6 +876,11 @@ public abstract class BaseManager {
                                             errorMessage = "MD5 not equal";
                                             break;
 
+                                        // 500
+                                        case ApplicationConstants.HTTP_INTERNAL_SERVER_ERROR:
+                                            errorMessage = "Internal Server Error";
+                                            break;
+
 
                                     }
 
@@ -902,10 +912,10 @@ public abstract class BaseManager {
                                             RequestSafeIP(myPhoto, syncing);
                                         } else {
 
-                                            if (syncing) {
+                                            //if (syncing) {
                                                 // If in a middle of sync notify by error
                                                 mServiceInstance.sendProgress(ObserverService.SYNC_ERROR);
-                                            }
+                                            //}
                                         }
 
                                     } else if (errorMessage.contains("connectivity")) {
@@ -913,10 +923,10 @@ public abstract class BaseManager {
                                         // Network connectivity issue, cancel all the queued requests
                                         CancelAllSyncing();
 
-                                        if (syncing) {
+                                        //if (syncing) {
                                             // If in a middle of sync notify by error
                                             mServiceInstance.sendProgress(ObserverService.SYNC_ERROR);
-                                        }
+                                        //}
 
                                     }
 

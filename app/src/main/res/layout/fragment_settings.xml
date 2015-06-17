@@ -14,7 +14,7 @@
             android:layout_width="match_parent"
             android:id="@+id/sync_now_button"
             android:layout_height="wrap_content"
-            android:background="@color/color_blue_5"
+            android:background="@drawable/button_sync_now_selector"
             android:text="Sync now"/>
 
     </RelativeLayout>

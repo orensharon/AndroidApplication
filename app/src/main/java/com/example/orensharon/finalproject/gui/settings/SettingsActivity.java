@@ -1,12 +1,15 @@
 package com.example.orensharon.finalproject.gui.settings;
 
 import android.app.Dialog;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -28,11 +31,18 @@ import com.example.orensharon.finalproject.service.helpers.ObserverServiceBroadc
 public class SettingsActivity extends FragmentActivity implements IFragment {
 
     private ObserverServiceBroadcastReceiver mBroadcastReceiver;
+
+    public ObserverService mObserverService;
+    public boolean mBound;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         createCustomActionBarTitle();
+
+        mBound = false;
 
         mBroadcastReceiver = new ObserverServiceBroadcastReceiver(this);
 
@@ -43,9 +53,43 @@ public class SettingsActivity extends FragmentActivity implements IFragment {
 
     }
 
+    public void startObservingService() {
+
+        // Starting the observer service
+
+        Intent intent = new Intent(this, ObserverService.class);
+        bindService(intent, mConnection, this.BIND_AUTO_CREATE);
+        startService(intent);
+
+
+
+    }
+
+    public void stopObservingService() {
+
+        // Stopping the observer service
+        if (mBound) {
+
+            // Unbind from the service
+            unbindService(mConnection);
+
+            // Stop the service
+            Intent intent = new Intent(this, ObserverService.class);
+            stopService(intent);
+            mBound = false;
+        }
+
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
+
+        // Bind to ObserverService
+        Intent intent = new Intent(this, ObserverService.class);
+        bindService(intent, mConnection, this.BIND_AUTO_CREATE);
+
+
 
         LocalBroadcastManager.getInstance(this).registerReceiver((mBroadcastReceiver),
                 new IntentFilter(ObserverService.class.getName()));
@@ -54,6 +98,14 @@ public class SettingsActivity extends FragmentActivity implements IFragment {
     @Override
     protected void onStop() {
         super.onStop();
+
+        if (mBound) {
+
+            // Unbind from the service
+            unbindService(mConnection);
+            mBound = false;
+        }
+
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiver);
     }
 
@@ -144,5 +196,23 @@ public class SettingsActivity extends FragmentActivity implements IFragment {
 
     }
 
+
+    /** Defines callbacks for service binding, passed to bindService() */
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            ObserverService.ServiceBinder binder = (ObserverService.ServiceBinder) service;
+            mObserverService = binder.getService();
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
 
 }

@@ -90,18 +90,12 @@ public class AccountFragment extends Fragment {
         SystemSession systemSession;
         systemSession = new SystemSession(getActivity());
         systemSession.Logout();
-        stopObservingService();
+        ((SettingsActivity)mListener).stopObservingService();
 
         mListener.LoadActivity(LoginActivity.class, false);
     }
 
 
-    private void stopObservingService() {
-        // Stop the service
-        Intent mServiceIntent;
-        mServiceIntent = new Intent(getActivity(), ObserverService.class);
-        getActivity().stopService(mServiceIntent);
-    }
 
 
 
