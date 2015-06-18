@@ -56,7 +56,7 @@ public class Photos extends Base {
                     String url = "http://" +
                             mSystemSession.geIPAddressOfSafe() + ApplicationConstants.PHOTO_GET_API_SUFFIX;
 
-                    LoadPhotos(response, url);
+                    LoadData(response, url);
 
 
                 }
@@ -75,11 +75,11 @@ public class Photos extends Base {
     }
 
 
-    private void LoadPhotos(String data, String url) {
+    public void LoadData(String data, String url) {
 
         // Extracting given data string into Json array and iterate over
         // All given photos
-        JSONObject json = null;
+        JSONObject json;
         JSONArray jsonArray = null;
         try {
             json = new JSONObject(data);
@@ -118,7 +118,7 @@ public class Photos extends Base {
                     if (getActivity() != null) {
                         mFeedPhotoAdapter = new FeedPhotoAdapter(getActivity(),
                                 R.layout.control_list_view_row_feed_photo_item,
-                                feedItems, mSystemSession.getToken());
+                                feedItems);
 
                         mFeedItemListView.setAdapter(mFeedPhotoAdapter);
                     }

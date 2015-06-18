@@ -1,6 +1,7 @@
 package com.example.orensharon.finalproject.gui.feed;
 
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.support.v4.app.Fragment;
@@ -12,14 +13,25 @@ import android.support.v4.app.FragmentTabHost;
 import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.orensharon.finalproject.ApplicationConstants;
 import com.example.orensharon.finalproject.R;
 import com.example.orensharon.finalproject.gui.IFragment;
 import com.example.orensharon.finalproject.gui.feed.sections.containers.BaseContainerFragment;
 import com.example.orensharon.finalproject.gui.feed.sections.containers.ContainerContactsFragment;
 import com.example.orensharon.finalproject.gui.feed.sections.containers.ContainerPhotosFragment;
 import com.example.orensharon.finalproject.gui.settings.SettingsActivity;
+import com.example.orensharon.finalproject.logic.CustomImageDownloader;
+import com.example.orensharon.finalproject.sessions.SystemSession;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
+
+import java.util.HashMap;
 
 /**
  * Created by orensharon on 1/21/15.
@@ -64,9 +76,42 @@ public class FeedActivity extends FragmentActivity implements IFragment {
 
         createCustomActionBarTitle();
 
+        SystemSession systemSession = new SystemSession(this);
+        HashMap<String, String> headers = new HashMap<String, String>();
+        headers.put(ApplicationConstants.HEADER_AUTHORIZATION, systemSession.getToken());
+
+        DisplayImageOptions options = new DisplayImageOptions.Builder()
+                .showImageForEmptyUri(R.drawable.image_not_found) // resource or drawable
+                .showImageOnFail(R.drawable.image_not_found) // resource or drawable
+                .imageScaleType(ImageScaleType.EXACTLY)
+                .extraForDownloader(headers)
+                .displayer(new FadeInBitmapDisplayer(1000))
+                .cacheInMemory(false) // default
+                .cacheOnDisk(true) // default
+                .build();
+
+
+        // Create global configuration and initialize ImageLoader with this config
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this)
+            .defaultDisplayImageOptions(options)
+            .imageDownloader(new CustomImageDownloader(this))
+            .build();
+
+
+        ImageLoader.getInstance().init(config);
+
         initView();
 
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (ImageLoader.getInstance() != null) {
+            ImageLoader.getInstance().destroy();
+        }
     }
 
     @Override

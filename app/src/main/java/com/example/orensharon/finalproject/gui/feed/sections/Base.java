@@ -23,6 +23,7 @@ public class Base extends Fragment {
 
     protected SystemSession mSystemSession;
 
+
     @Override
     public void onAttach(Activity activity) {
 
@@ -85,6 +86,10 @@ public class Base extends Fragment {
                                         errorMessage = "MD5 not equal";
                                         break;
 
+                                    // 500
+                                    case ApplicationConstants.HTTP_INTERNAL_SERVER_ERROR:
+                                        errorMessage = "Internal server error";
+                                        break;
 
                                 }
 
@@ -107,8 +112,10 @@ public class Base extends Fragment {
                                         RequestSafeIP(reqResponse, apiSuffix);
                                     }
                                 } else if (errorMessage.contains("connectivity")) {
-                                    // mProgressBar.setVisibility( View.GONE );
-                                    ShowErrorMessage("Check connection", R.drawable.icon_alert);
+
+
+                                        ShowErrorMessage("Check connection", R.drawable.icon_alert);
+
                                 }
 
                             }

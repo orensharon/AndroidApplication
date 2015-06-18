@@ -86,7 +86,8 @@ public class Contacts extends Base {
                     String url = "http://" +
                             mSystemSession.geIPAddressOfSafe() + ApplicationConstants.CONTACT_GET_API_SUFFIX;
 
-                   LoadContacts(response);
+
+                   LoadData(response);
 
 
                 }
@@ -105,7 +106,7 @@ public class Contacts extends Base {
     }
 
 
-    private void LoadContacts(String data) {
+    public void LoadData(String data) {
 
         // Extracting given data string into Json array and iterate over
         // All given photos

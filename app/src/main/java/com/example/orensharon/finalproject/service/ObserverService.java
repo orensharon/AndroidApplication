@@ -181,7 +181,6 @@ public class ObserverService extends Service implements Observer {
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         // Service was started
-        boolean sync = false;
         String message = null;
 
 

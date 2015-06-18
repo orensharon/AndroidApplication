@@ -66,11 +66,10 @@
             <ImageView
                 android:id="@+id/icon"
                 android:layout_width="fill_parent"
-
+                android:scaleType="centerCrop"
                 android:layout_height="wrap_content"
                 android:contentDescription="TODO"
-                android:layout_centerInParent="true"
-                android:src="@drawable/ic_launcher" />
+                android:layout_centerInParent="true" />
 
         </RelativeLayout>
         <RelativeLayout

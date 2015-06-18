@@ -99,14 +99,13 @@ public abstract class BaseManager {
             // Get the content
             result = getLastContent();
 
+            // Save the latest id of the local storage content
+            mContentSession.setLatestId(mContentType, getLatestSystemID());
+
             // TODO: check new content while sync
 
             // Save meta data of the content to database
             mContentBL.InsertContent(result);
-
-            // Save the latest id of the local storage content
-            mContentSession.setLatestId(mContentType, getLatestSystemID());
-
 
             Log.i("sharonlog",mContentType + " new latest id:" + mContentSession.getLatestId(mContentType));
 

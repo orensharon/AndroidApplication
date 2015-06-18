@@ -3,8 +3,10 @@ package com.example.orensharon.finalproject.logic;
 import android.content.Context;
 import android.util.Log;
 
+import com.android.volley.Cache;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.DiskBasedCache;
 import com.android.volley.toolbox.Volley;
 
 /**
@@ -17,12 +19,16 @@ public class RequestPool {
 
     private RequestQueue mRequestQueue;
 
+
     private static Context mContext;
 
     private RequestPool(Context context) {
 
         mContext = context;
         mRequestQueue = getRequestQueue();
+
+        // Instantiate the cache
+
 
 
     }

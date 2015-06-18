@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,52 +12,48 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import com.example.orensharon.finalproject.R;
-
-import com.example.orensharon.finalproject.logic.CustomPicasso;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Transformation;
-
-import java.text.ParsePosition;
-import java.text.SimpleDateFormat;
-import java.util.TimeZone;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+import org.ocpsoft.prettytime.PrettyTime;
+import java.util.Date;
 
 /**
  * Created by orensharon on 5/3/15.
+ * The Photo feed adapter
  */
 public class FeedPhotoAdapter extends ArrayAdapter<FeedPhotoItem> {
 
     private Context mContext;
     private int mLayoutInflater;
+    private LayoutInflater mInflater;
     private FeedPhotoItem data[] = null;
-    String mToken;
 
 
-    public FeedPhotoAdapter(Context context, int layoutResId, FeedPhotoItem[] data, String token) {
+
+    public FeedPhotoAdapter(Context context, int layoutResId, FeedPhotoItem[] data) {
         super(context, layoutResId, data);
         this.mLayoutInflater = layoutResId;
         this.mContext = context;
+        this.mInflater = ((Activity)mContext).getLayoutInflater();
         this.data = data;
-        mToken = token;
 
     }
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
-        FeedItemHolder holder = null;
+        FeedItemHolder holder;
 
         DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
 
-        float dpHeight = displayMetrics.heightPixels; // / displayMetrics.density;
+        //float dpHeight = displayMetrics.heightPixels; // / displayMetrics.density;
         final float dpWidth = displayMetrics.widthPixels; // / displayMetrics.density;
 
 
         if(convertView == null)
         {
-            LayoutInflater inflater = ((Activity)mContext).getLayoutInflater();
-            convertView = inflater.inflate(mLayoutInflater, parent, false);
+            convertView = mInflater.inflate(mLayoutInflater, parent, false);
 
             holder = new FeedItemHolder();
             holder.imageIcon = (ImageView)convertView.findViewById(R.id.icon);
@@ -73,38 +68,79 @@ public class FeedPhotoAdapter extends ArrayAdapter<FeedPhotoItem> {
         }
 
         RelativeLayout container;
-        ProgressBar progressBar = null;
-        if (convertView != null) {
+        ProgressBar progressBar;
 
-            container = (RelativeLayout)convertView.findViewById(R.id.feed_image_container);
-            container.getLayoutParams().width = (int) dpWidth;
-            container.getLayoutParams().height = (int) dpWidth;
 
-            holder.imageIcon.getLayoutParams().width = (int) dpWidth;
-            holder.imageIcon.getLayoutParams().height = (int) dpWidth;
-            progressBar = (ProgressBar) convertView.findViewById(R.id.feed_item_progress_Bar);
-            progressBar.setVisibility(View.VISIBLE);
-        }
+        container = (RelativeLayout)convertView.findViewById(R.id.feed_image_container);
+        container.getLayoutParams().width = (int) dpWidth;
+        container.getLayoutParams().height = (int) dpWidth;
 
-        FeedPhotoItem feedItem = data[position];
+        holder.imageIcon.getLayoutParams().width = (int) dpWidth;
+        holder.imageIcon.getLayoutParams().height = (int) dpWidth;
+        progressBar = (ProgressBar) convertView.findViewById(R.id.feed_item_progress_Bar);
+        progressBar.setVisibility(View.VISIBLE);
 
-        SimpleDateFormat df = new SimpleDateFormat("HH:mm MM/dd/yyyy");
-        df.setTimeZone(TimeZone.getTimeZone("GMT"));
-        String result = df.format(feedItem.getDateCreated());
 
+        FeedPhotoItem feedItem = getItem(position);
+
+        // Get the date and parse it
+        String friendlyDate;
+        PrettyTime prettyTime = new PrettyTime();
+        friendlyDate = prettyTime.format(new Date(feedItem.getDateCreated()));
+
+        // Put the geo location
         String geoLocation = feedItem.getGeoLocation();
         if (geoLocation.equals("null") || geoLocation.equals("")) {
             geoLocation = "Not available";
         }
-        holder.textCreatedDate.setText(result);
+
+        holder.textCreatedDate.setText(friendlyDate);
         holder.textGeoLocation.setText(geoLocation);
 
+        final ProgressBar finalProgressBar = progressBar;
 
-        final FeedItemHolder finalHolder = holder;
-        CustomPicasso.getImageLoader(mContext, mToken)
+        // Put the Image
+        ImageLoader imageLoader = ImageLoader.getInstance(); // Get singleton instance
+
+
+
+        //holder.imageIcon.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        imageLoader.displayImage(feedItem.getPhoto(), holder.imageIcon, new ImageLoadingListener() {
+            @Override
+            public void onLoadingStarted(String imageUri, View view) {
+
+            }
+
+            @Override
+            public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+
+            }
+
+            @Override
+            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                finalProgressBar.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onLoadingCancelled(String imageUri, View view) {
+
+            }
+        });
+          /*imageLoader.loadImage(feedItem.getPhoto(), new SimpleImageLoadingListener() {
+            @Override
+            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                finalProgressBar.setVisibility(View.GONE);
+                finalHolder.imageIcon.setImageBitmap(loadedImage);
+            }
+        });
+
+
+        //CustomPicasso.getImageLoader(mContext, mToken)
+      Picasso.with(mContext)
                 .load(feedItem.getPhoto())
                 .fit()
                 .centerCrop()
+                .tag(mContext)
                 .into(holder.imageIcon, new ImageLoadedCallback(progressBar) {
                     @Override
                     public void onSuccess() {
@@ -123,11 +159,22 @@ public class FeedPhotoAdapter extends ArrayAdapter<FeedPhotoItem> {
                                 .resize((int) dpWidth, (int) dpWidth)
                                 .into(finalHolder.imageIcon);
                     }
-                });
+                });*/
 
 
 
         return convertView;
+    }
+
+
+    @Override
+    public int getCount() {
+        return data.length;
+    }
+
+    @Override
+    public FeedPhotoItem getItem(int position) {
+        return data[position];
     }
 
     static class FeedItemHolder
@@ -135,24 +182,6 @@ public class FeedPhotoAdapter extends ArrayAdapter<FeedPhotoItem> {
         ImageView imageIcon;
         TextView textCreatedDate;
         TextView textGeoLocation;
-    }
-
-    private class ImageLoadedCallback implements Callback {
-        ProgressBar progressBar;
-
-        public  ImageLoadedCallback(ProgressBar progBar){
-            progressBar = progBar;
-        }
-
-        @Override
-        public void onSuccess() {
-
-        }
-
-        @Override
-        public void onError() {
-
-        }
     }
 
 

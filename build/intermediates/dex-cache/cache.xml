@@ -30,6 +30,20 @@
         <dex dex="/Users/orensharon/AndroidStudioProjects/FinalProject/AndroidApplication/app/build/intermediates/pre-dexed/debug/library-1.0.6-182a626d9943185c68cb4b3c40937b435a8b84cd.jar" />
     </item>
     <item
+        jar="/Users/orensharon/.gradle/caches/modules-2/files-2.1/com.nostra13.universalimageloader/universal-image-loader/1.9.4/dd9eeb557650c4ad7394df23f0f5cf27a7cfc697/universal-image-loader-1.9.4.jar"
+        jumboMode="false"
+        revision="20.0.0"
+        sha1="dd9eeb557650c4ad7394df23f0f5cf27a7cfc697">
+        <dex dex="/Users/orensharon/AndroidStudioProjects/FinalProject/AndroidApplication/app/build/intermediates/pre-dexed/debug/universal-image-loader-1.9.4-f517893a698f0312f5daf225c79b356e8a733292.jar" />
+    </item>
+    <item
+        jar="/Users/orensharon/.gradle/caches/modules-2/files-2.1/org.ocpsoft.prettytime/prettytime/3.2.7.Final/4b216ebcf284752a40e11c39c2ea62bc45528c33/prettytime-3.2.7.Final.jar"
+        jumboMode="false"
+        revision="20.0.0"
+        sha1="4b216ebcf284752a40e11c39c2ea62bc45528c33">
+        <dex dex="/Users/orensharon/AndroidStudioProjects/FinalProject/AndroidApplication/app/build/intermediates/pre-dexed/debug/prettytime-3.2.7.Final-02765754ff68033f1d79ae73664195d32a9b3f8a.jar" />
+    </item>
+    <item
         jar="/Users/orensharon/sdk/extras/android/m2repository/com/android/support/support-v4/19.1.0/support-v4-19.1.0.jar"
         jumboMode="false"
         revision="20.0.0"

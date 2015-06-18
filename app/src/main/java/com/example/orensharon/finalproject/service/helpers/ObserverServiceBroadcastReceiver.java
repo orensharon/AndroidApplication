@@ -84,7 +84,7 @@ public class ObserverServiceBroadcastReceiver extends BroadcastReceiver {
 
 
                     if (settingsFragment != null) {
-                        syncNowButton.setBackgroundColor(mContext.getResources().getColor(R.color.online));
+                        settingsFragment.initSyncButton();
                     }
                 }
                 if (code == ObserverService.SYNC_ERROR) {

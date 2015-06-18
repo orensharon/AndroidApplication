@@ -6,6 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.example.orensharon.finalproject.ApplicationConstants;
 import com.example.orensharon.finalproject.R;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -62,14 +64,15 @@ public class ContactDetails extends Fragment {
                 emailsTextView.setText(JsonArrayToString(json.getJSONArray("Emails"), new String[] {"Address", "Type"} ));
                 addressesTextView.setText(JsonArrayToString(json.getJSONArray("Addresses"), new String[] {"Address", "Type"} ));
 
-                if (!json.getJSONObject("Organization").get("Company").toString().equals("null")) {
-                    organizationCompanyTextView.setText(json.getJSONObject("Organization").get("Company").toString());
-                }
+                if (!json.getString("Organization").equals("null")) {
+                    if (!json.getJSONObject("Organization").get("Company").toString().equals("null")) {
+                        organizationCompanyTextView.setText(json.getJSONObject("Organization").get("Company").toString());
+                    }
 
-                if (!json.getJSONObject("Organization").get("Title").toString().equals("null")) {
-                    organizationTitleTextView.setText(json.getJSONObject("Organization").get("Title").toString());
+                    if (!json.getJSONObject("Organization").get("Title").toString().equals("null")) {
+                        organizationTitleTextView.setText(json.getJSONObject("Organization").get("Title").toString());
+                    }
                 }
-
                 if (!json.get("Notes").toString().equals("null")) {
                     notesTextView.setText(json.get("Notes").toString());
                 }
@@ -103,7 +106,18 @@ public class ContactDetails extends Fragment {
 
         for (int i = 0 ; i < array.length(); i ++) {
             JSONObject obj = array.getJSONObject(i);
-            result += obj.getString(params[0]) + " (" + obj.getString(params[1]) + ")";
+            int typeId = obj.getInt(params[1]);
+            String type = "";
+
+            if (params[0].equals("Number")) {
+                // Means phones
+                type = ApplicationConstants.CONTACT_PHONE_TYPES[typeId];
+            } else if (params[0].equals("Address")) {
+                // Means Emails / Addresses
+                type = ApplicationConstants.CONTACT_ADDRESSES_TYPES[typeId];
+            }
+
+            result += type + ":\t\t\t\t" + obj.getString(params[0]);
             if (i < array.length() - 1) {
                 result += "\n";
             }

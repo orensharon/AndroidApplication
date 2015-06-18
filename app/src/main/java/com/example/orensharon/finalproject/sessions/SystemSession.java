@@ -26,6 +26,7 @@ public class SystemSession {
     private final String IP_ADDRESS_KEY = "IP_ADDRESS_KEY";
     private final String AUTH_TOKEN_KEY = "AUTH_TOKEN_KEY";
     private final String IN_SYNC_KEY = "IN_SYNC_KEY";
+    private final String OFFLINE_LIST_KEY = "OFFLINE_LIST_KEY";
 
 
     public SystemSession(Context context) {
@@ -52,11 +53,12 @@ public class SystemSession {
 
         // Set the system to a logged out state
         mEditor.putBoolean(LOGIN_STATE_KEY, false);
+        mEditor.apply();
 
         setIPAddressOfSafe(ApplicationConstants.NO_IP_VALUE);
         setToken(ApplicationConstants.NO_TOKEN_VALUE);
+        setInSync(null, false);
 
-        mEditor.apply();
     }
 
     private void setLoginState(boolean state) {
@@ -137,5 +139,6 @@ public class SystemSession {
         mEditor.putBoolean(str, state);
         mEditor.apply();
     }
+
 
 }

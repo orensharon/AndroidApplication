@@ -16,6 +16,7 @@ import com.example.orensharon.finalproject.R;
 import com.example.orensharon.finalproject.gui.IFragment;
 import com.example.orensharon.finalproject.gui.login.LoginActivity;
 import com.example.orensharon.finalproject.service.ObserverService;
+import com.example.orensharon.finalproject.sessions.SettingsSession;
 import com.example.orensharon.finalproject.sessions.SystemSession;
 
 /**
@@ -88,8 +89,12 @@ public class AccountFragment extends Fragment {
     private void LogOut() {
 
         SystemSession systemSession;
+        SettingsSession settingsSession;
         systemSession = new SystemSession(getActivity());
+        settingsSession = new SettingsSession(getActivity());
+
         systemSession.Logout();
+        settingsSession.setServiceIsEnabledByUser(false);
         ((SettingsActivity)mListener).stopObservingService();
 
         mListener.LoadActivity(LoginActivity.class, false);

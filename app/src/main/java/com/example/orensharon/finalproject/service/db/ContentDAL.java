@@ -16,11 +16,9 @@ import java.util.List;
 public class ContentDAL extends SQLiteOpenHelper {
 
 
-
     public class DBConstants {
 
         public static final String TABLE_NAME = "Contents";
-
         public static final String COLUMN_ID = "Id";
         public static final String COLUMN_TYPE = "type";
         public static final String COLUMN_CHECKSUM = "checksum";
@@ -33,6 +31,7 @@ public class ContentDAL extends SQLiteOpenHelper {
     }
 
     private SQLiteDatabase mDB;
+
 
     public static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "KEEP_IT_SAFE_DB";

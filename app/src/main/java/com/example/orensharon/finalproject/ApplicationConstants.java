@@ -75,6 +75,13 @@ public class ApplicationConstants
     public static final String TYPE_OF_CONTENT_SMS = "Sms";
     public static final String TYPE_OF_CONTENT_CALL = "Call";
 
+    // Phones Types
+    public static final String[] CONTACT_PHONE_TYPES =
+            { "Custom", "Home", "Mobile", "Work", "Work Fax", "Home Fax", "Pager", "Other", "Callback" };
+
+    // Addresses / Email Addresses Types
+    public static final String[] CONTACT_ADDRESSES_TYPES =
+            { "Custom", "Home", "Work", "Other" };
 
 
     // Default init values of needed data, When the value of property is set
@@ -83,6 +90,9 @@ public class ApplicationConstants
     // Session constants
     public static final String NO_IP_VALUE = "";
     public static final String NO_TOKEN_VALUE = "";
+
+
+
 
 
     // Content Keys
