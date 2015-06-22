@@ -39,6 +39,7 @@
 
                 android:layout_height="wrap_content"
                 android:layout_width="0dp"
+                android:gravity="left"
                 android:id="@+id/contact_name_value_text_view"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="0.7"
@@ -68,6 +69,7 @@
                 android:layout_height="wrap_content"
                 android:layout_width="0dp"
                 android:layout_weight="0.7"
+                android:gravity="left"
                 android:id="@+id/contact_phones_value_text_view"
                 android:textSize="14sp"
                 />
@@ -95,6 +97,7 @@
                 android:layout_height="wrap_content"
                 android:layout_width="0dp"
                 android:layout_weight="0.7"
+                android:gravity="left"
                 android:id="@+id/contact_emails_value_text_view"
                 android:textSize="14sp"
                 />
@@ -122,6 +125,7 @@
                 android:layout_height="wrap_content"
                 android:layout_width="0dp"
                 android:layout_weight="0.7"
+                android:gravity="left"
                 android:id="@+id/contact_addresses_value_text_view"
                 android:textSize="14sp"
                 />
@@ -158,6 +162,7 @@
                         android:layout_height="wrap_content"
                         android:layout_width="0dp"
                         android:layout_weight="0.35"
+                        android:gravity="left"
                         android:id="@+id/contact_organization_company_text_view"
                         android:textSize="14sp"
                         android:text="Company:"/>
@@ -179,6 +184,7 @@
                         android:layout_height="wrap_content"
                         android:layout_width="0dp"
                         android:layout_weight="0.35"
+                        android:gravity="left"
                         android:id="@+id/contact_organization_title_text_view"
                         android:textSize="14sp"
                         android:text="Title:"/>
@@ -216,6 +222,7 @@
                 android:layout_height="wrap_content"
                 android:layout_width="0dp"
                 android:layout_weight="0.7"
+                android:gravity="left"
                 android:id="@+id/contact_notes_value_text_view"
                 android:textSize="14sp"
                 android:text=""/>

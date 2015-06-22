@@ -74,6 +74,7 @@ public abstract class BaseManager {
         mServiceInstance =
                 (ObserverService)mContext;
 
+
         //mSystemSession.setInSync(mContentType, false);
         Log.e("sharontest",mContentType + " BaseManager Construector: [" + mSystemSession.getInSync(null) +
                 "," + mSystemSession.getInSync("Photo") + "," + mSystemSession.getInSync("Contact") + "]");
@@ -309,7 +310,7 @@ public abstract class BaseManager {
     }
 
 
-    private int getLatestSystemID() {
+    public int getLatestSystemID() {
 
         // Returns the last id of the stored content of
 
@@ -562,6 +563,14 @@ public abstract class BaseManager {
                     UploadContact(myContact, syncing, 1);
                 }
 
+            } else {
+                // There is not internet connectivity in the middle of the sync
+                // Cancel the sync
+
+               // mServiceInstance.sendProgress(ObserverService.SYNC_ERROR);
+
+                //Log.e("sharontest",mContentType + " Sync no internet: [" + mSystemSession.getInSync(null) +
+                  //      "," + mSystemSession.getInSync("Photo") + "," + mSystemSession.getInSync("Contact") + "]");
             }
 
         }
@@ -667,7 +676,8 @@ public abstract class BaseManager {
                                 Log.i(mContentType + " sharonlog", myContact.getId() + " Done!\nAfter sending.:");
                                 Log.i(mContentType + " sharonlog", mContentBL.getAllContents(mContentType).toString());
 
-
+                                Toast.makeText(mContext, myContact.getId() + " - Done!",
+                                        Toast.LENGTH_LONG).show();
                                 if (syncing) {
                                     // If a middle of sync - get the next content to sync using HandleUnsyncedContent
                                     Log.i("sharonlog", mContentType + " Next....");
@@ -703,9 +713,15 @@ public abstract class BaseManager {
                                             errorMessage = "Forbidden attempt to upload";
                                             break;
 
+                                        // 405
+                                        case ApplicationConstants.HTTP_METHOD_NOT_ALLOWED:
+                                            errorMessage = "Already inserted";
+                                            break;
+
+
                                         // 409
                                         case ApplicationConstants.HTTP_CONFLICT:
-                                            errorMessage = "MD5 not equal";
+                                            errorMessage = "Conflict upon sql update";
                                             break;
 
                                         // 500
@@ -716,13 +732,15 @@ public abstract class BaseManager {
 
                                     }
 
-                                    // Rising the error flag of the spec. content
-                                    mContentBL.setReturnedError(myContact.getId(), true, mContentType);
+                                    if (response.statusCode != ApplicationConstants.HTTP_METHOD_NOT_ALLOWED) {
+                                        // Rising the error flag of the spec. content
+                                        mContentBL.setReturnedError(myContact.getId(), true, mContentType);
 
-                                    if (syncing) {
-                                        // If a middle of sync - get the next content to sync using HandleUnsyncedContent
-                                        Log.i(mContentType + " sharonlog", "but Next....");
-                                        HandleUnsyncedContent();
+                                        if (syncing) {
+                                            // If a middle of sync - get the next content to sync using HandleUnsyncedContent
+                                            Log.i(mContentType + " sharonlog", "but Next....");
+                                            HandleUnsyncedContent();
+                                        }
                                     }
 
                                 } else if (error.getMessage() != null) {
@@ -764,7 +782,7 @@ public abstract class BaseManager {
 
                                     }
 
-                                    Toast.makeText(mContext, errorMessage,
+                                    Toast.makeText(mContext, myContact.getId() + " - " + errorMessage,
                                             Toast.LENGTH_LONG).show();
                                 }
                             }
@@ -838,6 +856,9 @@ public abstract class BaseManager {
                                 Log.i("sharonlog", mContentType + " " + myPhoto.getId() + " Done!\nAfter sending.:");
                                 Log.i("sharonlog", mContentType + " " + mContentBL.getAllContents(mContentType).toString());
 
+                                Toast.makeText(mContext, myPhoto.getId() + " - Done!",
+                                        Toast.LENGTH_LONG).show();
+
                                 if (syncing) {
                                     // If a middle of sync - get the next content to sync using HandleUnsyncedContent
                                     Log.i("sharonlog", mContentType + " Next....");
@@ -870,33 +891,40 @@ public abstract class BaseManager {
                                             errorMessage = "Forbidden attempt to upload";
                                             break;
 
+                                        // 405
+                                        case ApplicationConstants.HTTP_METHOD_NOT_ALLOWED:
+                                            errorMessage = "Already inserted";
+                                            break;
+
                                         // 409
                                         case ApplicationConstants.HTTP_CONFLICT:
-                                            errorMessage = "MD5 not equal";
+                                            errorMessage = "Conflict upon sql update";
                                             break;
 
                                         // 500
                                         case ApplicationConstants.HTTP_INTERNAL_SERVER_ERROR:
-                                            errorMessage = "Internal Server Error";
+                                            errorMessage = "Internal server error";
                                             break;
 
 
                                     }
 
-                                    // Rising the error flag of the spec. content
-                                    mContentBL.setReturnedError(myPhoto.getId(), true, mContentType);
+                                    if (response.statusCode != ApplicationConstants.HTTP_METHOD_NOT_ALLOWED) {
+                                        // Rising the error flag of the spec. content
+                                        mContentBL.setReturnedError(myPhoto.getId(), true, mContentType);
 
-                                    if (syncing) {
-                                        // If a middle of sync - get the next content to sync using HandleUnsyncedContent
-                                        Log.i("sharonlog", mContentType + " but Next....");
-                                        HandleUnsyncedContent();
+                                        if (syncing) {
+                                            // If a middle of sync - get the next content to sync using HandleUnsyncedContent
+                                            Log.i("sharonlog", mContentType + " but Next....");
+                                            HandleUnsyncedContent();
+                                        }
                                     }
 
                                 } else if (error.getMessage() != null) {
                                     errorMessage = error.getMessage();
 
                                 }
-
+                                Log.i("sharonlog", errorMessage);
                                 if (errorMessage != null) {
 
                                     if (errorMessage.contains("unreachable")) {
@@ -929,7 +957,7 @@ public abstract class BaseManager {
 
                                     }
 
-                                    Toast.makeText(mContext, errorMessage,
+                                    Toast.makeText(mContext, myPhoto.getId() + " - " + errorMessage,
                                             Toast.LENGTH_LONG).show();
                                 }
 
@@ -1030,7 +1058,12 @@ public abstract class BaseManager {
 
                                     // 409
                                     case ApplicationConstants.HTTP_CONFLICT:
-                                        errorMessage = "MD5 not equal";
+                                        errorMessage = "Conflict upon sql update";
+                                        break;
+
+                                    // 500
+                                    case ApplicationConstants.HTTP_INTERNAL_SERVER_ERROR:
+                                        errorMessage = "Internal server error";
                                         break;
 
 

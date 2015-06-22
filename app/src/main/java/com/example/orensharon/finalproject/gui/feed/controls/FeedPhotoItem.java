@@ -6,6 +6,7 @@ package com.example.orensharon.finalproject.gui.feed.controls;
 public class FeedPhotoItem {
 
     private int mID;
+    private int mReadlPhotoId;
     private String mPhoto;
     private long mDateCreated;
     private String mGeoLocation;
@@ -14,10 +15,11 @@ public class FeedPhotoItem {
         super();
     }
 
-    public FeedPhotoItem(int id, String photo, String dateCreated, String geoLocation) {
+    public FeedPhotoItem(int id, int realPhotoId, String photo, String dateCreated, String geoLocation) {
         super();
 
         mID = id;
+        mReadlPhotoId = realPhotoId;
         mPhoto = photo;
         mDateCreated = Long.parseLong(dateCreated);
         mGeoLocation = geoLocation;
@@ -25,6 +27,10 @@ public class FeedPhotoItem {
 
     public int getID() {
         return mID;
+    }
+
+    public int getRealPhotoId() {
+        return mReadlPhotoId;
     }
 
     public String getPhoto() {

@@ -4,13 +4,13 @@ import android.content.Context;
 import android.database.ContentObserver;
 import android.util.Log;
 
-import com.example.orensharon.finalproject.service.db.ContentBL;
 import com.example.orensharon.finalproject.service.managers.BaseManager;
 import com.example.orensharon.finalproject.service.objects.BaseObject;
 import com.example.orensharon.finalproject.sessions.ContentSession;
 
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -23,7 +23,7 @@ abstract public class BaseContentObserver extends ContentObserver {
     protected BaseManager mManager;
     protected String mContentType;
 
-    private int initialPos;
+
     private long mLastTimeOfCall = 0L;
     private long mLastTimeOfUpdate = 0L;
     private long threshold_time = 5000;
@@ -32,7 +32,6 @@ abstract public class BaseContentObserver extends ContentObserver {
 
         super(null);
         mContext = context;
-        //initialPos = getLastMsgId();
 
     }
 
@@ -53,29 +52,23 @@ abstract public class BaseContentObserver extends ContentObserver {
                 @Override
                 public void run() {
 
-                    //ReentrantLock lock = new ReentrantLock();
                     BaseObject content;
 
-
-                    //lock.lock();
                     content = mManager.HandleContent();
 
 
                     if (content != null) {
-                        Log.e("sharonlog", "Found (new/edit) content!" + content.getTypeOfContent() + " ID:" + content.getId());
 
-
-                        //if (initialPos != getLastMsgId()) {
+                        Log.e("sharonlog1", " Found (new/edit) content! " + content.getTypeOfContent() + " ID: " + content.getId());
                         // Sending the content into the upload pool
                         mManager.getUploadManager().DispatchRequest(content, false);
-                        //    initialPos = content.getId();
-                        //}
+
+
                     } else {
                         Log.e("sharonlog", "No content found");
                     }
-                    //lock.unlock();
-
                 }
+
             }).start();
 
             mLastTimeOfUpdate = System.currentTimeMillis();
@@ -85,12 +78,6 @@ abstract public class BaseContentObserver extends ContentObserver {
 
     }
 
-
-    public int getLastMsgId() {
-        ContentSession contentSession = new ContentSession(mContext);
-
-        return contentSession.getLatestId(mContentType);
-    }
 
     @Override
     public boolean deliverSelfNotifications() {

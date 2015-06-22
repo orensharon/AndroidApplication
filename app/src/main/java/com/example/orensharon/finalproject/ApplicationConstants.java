@@ -53,7 +53,7 @@ public class ApplicationConstants
     public static final int HTTP_FORBIDDEN = 403;
     public static final int HTTP_CONFLICT = 409;
     public static final int HTTP_INTERNAL_SERVER_ERROR = 500;
-
+    public static final int HTTP_METHOD_NOT_ALLOWED = 405;
 
     // HTTP Posts constants
     public static final String POST_BODY_BOUNDARY = "xx";

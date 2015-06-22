@@ -94,6 +94,7 @@ public class FeedPhotoAdapter extends ArrayAdapter<FeedPhotoItem> {
             geoLocation = "Not available";
         }
 
+        //holder.textCreatedDate.setText("ID" + feedItem.getRealPhotoId());
         holder.textCreatedDate.setText(friendlyDate);
         holder.textGeoLocation.setText(geoLocation);
 

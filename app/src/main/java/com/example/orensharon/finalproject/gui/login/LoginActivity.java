@@ -6,6 +6,8 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -42,9 +44,6 @@ public class LoginActivity extends Activity {
         // Initialize the system session
         mSystemSession = new SystemSession(getApplicationContext());
 
-        LoginButtonListener();
-        InitLogo();
-
         // Read save username and password from the session
         // And set them in the text fields
         mUsername = ((EditText)findViewById(R.id.edit_text_username));
@@ -53,6 +52,34 @@ public class LoginActivity extends Activity {
         mUsername.setText(mSystemSession.getUsername());
         mPassword.setText(mSystemSession.getPassword());
 
+        LoginButtonListener();
+        UsernameOnChangeListener();
+
+        InitLogo();
+
+
+    }
+
+    private void UsernameOnChangeListener() {
+        mUsername.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            public void afterTextChanged(Editable s) {
+
+                mPassword.setText("");
+
+
+            }
+        });
     }
 
     @Override
@@ -244,6 +271,10 @@ public class LoginActivity extends Activity {
                                         errorMessage = "Forbidden request";
                                         break;
 
+                                    // 500
+                                    case ApplicationConstants.HTTP_INTERNAL_SERVER_ERROR:
+                                        errorMessage = "Internal Server Error";
+                                        break;
 
                                 }
 
@@ -323,38 +354,4 @@ public class LoginActivity extends Activity {
     }
 
 
-
-
-
-    public void Testing(View view) {
-/*
-        // Contact Uploading test
-        BaseManager contactManager = new ContactManager(getApplicationContext(), ContactsContract.Contacts.CONTENT_URI);
-        MyContact myContact = (MyContact)contactManager.requestLatestContentFromDatabase();
-
-        Log.e("Contact",myContact.toJSONObject().toString());
-
-
-        JSONObject body;
-        RequestFactory requestFactory;
-
-        String ip = mSystemSession.geIPAddressOfSafe();
-        String url = "http://" + ip + ApplicationConstants.CONTACT_INSERT_API_SUFFIX;
-
-        requestFactory = new RequestFactory(getApplicationContext());
-
-
---------
-        // Photo Uploading Test
-
-        File file = new File("/storage/sdcard0/DCIM/Camera/20150418_234415.jpg");
-        final MyPhoto photo = new MyPhoto("505", "MyPhoto", file,"image/jpeg", "20150418_234415");
-        String ip = mSystemSession.geIPAddressOfSafe();
-
-        String url = "http://" + ip + ApplicationConstants.PHOTO_INSERT_API_SUFFIX;
-        RequestFactory requestFactory = new RequestFactory(getApplication());
-
-
-        */
-    }
 }

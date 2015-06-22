@@ -67,14 +67,23 @@ public class ContactDetails extends Fragment {
                 if (!json.getString("Organization").equals("null")) {
                     if (!json.getJSONObject("Organization").get("Company").toString().equals("null")) {
                         organizationCompanyTextView.setText(json.getJSONObject("Organization").get("Company").toString());
+                    } else {
+                        organizationCompanyTextView.setText("No info");
                     }
 
                     if (!json.getJSONObject("Organization").get("Title").toString().equals("null")) {
                         organizationTitleTextView.setText(json.getJSONObject("Organization").get("Title").toString());
+                    } else {
+                        organizationTitleTextView.setText("No info");
                     }
+                } else {
+                    organizationCompanyTextView.setText("No info");
+                    organizationTitleTextView.setText("No info");
                 }
                 if (!json.get("Notes").toString().equals("null")) {
                     notesTextView.setText(json.get("Notes").toString());
+                } else {
+                    notesTextView.setText("No info");
                 }
 
 
@@ -121,6 +130,10 @@ public class ContactDetails extends Fragment {
             if (i < array.length() - 1) {
                 result += "\n";
             }
+        }
+
+        if (result.equals("")) {
+            result = "No info";
         }
         return result;
     }

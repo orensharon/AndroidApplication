@@ -83,7 +83,7 @@ public class Base extends Fragment {
 
                                     // 409
                                     case ApplicationConstants.HTTP_CONFLICT:
-                                        errorMessage = "MD5 not equal";
+                                        errorMessage = "";
                                         break;
 
                                     // 500
@@ -222,7 +222,12 @@ public class Base extends Fragment {
 
                                 // 409
                                 case ApplicationConstants.HTTP_CONFLICT:
-                                    errorMessage = "MD5 not equal";
+                                    errorMessage = "";
+                                    break;
+
+                                // 500
+                                case ApplicationConstants.HTTP_INTERNAL_SERVER_ERROR:
+                                    errorMessage = "Internal server error";
                                     break;
 
 

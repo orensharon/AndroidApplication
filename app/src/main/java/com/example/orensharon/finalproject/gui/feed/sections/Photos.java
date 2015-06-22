@@ -102,13 +102,14 @@ public class Photos extends Base {
 
                     try {
                         String id = jsonArray.getJSONObject(i).get("Id").toString();
+                        int realId = jsonArray.getJSONObject(i).getInt("RealId");
                         String dateCreated = jsonArray.getJSONObject(i).get("DateCreated").toString();
                         String geoLocation = jsonArray.getJSONObject(i).get("GeoLocation").toString();
                         String photoUrl = url + id;
-                        feedItems[i] = new FeedPhotoItem(i, photoUrl, dateCreated,geoLocation);
+                        feedItems[i] = new FeedPhotoItem(i, realId,photoUrl, dateCreated,geoLocation);
                     } catch (JSONException e) {
                         e.printStackTrace();
-                        feedItems[i] = new FeedPhotoItem(i, "", "", "");
+                        feedItems[i] = new FeedPhotoItem(i, -1 , "", "", "");
                     }
 
 

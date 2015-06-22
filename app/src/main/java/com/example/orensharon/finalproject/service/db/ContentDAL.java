@@ -382,7 +382,7 @@ public class ContentDAL extends SQLiteOpenHelper {
         cursor = mDB.rawQuery(
                 "SELECT * " +
                         " FROM " + DBConstants.TABLE_NAME +
-                        " WHERE " + DBConstants.COLUMN_TYPE + " = '" + type + "'"
+                        " WHERE " + DBConstants.COLUMN_TYPE + " = '" + type + "' ORDER BY Id DESC"
                 ,null
         );
 
