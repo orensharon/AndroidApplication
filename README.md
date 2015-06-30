@@ -1,4 +1,4 @@
-AndroidApplication
+KeepItSafe Mobile Application
 ===================
 This is the android application of the final project.<br />
 The application contains a user interface, including:<br />
