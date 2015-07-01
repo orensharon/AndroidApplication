@@ -119,6 +119,8 @@ public class SystemSession {
 
     public boolean getInSync(String contentType) {
 
+        // Get the status of the sync status
+
         String str = IN_SYNC_KEY;
         if (contentType != null) {
             // null means for both
@@ -128,13 +130,14 @@ public class SystemSession {
     }
     public void setInSync(String contentType, boolean state) {
 
+        // Set the status of the sync state
         String str = IN_SYNC_KEY;
         if (contentType != null) {
             // null means for both
             str = contentType + "_" + str;
         } else if (state == false) {
-            setInSync("Photo",false);
-            setInSync("Contact",false);
+            setInSync(ApplicationConstants.TYPE_OF_CONTENT_PHOTO,false);
+            setInSync(ApplicationConstants.TYPE_OF_CONTENT_CONTACT,false);
         }
         mEditor.putBoolean(str, state);
         mEditor.apply();

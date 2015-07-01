@@ -13,6 +13,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.example.orensharon.finalproject.ApplicationConstants;
+import com.example.orensharon.finalproject.R;
 import com.example.orensharon.finalproject.logic.RequestFactory;
 import com.example.orensharon.finalproject.service.ObserverService;
 import com.example.orensharon.finalproject.service.db.ContentBL;
@@ -166,35 +167,31 @@ public abstract class BaseManager {
 
         // Make sure syncing is not in process
         if (!mSystemSession.getInSync(null)) {
-           // new Thread(new Runnable() {
-           //     @Override
-           //     public void run() {
-
-                    Log.e("sharonlog", mContentType + " Now managing: " + mObservingUri.toString());
-                    Log.e("sharonlog", mContentType + " Before Managing ID: " + mContentSession.getLatestId(mContentType));
-
-                    // Get and save the latest system id of the content table
-                    int latestSystemID = getLatestSystemID();
-                    int savedSystemID = mContentSession.getLatestId(mContentType);
-
-                    if (latestSystemID > savedSystemID) {
-                        // Means the saved ID is not synced with the actual one
-                        mContentSession.setLatestId(mContentType, latestSystemID);
-                    }
-
-                    Log.e("sharonlog", mContentType + " After Managing ID: " + mContentSession.getLatestId(mContentType));
-                    Log.i("sharonlog", mContentType + " Content List:");
-                    Log.i("sharonlog", mContentBL.getAllContents(mContentType).toString());
-
-                    // TODO: check for edits
-                    if (mServiceInstance.getServiceStatus() == ObserverService.STATUS_SERVICE_RUNNING) {
-                        //Sync();
-                    }
 
 
+                Log.e("sharonlog", mContentType + " Now managing: " + mObservingUri.toString());
+                Log.e("sharonlog", mContentType + " Before Managing ID: " + mContentSession.getLatestId(mContentType));
+
+                // Get and save the latest system id of the content table
+                int latestSystemID = getLatestSystemID();
+                int savedSystemID = mContentSession.getLatestId(mContentType);
+
+                if (latestSystemID > savedSystemID) {
+                    // Means the saved ID is not synced with the actual one
+                    mContentSession.setLatestId(mContentType, latestSystemID);
                 }
-            // }).start();
-        //}
+
+                Log.e("sharonlog", mContentType + " After Managing ID: " + mContentSession.getLatestId(mContentType));
+                Log.i("sharonlog", mContentType + " Content List:");
+                Log.i("sharonlog", mContentBL.getAllContents(mContentType).toString());
+
+                // TODO: check for edits
+                if (mServiceInstance.getServiceStatus() == ObserverService.STATUS_SERVICE_RUNNING) {
+                    //Sync();
+                }
+
+
+            }
     }
 
     public void Sync()
@@ -212,7 +209,7 @@ public abstract class BaseManager {
 
             Log.e("sharonlog", mContentType + " All terms ok, Calling HandleUnsyncedContent()");
 
-
+            // TODO: Thread
             HandleUnsyncedContent();
         } else {
             // Means that need to pause the sync
@@ -584,9 +581,7 @@ public abstract class BaseManager {
 
             mRequestFactory.CancelByTag(mContentType);
             mContentBL.CancelAllInSync(mContentType);
-
-//            Log.i("sharonlog", mContentType + " Content List:");
- //           Log.i("sharonlog", mContentBL.getAllContents(mContentType).toString());
+;
 
         }
 
@@ -600,8 +595,6 @@ public abstract class BaseManager {
             mRequestFactory.CancelAll();
             mContentBL.CancelAllInSync(mContentType);
 
-//            Log.i("sharonlog", mContentType + " Content List:");
-            //           Log.i("sharonlog", mContentBL.getAllContents(mContentType).toString());
 
         }
 
@@ -627,7 +620,7 @@ public abstract class BaseManager {
             } else {
                 apiSuffix = ApplicationConstants.CONTACT_INSERT_API_SUFFIX;
             }
-            String url = "http://" + ip + apiSuffix;
+            String url = mContext.getString(R.string.http_prefix) + ip + apiSuffix;
 
             // Adding parameters into the body
             try {
@@ -676,8 +669,8 @@ public abstract class BaseManager {
                                 Log.i(mContentType + " sharonlog", myContact.getId() + " Done!\nAfter sending.:");
                                 Log.i(mContentType + " sharonlog", mContentBL.getAllContents(mContentType).toString());
 
-                                Toast.makeText(mContext, myContact.getId() + " - Done!",
-                                        Toast.LENGTH_LONG).show();
+                                //Toast.makeText(mContext, myContact.getId() + " - Done!",
+                                //        Toast.LENGTH_LONG).show();
                                 if (syncing) {
                                     // If a middle of sync - get the next content to sync using HandleUnsyncedContent
                                     Log.i("sharonlog", mContentType + " Next....");
@@ -705,28 +698,27 @@ public abstract class BaseManager {
 
                                         // 400
                                         case ApplicationConstants.HTTP_BAD_REQUEST:
-                                            errorMessage = "400 Bad Request";
+                                            errorMessage = mContext.getString(R.string.http_bad_request);
                                             break;
 
                                         // 403
                                         case ApplicationConstants.HTTP_FORBIDDEN:
-                                            errorMessage = "Forbidden attempt to upload";
+                                            errorMessage = mContext.getString(R.string.http_forbidden);
                                             break;
 
                                         // 405
                                         case ApplicationConstants.HTTP_METHOD_NOT_ALLOWED:
-                                            errorMessage = "Already inserted";
+                                            errorMessage = mContext.getString(R.string.http_method_not_allowed);
                                             break;
-
 
                                         // 409
                                         case ApplicationConstants.HTTP_CONFLICT:
-                                            errorMessage = "Conflict upon sql update";
+                                            errorMessage = mContext.getString(R.string.http_conflict);
                                             break;
 
                                         // 500
                                         case ApplicationConstants.HTTP_INTERNAL_SERVER_ERROR:
-                                            errorMessage = "Internal Server Error";
+                                            errorMessage = mContext.getString(R.string.http_internal_server_error);
                                             break;
 
 
@@ -763,10 +755,8 @@ public abstract class BaseManager {
                                             RequestSafeIP(myContact, syncing);
                                         } else {
 
-                                            //if (syncing) {
-                                                // If in a middle of sync notify by error
-                                                mServiceInstance.sendProgress(ObserverService.SYNC_ERROR);
-                                            //}
+                                            mServiceInstance.sendProgress(ObserverService.SYNC_ERROR);
+
                                         }
 
 
@@ -774,16 +764,9 @@ public abstract class BaseManager {
 
                                         // Some issue with the network connectivity
                                         CancelAllSyncing();
-
-                                       // if (syncing) {
-                                            // If in a middle of sync notify by error
-                                            mServiceInstance.sendProgress(ObserverService.SYNC_ERROR);
-                                       // }
+                                        mServiceInstance.sendProgress(ObserverService.SYNC_ERROR);
 
                                     }
-
-                                    Toast.makeText(mContext, myContact.getId() + " - " + errorMessage,
-                                            Toast.LENGTH_LONG).show();
                                 }
                             }
                         }
@@ -803,7 +786,7 @@ public abstract class BaseManager {
 
             // Building upload API
             String ip = mSystemSession.geIPAddressOfSafe();
-            String url = "http://" + ip + ApplicationConstants.PHOTO_INSERT_API_SUFFIX;
+            String url = mContext.getString(R.string.http_prefix) + ip + ApplicationConstants.PHOTO_INSERT_API_SUFFIX;
 
             JSONObject body = new JSONObject();
             try {
@@ -856,8 +839,6 @@ public abstract class BaseManager {
                                 Log.i("sharonlog", mContentType + " " + myPhoto.getId() + " Done!\nAfter sending.:");
                                 Log.i("sharonlog", mContentType + " " + mContentBL.getAllContents(mContentType).toString());
 
-                                Toast.makeText(mContext, myPhoto.getId() + " - Done!",
-                                        Toast.LENGTH_LONG).show();
 
                                 if (syncing) {
                                     // If a middle of sync - get the next content to sync using HandleUnsyncedContent
@@ -883,27 +864,27 @@ public abstract class BaseManager {
 
                                         // 400
                                         case ApplicationConstants.HTTP_BAD_REQUEST:
-                                            errorMessage = "400 Bad Request";
+                                            errorMessage = mContext.getString(R.string.http_bad_request);
                                             break;
 
                                         // 403
                                         case ApplicationConstants.HTTP_FORBIDDEN:
-                                            errorMessage = "Forbidden attempt to upload";
+                                            errorMessage = mContext.getString(R.string.http_forbidden);
                                             break;
 
                                         // 405
                                         case ApplicationConstants.HTTP_METHOD_NOT_ALLOWED:
-                                            errorMessage = "Already inserted";
+                                            errorMessage = mContext.getString(R.string.http_method_not_allowed);
                                             break;
 
                                         // 409
                                         case ApplicationConstants.HTTP_CONFLICT:
-                                            errorMessage = "Conflict upon sql update";
+                                            errorMessage = mContext.getString(R.string.http_conflict);
                                             break;
 
                                         // 500
                                         case ApplicationConstants.HTTP_INTERNAL_SERVER_ERROR:
-                                            errorMessage = "Internal server error";
+                                            errorMessage = mContext.getString(R.string.http_internal_server_error);
                                             break;
 
 
@@ -932,36 +913,25 @@ public abstract class BaseManager {
                                         // Safe is unreachable, cancel all the queued requests
                                         CancelAllSyncing();
                                         Log.i("sharonlog", mContentType + " cant find safe.... retries:" + ipRequestRetriesCount);
-                                        // Cant find safe
-                                        if (ipRequestRetriesCount > 0) {
 
+
+                                        if (ipRequestRetriesCount > 0) {
                                             // Try to get the ip address of safe again - it may have been changed
                                             RequestSafeIP(myPhoto, syncing);
                                         } else {
 
-                                            //if (syncing) {
-                                                // If in a middle of sync notify by error
-                                                mServiceInstance.sendProgress(ObserverService.SYNC_ERROR);
-                                            //}
+                                            mServiceInstance.sendProgress(ObserverService.SYNC_ERROR);
                                         }
 
                                     } else if (errorMessage.contains("connectivity")) {
 
                                         // Network connectivity issue, cancel all the queued requests
                                         CancelAllSyncing();
-
-                                        //if (syncing) {
-                                            // If in a middle of sync notify by error
-                                            mServiceInstance.sendProgress(ObserverService.SYNC_ERROR);
-                                        //}
+                                        mServiceInstance.sendProgress(ObserverService.SYNC_ERROR);
 
                                     }
 
-                                    Toast.makeText(mContext, myPhoto.getId() + " - " + errorMessage,
-                                            Toast.LENGTH_LONG).show();
                                 }
-
-
                             }
                         });
             }
@@ -981,7 +951,7 @@ public abstract class BaseManager {
             requestFactory.createJsonRequest(
                     Request.Method.POST,
                     ApplicationConstants.IP_GET_API,
-                    "ip_request",
+                    ApplicationConstants.IP_REQUEST_TAG,
                     body.toString(),
                     mSystemSession.getToken(),
 
@@ -1012,8 +982,8 @@ public abstract class BaseManager {
                                     mSystemSession.setIPAddressOfSafe(ip);
                                 }
 
-                                Toast.makeText(mContext, mSystemSession.geIPAddressOfSafe(),
-                                        Toast.LENGTH_LONG).show();
+                                //Toast.makeText(mContext, mSystemSession.geIPAddressOfSafe(),
+                                //        Toast.LENGTH_LONG).show();
                                 Log.i("sharonlog", mContentType + " got ip:" + ip);
 
 
@@ -1029,8 +999,6 @@ public abstract class BaseManager {
 
                                 // Getting issues from get the ip of the safe
                                 mSystemSession.setIPAddressOfSafe(ApplicationConstants.NO_IP_VALUE);
-                                Toast.makeText(mContext, "NO-IP",
-                                        Toast.LENGTH_LONG).show();
 
                             }
 
@@ -1048,22 +1016,22 @@ public abstract class BaseManager {
 
                                     // 400
                                     case ApplicationConstants.HTTP_BAD_REQUEST:
-                                        errorMessage = "400 Bad Request";
+                                        errorMessage = mContext.getString(R.string.http_bad_request);
                                         break;
 
                                     // 403
                                     case ApplicationConstants.HTTP_FORBIDDEN:
-                                        errorMessage = "Forbidden attempt to upload";
+                                        errorMessage = mContext.getString(R.string.http_forbidden);
                                         break;
 
                                     // 409
                                     case ApplicationConstants.HTTP_CONFLICT:
-                                        errorMessage = "Conflict upon sql update";
+                                        errorMessage = mContext.getString(R.string.http_conflict);
                                         break;
 
                                     // 500
                                     case ApplicationConstants.HTTP_INTERNAL_SERVER_ERROR:
-                                        errorMessage = "Internal server error";
+                                        errorMessage = mContext.getString(R.string.http_internal_server_error);
                                         break;
 
 
@@ -1073,12 +1041,9 @@ public abstract class BaseManager {
                                 errorMessage = error.getMessage();
                             }
 
-
                             if (errorMessage != null) {
-                                Toast.makeText(mContext, errorMessage,
-                                        Toast.LENGTH_LONG).show();
+                                
                             }
-
                         }
                     });
 

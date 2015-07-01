@@ -124,7 +124,7 @@ public class LoginActivity extends Activity {
         // Init the progress bar
         mProgressDialog = new ProgressDialog(this);
         // Set Progress Dialog Text
-        mProgressDialog.setMessage("Please wait...");
+        mProgressDialog.setMessage(getString(R.string.login_progress_dialog_text));
         // Set Cancelable as False
         mProgressDialog.setCancelable(false);
     }
@@ -157,7 +157,7 @@ public class LoginActivity extends Activity {
 
                 } else {
                     // Show message
-                    ShowErrorDialog("Please fill all the required fields");
+                    ShowErrorDialog(getString(R.string.login_validation_error));
                 }
 
 
@@ -238,7 +238,7 @@ public class LoginActivity extends Activity {
                             } else {
                                 // Something is wrong with reading the token
                                 // Unexpected response
-                                ShowErrorDialog("Unexpected Login response (Not error)");
+                                ShowErrorDialog(getString(R.string.login_unexpected_error));
                                 /*Toast.makeText(getApplicationContext(), "Unexpected Login response (Not error)",
                                         Toast.LENGTH_LONG).show();*/
                             }
@@ -263,17 +263,17 @@ public class LoginActivity extends Activity {
 
                                     // 400
                                     case ApplicationConstants.HTTP_BAD_REQUEST:
-                                        errorMessage = "Username or password are incorrect.\nPlease try again";
+                                        errorMessage = getString(R.string.login_incorrect_details);
                                         break;
 
                                     // 403
                                     case ApplicationConstants.HTTP_FORBIDDEN:
-                                        errorMessage = "Forbidden request";
+                                        errorMessage = getString(R.string.http_forbidden);
                                         break;
 
                                     // 500
                                     case ApplicationConstants.HTTP_INTERNAL_SERVER_ERROR:
-                                        errorMessage = "Internal Server Error";
+                                        errorMessage = getString(R.string.http_internal_server_error);
                                         break;
 
                                 }
@@ -283,10 +283,7 @@ public class LoginActivity extends Activity {
                             }
 
                             ShowErrorDialog(errorMessage);
-                            /*if (errorMessage != null ){
-                                Toast.makeText(getApplicationContext(), errorMessage,
-                                        Toast.LENGTH_LONG).show();
-                            }*/
+                            
                         }
                     }
             );

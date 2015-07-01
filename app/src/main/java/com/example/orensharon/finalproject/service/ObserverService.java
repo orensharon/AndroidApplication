@@ -17,6 +17,8 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 
+import com.example.orensharon.finalproject.ApplicationConstants;
+import com.example.orensharon.finalproject.R;
 import com.example.orensharon.finalproject.service.observers.BaseContentObserver;
 import com.example.orensharon.finalproject.service.observers.ContactObserver;
 import com.example.orensharon.finalproject.service.observers.PhotoObserver;
@@ -111,7 +113,7 @@ public class ObserverService extends Service implements Observer {
                 .getSystemService(Context.NOTIFICATION_SERVICE);
 
         mSystemSession = new SystemSession(this);
-        //mSystemSession.setInSync(null, false);
+
         Log.e("sharontest","Service OnCreate: [" + mSystemSession.getInSync(null) +
         "," + mSystemSession.getInSync("Photo") + "," + mSystemSession.getInSync("Contact") + "]");
 
@@ -141,14 +143,6 @@ public class ObserverService extends Service implements Observer {
                 mSystemSession.setInSync(null,false);
             }
         }).start();
-
-        //if (mPhotosObserver != null) {
-        //    mPhotosObserver.CancelSyncing();
-       // }
-
-        //if (mContactsObserver != null) {
-        //    mContactsObserver.CancelSyncing();
-        //}
 
 
         // Unregister from internet connection observer
@@ -203,93 +197,7 @@ public class ObserverService extends Service implements Observer {
 
         StartObservers();
 
-        /*
-        if (mSettingsSession.getUserContentItem("Contacts")) {
 
-            // Phone book observing selected by user
-
-            Log.i("sharonlog1","Phone Book is checked.");
-            if (mContactsObserver == null) {
-
-                // Observer in init for the first time
-                Log.i("sharonlog1","mContactsObserver == null");
-                Log.i("sharonlog1","register mContactsObserver");
-                mContactsObserver = new ContactObserver(this, CONTACT_OBSERVER_URI);
-                RegisterToObserver(CONTACT_OBSERVER_URI, mContactsObserver);
-
-            } else {
-                // Means service is running
-             //   Log.i("sharonlog1","mContactsObserver != null");
-             //   Log.i("sharonlog1","mContactsObserver manage");
-                if (sync) {
-                    mContactsObserver.Manage();
-                }
-            }
-
-        } else {
-
-            // Phone book observing unselected by user
-
-            Log.i("sharonlog1","Phone Book is unchecked.");
-            if (mContactsObserver != null) {
-                // Unregister from observer
-                Log.i("sharonlog1","mContactsObserver != null");
-                Log.i("sharonlog1","unregister mContactsObserver");
-                UnregisterFromObserver(mContactsObserver);
-
-                mSystemSession.setInSync("Contact", false);
-                Log.e("sharontest","Phone book uncheck: [" + mSystemSession.getInSync(null) +
-                        "," + mSystemSession.getInSync("Photo") + "," + mSystemSession.getInSync("Contact") + "]");
-                mContactsObserver = null;
-            }
-
-        }
-
-
-
-
-        if (mSettingsSession.getUserContentItem("Photos")) {
-
-            // Photos observing selected by user
-
-            Log.i("sharonlog1","Photos is checked.");
-            if (mPhotosObserver == null) {
-
-                // Observer in init for the first time
-                Log.i("sharonlog1","mPhotosObserver == null");
-                Log.i("sharonlog1","register mPhotosObserver");
-                mPhotosObserver = new PhotoObserver(this, PHOTO_OBSERVER_URI);
-                RegisterToObserver(PHOTO_OBSERVER_URI, mPhotosObserver);
-            } else {
-                // Means service is running
-
-                if (sync) {
-                    mPhotosObserver.Manage();
-                }
-               // Log.i("sharonlog1","mPhotosObserver != null");
-               // Log.i("sharonlog1","mPhotosObserver manage");
-               // mPhotosObserver.Manage();
-            }
-
-        } else {
-
-            // Photo observing unselected by user
-
-            Log.i("sharonlog1","Photo is unchecked.");
-            if (mPhotosObserver != null) {
-                // Unregister from observer
-                Log.i("sharonlog1","mPhotosObserver != null");
-                Log.i("sharonlog1","unregister mPhotosObserver");
-                UnregisterFromObserver(mPhotosObserver);
-                mSystemSession.setInSync("Photo", false);
-                Log.e("sharontest","Photo uncheck: [" + mSystemSession.getInSync(null) +
-                        "," + mSystemSession.getInSync("Photo") + "," + mSystemSession.getInSync("Contact") + "]");
-                mPhotosObserver = null;
-            }
-
-        }*/
-
-        // Hide the notification status
         Log.e("sharontest","Service before fix: [" + mSystemSession.getInSync(null) +
                 "," + mSystemSession.getInSync("Photo") + "," + mSystemSession.getInSync("Contact") + "]");
 
@@ -298,7 +206,7 @@ public class ObserverService extends Service implements Observer {
             mSystemSession.setInSync(null, false);
         }
 
-        // Hide the notification status
+
         Log.e("sharontest","Service check if can remove noti: [" + mSystemSession.getInSync(null) +
                 "," + mSystemSession.getInSync("Photo") + "," + mSystemSession.getInSync("Contact") + "]");
 
@@ -323,8 +231,8 @@ public class ObserverService extends Service implements Observer {
 
     private void StartObservers() {
 
-        StartObserver("Contacts");
-        StartObserver("Photos");
+        StartObserver(ApplicationConstants.TYPE_OF_CONTENT_CONTACT);
+        StartObserver(ApplicationConstants.TYPE_OF_CONTENT_PHOTO);
 
     }
     public void StartObserver(String type) {
@@ -334,24 +242,24 @@ public class ObserverService extends Service implements Observer {
 
         if (mSettingsSession.getUserContentItem(type)) {
 
-            if (type.equals("Contacts")) {
+            if (type.equals(ApplicationConstants.TYPE_OF_CONTENT_CONTACT)) {
                 RegisterToObserver(CONTACT_OBSERVER_URI, mContactsObserver);
-            } else if (type.equals("Photos")) {
+            } else if (type.equals(ApplicationConstants.TYPE_OF_CONTENT_PHOTO)) {
                 RegisterToObserver(PHOTO_OBSERVER_URI, mPhotosObserver);
             }
 
-            Log.i("sharonlog","register " + type);
+            Log.i("sharonlog", "register " + type);
         }
     }
     private void StopObservers() {
-        StopObserver("Contacts");
-        StopObserver("Photos");
+        StopObserver(ApplicationConstants.TYPE_OF_CONTENT_CONTACT);
+        StopObserver(ApplicationConstants.TYPE_OF_CONTENT_PHOTO);
     }
     public void StopObserver(String type) {
 
-        if (type.equals("Contacts")) {
+        if (type.equals(ApplicationConstants.TYPE_OF_CONTENT_CONTACT)) {
             UnregisterFromObserver(mContactsObserver);
-        } else if (type.equals("Photos")) {
+        } else if (type.equals(ApplicationConstants.TYPE_OF_CONTENT_PHOTO)) {
             UnregisterFromObserver(mPhotosObserver);
         }
 
@@ -411,33 +319,22 @@ public class ObserverService extends Service implements Observer {
         // Send the broadcast message
         mBroadcaster.sendBroadcast(intent);
     }
-    public void sendError(int errorCode) {
 
-        String message = "some error";
-
-
-        if (errorCode == SAFE_UNREACHABLE) {
-            message = "Check if safe in online..";
-        } else if (errorCode == NO_INTERNET) {
-            message = "Check internet connection..";
-        }
-        sendResult(MESSAGE_FROM_SERVICE_ERROR, errorCode, message);
-    }
     public void sendProgress(int progressCode) {
 
-        String message = "some progress";
+        String message = "";
 
         if (progressCode == SYNC_ERROR) {
 
             if (mSystemSession.getInSync(null)) {
                 cancelNotification(ObserverService.SYNC_NOTIFICATION);
-                showSyncDetailsNotification("Sync error :(", android.R.drawable.stat_notify_error);
+                showSyncDetailsNotification(getString(R.string.sync_error_message), android.R.drawable.stat_notify_error);
             }
 
             mSystemSession.setInSync(null, false);
         } else if (progressCode == SYNC_DONE) {
             cancelNotification(ObserverService.SYNC_NOTIFICATION);
-            showSyncDetailsNotification("Sync complete", android.R.drawable.stat_sys_download_done);
+            showSyncDetailsNotification(getString(R.string.sync_done_messsage), android.R.drawable.stat_sys_download_done);
         } else if (progressCode == SYNC_PAUSE) {
             cancelNotification(ObserverService.SYNC_NOTIFICATION);
 
@@ -535,8 +432,8 @@ public class ObserverService extends Service implements Observer {
 
 
         Notification noti = new Notification.Builder(this)
-                .setContentTitle("KeepItSafe")
-                .setContentText("Sync is in process")
+                .setContentTitle(getString(R.string.app_name))
+                .setContentText(getString(R.string.sync_in_proccess_notification))
                 .setOngoing(true)
                 .setSmallIcon(android.R.drawable.stat_notify_sync)
                 .build();
@@ -557,7 +454,7 @@ public class ObserverService extends Service implements Observer {
 
 
         Notification noti = new Notification.Builder(this)
-                .setContentTitle("KeepItSafe")
+                .setContentTitle(getString(R.string.app_name))
                 .setContentText(message)
                 .setSmallIcon(res)
                 .setSound(alarmSound)

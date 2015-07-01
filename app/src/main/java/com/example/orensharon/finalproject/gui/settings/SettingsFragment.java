@@ -155,13 +155,13 @@ public class SettingsFragment extends Fragment {
 
             // Means there is unsynced content
             mSyncNowButton.setEnabled(true);
-            mSyncNowButton.setText("Sync now");
+            mSyncNowButton.setText(getActivity().getString(R.string.sync_now_button_text));
         } else {
 
             if (count == 0) {
                 // All Synced
                 mSyncNowButton.setBackgroundColor(getResources().getColor(R.color.online));
-                mSyncNowButton.setText("All Synced");
+                mSyncNowButton.setText(getActivity().getString(R.string.all_synced_button_text));
             }
 
             // Means service is turned off or nothing to sync

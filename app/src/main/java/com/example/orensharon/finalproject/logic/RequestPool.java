@@ -27,9 +27,6 @@ public class RequestPool {
         mContext = context;
         mRequestQueue = getRequestQueue();
 
-        // Instantiate the cache
-
-
 
     }
 

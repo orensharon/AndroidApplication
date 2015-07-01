@@ -31,7 +31,7 @@ public class ApplicationConstants
 
     // IP Getter
     public static final String IP_GETTER_IP_ADDRESS_KEY = "IP";
-
+    public static final String IP_REQUEST_TAG = "ip_request";
     // Data streaming
     public static final String CONTENT_STREAM_UPLOAD_RESULT_KEY = "UploadResult";  // MD5
 
@@ -41,9 +41,15 @@ public class ApplicationConstants
     public static final String CONTACT_DISPLAY_NAME_KEY = "DisplayName";
     public static final String CONTACT_PHOTO_URI_KEY = "PhotoId";
     public static final String CONTACT_PHONES_KEY = "Phones";
+    public static final String CONTACT_PHONE_NUMBER_KEY = "Number";
+    public static final String CONTACT_PHONE_TYPE_KEY = "Type";
     public static final String CONTACT_EMAIL_KEY = "Emails";
     public static final String CONTACT_ADDRESSES_KEY = "Addresses";
+    public static final String CONTACT_ADDRESS_ADDRESS_KEY = "Address";
+    public static final String CONTACT_ADDRESS_TYPE_KEY = "Type";
     public static final String CONTACT_ORGANIZATION_KEY = "Organization";
+    public static final String CONTACT_ORGANIZATION_TITLE_KEY = "Title";
+    public static final String CONTACT_ORGANIZATION_COMPANY_KEY = "Company";
     public static final String CONTACT_NOTES_KEY = "Notes";
 
     /* End JSON parameters keys */
@@ -92,6 +98,10 @@ public class ApplicationConstants
     public static final String NO_TOKEN_VALUE = "";
 
 
+
+    // Fragments/activities tags
+    public static final String SETTING_FRAGMENT_TAG = "SETTINGS_FRAGMENT";
+    public static final String ACCOUNT_FRAGMENT_TAG = "ACCOUNT_FRAGMENT";
 
 
 

@@ -23,6 +23,7 @@ import org.json.JSONObject;
  */
 public class Photos extends Base {
 
+    private static final int RETRIES = 1;
     private FeedPhotoAdapter mFeedPhotoAdapter;
     private ListView mFeedItemListView;
 
@@ -53,7 +54,7 @@ public class Photos extends Base {
                     // Hide progress bar
                     mProgressBar.setVisibility(View.GONE);
 
-                    String url = "http://" +
+                    String url = getString(R.string.http_prefix) +
                             mSystemSession.geIPAddressOfSafe() + ApplicationConstants.PHOTO_GET_API_SUFFIX;
 
                     LoadData(response, url);
@@ -70,7 +71,7 @@ public class Photos extends Base {
         GetListOfContents(
                 response,
                 ApplicationConstants.PHOTO_GET_LIST_API_SUFFIX,
-                1);
+                RETRIES);
         return view;
     }
 
@@ -101,7 +102,7 @@ public class Photos extends Base {
 
 
                     try {
-                        String id = jsonArray.getJSONObject(i).get("Id").toString();
+                        String id = jsonArray.getJSONObject(i).get(ApplicationConstants.CONTENT_ID_KEY).toString();
                         int realId = jsonArray.getJSONObject(i).getInt("RealId");
                         String dateCreated = jsonArray.getJSONObject(i).get("DateCreated").toString();
                         String geoLocation = jsonArray.getJSONObject(i).get("GeoLocation").toString();
@@ -130,7 +131,7 @@ public class Photos extends Base {
             } else {
 
                 // No items to show yet...
-                ShowErrorMessage("Nothing to show", R.drawable.icon_info);
+                ShowErrorMessage(getActivity().getString(R.string.feed_nothing_to_show_message), R.drawable.icon_info);
                // LoadMessageIntoSection("Nothing to show", R.drawable.icon_info);
             }
         }

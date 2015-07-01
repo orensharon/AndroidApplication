@@ -29,23 +29,5 @@ public class MyStringRequest extends StringRequest {
         mBody = body;
     }
 
-    @Override
-    public Map<String, String> getHeaders() throws AuthFailureError {
 
-        return super.getHeaders();
-    }
-
-
-
-    @Override
-    protected Map<String, String> getParams() throws AuthFailureError {
-
-        /*Map<String, String> params;
-        params = new HashMap<String, String>();
-        params.put("username","sharon");
-        params.put("password","12345");*/
-
-        //return params;
-        return super.getParams();
-    }
 }

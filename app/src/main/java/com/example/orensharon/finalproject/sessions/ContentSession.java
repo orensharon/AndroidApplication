@@ -2,14 +2,6 @@ package com.example.orensharon.finalproject.sessions;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-
-import com.example.orensharon.finalproject.utils.Helper;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 /**
  * Created by orensharon on 1/28/15.
  * This class represents the session of the settings contains:

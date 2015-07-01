@@ -1,7 +1,5 @@
 package com.example.orensharon.finalproject.service.managers;
 
-
-import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
@@ -13,7 +11,6 @@ import com.example.orensharon.finalproject.service.objects.BaseObject;
 import com.example.orensharon.finalproject.service.objects.Contact.MyAddress;
 import com.example.orensharon.finalproject.service.objects.Contact.MyContact;
 import com.example.orensharon.finalproject.service.objects.Contact.MyEmail;
-import com.example.orensharon.finalproject.service.objects.Contact.MyInstantMessenger;
 import com.example.orensharon.finalproject.service.objects.Contact.MyNotes;
 import com.example.orensharon.finalproject.service.objects.Contact.MyOrganization;
 import com.example.orensharon.finalproject.service.objects.Contact.MyPhone;
@@ -215,20 +212,6 @@ public class ContactManager extends BaseManager {
 
         while(cursor.moveToNext()) {
 
-            /*poBox = addressCur.getString(
-                    addressCur.getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.POBOX));
-            street = addressCur.getString(
-                    addressCur.getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.STREET));
-            city = addressCur.getString(
-                    addressCur.getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.CITY));
-            state = addressCur.getString(
-                    addressCur.getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.REGION));
-            postalCode = addressCur.getString(
-                    addressCur.getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.POSTCODE));
-            country = addressCur.getString(
-                    addressCur.getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.COUNTRY));
-            */
-
             type = getColumnString(cursor, ContactsContract.CommonDataKinds.StructuredPostal.TYPE);
 
 
@@ -406,41 +389,6 @@ public class ContactManager extends BaseManager {
         cur.close();
         return null;
     }
-
-
-
-
-    /*
-    public String requestPhoto(String idContact) {
-
-        Uri uri = getPhotoDataUri(idContact);
-        if (uri == null){
-            return null;
-        }
-        Cursor  cursor = mContentResolver.query(
-                uri,
-                new String[]{ContactsContract.Data.DATA15},
-                null,
-                null,
-                null
-        );
-        if (cursor == null){
-            return null;
-        }
-        try{
-            if (cursor.moveToFirst()){
-                byte [] bytes = cursor.getBlob(0);
-                //InputStream inputStream = new ByteArrayInputStream(bytes);
-                return cursor.getBlob(0).toString(); //BitmapFactory.decodeStream(inputStream);
-            }
-        } finally {
-            cursor.close();
-        }
-        return null;
-    }
-    */
-
-
 
 
 }

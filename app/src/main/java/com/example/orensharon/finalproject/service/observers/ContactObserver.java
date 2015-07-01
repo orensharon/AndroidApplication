@@ -23,17 +23,6 @@ public class ContactObserver extends BaseContentObserver {
         mManager = new ContactManager(mContext, uri, mContentType);
         this.Manage();
 
-        // Get the last contact
-        /*Object obj = mManager.requestLastContentById(MyContact.class);
-        MyContact contact = MyContact.class.cast(obj);
-        Log.e("last contact", contact.toString());*/
-
-
-        // Get all the contacts
-        /*Object obj = mManager.requestAllContent(MyContact.class);
-        List<MyContact> contacts = (List<MyContact>) obj;
-        Log.e("all contacts", contacts.toString());*/
-
 
     }
 

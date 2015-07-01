@@ -45,6 +45,8 @@ public class FeedActivity extends FragmentActivity implements IFragment {
     private static final String FEED_PHOTOS = "photos";
     private static final String FEED_CONTACTS = "contacts";
 
+    private final int FADE_TIME_MILLI = 1000;
+
     public enum Tabs {
 
         PHOTOS(FEED_PHOTOS, ContainerPhotosFragment.class),
@@ -85,7 +87,7 @@ public class FeedActivity extends FragmentActivity implements IFragment {
                 .showImageOnFail(R.drawable.image_not_found) // resource or drawable
                 .imageScaleType(ImageScaleType.EXACTLY)
                 .extraForDownloader(headers)
-                .displayer(new FadeInBitmapDisplayer(1000))
+                .displayer(new FadeInBitmapDisplayer(FADE_TIME_MILLI))
                 .cacheInMemory(false) // default
                 .cacheOnDisk(true) // default
                 .build();

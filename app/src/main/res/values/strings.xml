@@ -43,5 +43,21 @@
     <string name="format_full_friendly_date">
         <xliff:g id="month">%1$s</xliff:g>, <xliff:g id="day">%2$s</xliff:g>
     </string>
+    <string name="sync_error_message">Sync error :(</string>
+    <string name="sync_done_messsage">Sync complete</string>
+    <string name="sync_in_proccess_notification">Sync is in process</string>
+    <string name="http_bad_request">400 Bad Request</string>
+    <string name="http_forbidden">Forbidden attempt to upload</string>
+    <string name="http_conflict">Conflict upon sql update</string>
+    <string name="http_internal_server_error">Internal server error</string>
+    <string name="http_method_not_allowed">Already inserted</string>
+    <string name="http_prefix">http://</string>
+    <string name="sync_now_button_text">Sync now</string>
+    <string name="all_synced_button_text">All Synced</string>
+    <string name="login_progress_dialog_text">Please wait...</string>
+    <string name="login_validation_error">Please fill all the required fields</string>
+    <string name="login_unexpected_error">Unexpected Login response (Not error)</string>
+    <string name="login_incorrect_details">Username or password are incorrect.\nPlease try again</string>
+    <string name="feed_nothing_to_show_message">Nothing to show</string>
 
 </resources>

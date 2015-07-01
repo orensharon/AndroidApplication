@@ -85,7 +85,7 @@ public class ContentBL {
     public List<DBContent> getAllUnsyncedContents(String type) {
         return mContentDAL.getAllUnsyncedContents(type);
     }
-    /*
+
     public List<Integer> getAllErrorContents(String type) {
         return mContentDAL.getAllErrorContents(type);
     }
@@ -98,5 +98,5 @@ public class ContentBL {
         return mContentDAL.getAllSyncedContents(type);
     }
 
-    */
+
 }

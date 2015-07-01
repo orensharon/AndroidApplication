@@ -22,6 +22,7 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.orensharon.finalproject.ApplicationConstants;
 import com.example.orensharon.finalproject.gui.IFragment;
 
 import com.example.orensharon.finalproject.R;
@@ -47,7 +48,7 @@ public class SettingsActivity extends FragmentActivity implements IFragment {
         mBroadcastReceiver = new ObserverServiceBroadcastReceiver(this);
 
         if (savedInstanceState == null) {
-            LoadFragment(new SettingsFragment(),"SETTINGS_FRAGMENT", false);
+            LoadFragment(new SettingsFragment(), ApplicationConstants.SETTING_FRAGMENT_TAG, false);
         }
 
 
@@ -127,7 +128,7 @@ public class SettingsActivity extends FragmentActivity implements IFragment {
         switch (item.getItemId()) {
             case R.id.action_save:
 
-                LoadFragment(new AccountFragment(),"ACCOUNT_FRAGMENT", true);
+                LoadFragment(new AccountFragment(),ApplicationConstants.ACCOUNT_FRAGMENT_TAG, true);
                 return true;
 
             default:

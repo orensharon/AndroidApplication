@@ -1,5 +1,7 @@
 package com.example.orensharon.finalproject.service.objects.Contact;
 
+import com.example.orensharon.finalproject.ApplicationConstants;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -46,8 +48,8 @@ public class MyEmail {
         JSONObject jsonObject = new JSONObject();
 
         try {
-            jsonObject.put("Address",address);
-            jsonObject.put("Type",type);
+            jsonObject.put(ApplicationConstants.CONTACT_ADDRESS_ADDRESS_KEY,address);
+            jsonObject.put(ApplicationConstants.CONTACT_ADDRESS_TYPE_KEY,type);
             return jsonObject.toString();
         } catch (JSONException e) {
             e.printStackTrace();

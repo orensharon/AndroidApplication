@@ -101,8 +101,8 @@ public class Base extends Fragment {
                             if (errorMessage != null) {
 
                                 if (getActivity() != null) {
-                                    Toast.makeText(getActivity(), errorMessage,
-                                            Toast.LENGTH_LONG).show();
+                                    //Toast.makeText(getActivity(), errorMessage,
+                                    //        Toast.LENGTH_LONG).show();
                                 }
 
                                 if (errorMessage.contains("unreachable")) {
@@ -185,16 +185,16 @@ public class Base extends Fragment {
                             mSystemSession.setIPAddressOfSafe(ip);
 
                             if (getActivity() != null) {
-                                Toast.makeText(getActivity(), mSystemSession.geIPAddressOfSafe(),
-                                        Toast.LENGTH_LONG).show();
+                                //Toast.makeText(getActivity(), mSystemSession.geIPAddressOfSafe(),
+                                //        Toast.LENGTH_LONG).show();
                             }
                         } else {
 
                             mSystemSession.setIPAddressOfSafe(ApplicationConstants.NO_IP_VALUE);
 
                             if (getActivity() != null) {
-                                Toast.makeText(getActivity(), "NO-IP",
-                                        Toast.LENGTH_LONG).show();
+                                //Toast.makeText(getActivity(), "NO-IP",
+                                //        Toast.LENGTH_LONG).show();
                             }
                         }
                         GetListOfContents(reqResponse, api, 0);

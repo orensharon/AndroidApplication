@@ -459,8 +459,8 @@ public class ContentDAL extends SQLiteOpenHelper {
     }
 
 
-/*
-    public List<DBContent> getAllSyncedContents(String type) {
+
+    public List<Integer> getAllSyncedContents(String type) {
         List<Integer> result;
 
         result = new ArrayList<Integer>();
@@ -492,7 +492,7 @@ public class ContentDAL extends SQLiteOpenHelper {
 
 
 
-    public List<DBContent> getAllInSyncContents(String type) {
+    public List<Integer> getAllInSyncContents(String type) {
         List<Integer> result;
 
         result = new ArrayList<Integer>();
@@ -522,7 +522,7 @@ public class ContentDAL extends SQLiteOpenHelper {
         return result;
     }
 
-    public List<DBContent> getAllErrorContents(String type) {
+    public List<Integer> getAllErrorContents(String type) {
         List<Integer> result;
 
         result = new ArrayList<Integer>();
@@ -550,6 +550,6 @@ public class ContentDAL extends SQLiteOpenHelper {
 
 
         return result;
-    }*/
+    }
 
 }

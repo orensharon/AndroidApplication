@@ -46,8 +46,8 @@ public class RequestFactory {
 
         request.setTag(typeOfContent);
 
-        request.setRetryPolicy(new DefaultRetryPolicy(5000,
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        //request.setRetryPolicy(new DefaultRetryPolicy(5000,
+        //        DefaultRetryPolicy.DEFAULT_MAX_RETRIES,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
         RequestPool.getInstance(mContext).addToRequestQueue(request);
 
@@ -89,8 +89,8 @@ public class RequestFactory {
             );
 
             request.setTag(typeOfContent);
-            request.setRetryPolicy(new DefaultRetryPolicy(20000,
-                            DefaultRetryPolicy.DEFAULT_MAX_RETRIES,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+            //request.setRetryPolicy(new DefaultRetryPolicy(20000,
+            //                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
             // Adding request to queue
             RequestPool.getInstance(mContext).addToRequestQueue(request);
