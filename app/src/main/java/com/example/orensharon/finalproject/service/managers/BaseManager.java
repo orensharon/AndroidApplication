@@ -7,7 +7,7 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.provider.ContactsContract;
 import android.util.Log;
-import android.widget.Toast;
+
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -53,6 +53,9 @@ public abstract class BaseManager {
     // The upload manager of the contents
     private UploadManager mUploadManager;
 
+    // To prevent multiple simultaneity managing
+    private boolean mIsManaging;
+
     protected String mContentType;
 
 
@@ -66,7 +69,10 @@ public abstract class BaseManager {
         mSettingsSession = new SettingsSession(mContext);
         mSystemSession = new SystemSession(mContext);
 
+        mIsManaging = false;
+
         mContentType = contentType;
+
         // Init the upload manager component
         mUploadManager = new UploadManager();
 
@@ -121,6 +127,9 @@ public abstract class BaseManager {
 
             Log.i("sharonlog",mContentType + " Content may has been changed or deleted");
 
+            // Check for contents that has been edited by user
+            handleContentEdit();
+
 
 
         }
@@ -133,55 +142,71 @@ public abstract class BaseManager {
         // Checking if the content was edited, if does it marked as unsynced
         // And will update safe upon next sync
 
+        if (!mIsManaging) {
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
+            Thread t = new Thread(new Runnable() {
+                @Override
+                public void run() {
 
-                ArrayList<BaseObject> list = getAllContents();
+                    ArrayList<BaseObject> list = getAllContents();
 
-                // Flag to indicate if have edited content
-                boolean isContentsEdited = false;
+                    // Flag to indicate if have edited content
+                    boolean isContentsEdited = false;
 
-                // Run throw all contents in local replica
-                for (BaseObject content : list) {
+                    mIsManaging = true;
+
+                    // Run throw all contents in local replica
+                    for (BaseObject content : list) {
 
 
-                    DBContent dbContent = mContentBL.isContentExist(mContentType, content.getId());
-                    if (dbContent != null) {
+                        DBContent dbContent = mContentBL.isContentExist(mContentType, content.getId());
+                        if (dbContent != null) {
 
-                        Log.i("sharonlog", mContentType + " Checking content with id " + dbContent.getId());
-                        Log.i("sharonlog",mContentType + " Before checksum " + dbContent.getChecksum());
-                        Log.i("sharonlog",mContentType + " After checksum " + content.getChecksum());
+                            Log.i("sharonlog", mContentType + " Checking content with id " + dbContent.getId());
+                            Log.i("sharonlog", mContentType + " Before checksum " + dbContent.getChecksum());
+                            Log.i("sharonlog", mContentType + " After checksum " + content.getChecksum());
 
-                        // Comparing checksum of the contents
-                        if (!dbContent.getChecksum().equals(content.getChecksum())) {
+                            // Comparing checksum of the contents
+                            if (!dbContent.getChecksum().equals(content.getChecksum())) {
 
-                            // Content was edited - set new checksum, update flags
+                                // Make sure content wasn't deleted
+                                // Get the next content object by id
+                                BaseObject deviceDbContent = getContentByID(content.getId());
 
-                            Log.e("sharonlog",mContentType + " EDITED!");
+                                // Check if the content exist
+                                if (deviceDbContent != null) {
 
-                            // Set the flag of the content to be unsynced
-                            mContentBL.setChecksum(content.getId(), content.getChecksum(),mContentType);
-                            mContentBL.setSynced(content.getId(), false, mContentType);
-                            mContentBL.setDirty(content.getId(), true, mContentType);
-                            mContentBL.setDateModified(content.getId(), System.currentTimeMillis(), mContentType);
 
-                            isContentsEdited = true;
+                                    // Content was edited - set new checksum, update flags
+                                    Log.e("sharonlog", mContentType + " EDITED!");
+
+                                    // Set the flag of the content to be unsynced
+                                    mContentBL.setChecksum(content.getId(), content.getChecksum(), mContentType);
+                                    mContentBL.setSynced(content.getId(), false, mContentType);
+                                    mContentBL.setDirty(content.getId(), true, mContentType);
+                                    mContentBL.setDateModified(content.getId(), System.currentTimeMillis(), mContentType);
+
+                                    isContentsEdited = true;
+                                }
+                            }
                         }
+
                     }
 
+                    mIsManaging = false;
+
+                    // Need to enable to sync button
+                    if (isContentsEdited) {
+                        mServiceInstance.sendProgress(ObserverService.SYNC_READY);
+                    }
+
+
                 }
+            });
 
-                // Need to enable to sync button
-                if (isContentsEdited) {
-                    mServiceInstance.sendProgress(ObserverService.SYNC_READY);
-                }
+        t.start();
 
-
-            }
-        }).start();
-
+        }
     }
 
 
@@ -213,8 +238,6 @@ public abstract class BaseManager {
                 Log.i("sharonlog", mContentType + " Content List:");
                 Log.i("sharonlog", mContentBL.getAllContents(mContentType).toString());
 
-                // Check for contents that has been edited by user
-                handleContentEdit();
 
                 if (mServiceInstance.getServiceStatus() == ObserverService.STATUS_SERVICE_RUNNING) {
                     //Sync();

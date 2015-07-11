@@ -66,7 +66,7 @@ public class ContentDAL extends SQLiteOpenHelper {
     }
 
 
-
+    // Insert content from replica
     public void InsertContent(String type, int id, String checksum) {
         // When new content add to device
 
@@ -96,6 +96,7 @@ public class ContentDAL extends SQLiteOpenHelper {
         }
     }
 
+    // Delete content from replica
     public void DeleteContent(String type, int id) {
 
         String query;
@@ -106,6 +107,7 @@ public class ContentDAL extends SQLiteOpenHelper {
         mDB.close();
     }
 
+    // For all contents in type of given type - set in not in sync
     public void CancelAllInSync(String type) {
         mDB  = this.getWritableDatabase();
 
@@ -116,7 +118,8 @@ public class ContentDAL extends SQLiteOpenHelper {
         mDB.close();
     }
 
-    // Setters
+
+    // Flags setters
     public void setInSync(int id, boolean flag, String type) {
 
 
@@ -127,20 +130,6 @@ public class ContentDAL extends SQLiteOpenHelper {
 
         mDB.execSQL("UPDATE " + DBConstants.TABLE_NAME + " SET " +
                 DBConstants.COLUMN_IS_SYNCING + " = " + value +
-                " WHERE " + DBConstants.COLUMN_TYPE + " = '" + type +
-                "' AND " + DBConstants.COLUMN_ID + " = '" + id + "'");
-
-        mDB.close();
-    }
-
-    public void setChecksum(int id, String checksum, String type) {
-
-
-
-        mDB  = this.getWritableDatabase();
-
-        mDB.execSQL("UPDATE " + DBConstants.TABLE_NAME + " SET " +
-                DBConstants.COLUMN_CHECKSUM + " = " + checksum +
                 " WHERE " + DBConstants.COLUMN_TYPE + " = '" + type +
                 "' AND " + DBConstants.COLUMN_ID + " = '" + id + "'");
 
@@ -189,6 +178,22 @@ public class ContentDAL extends SQLiteOpenHelper {
         mDB.close();
     }
 
+
+    // Other setters
+    public void setChecksum(int id, String checksum, String type) {
+
+
+
+        mDB  = this.getWritableDatabase();
+
+        mDB.execSQL("UPDATE " + DBConstants.TABLE_NAME + " SET " +
+                DBConstants.COLUMN_CHECKSUM + " = " + checksum +
+                " WHERE " + DBConstants.COLUMN_TYPE + " = '" + type +
+                "' AND " + DBConstants.COLUMN_ID + " = '" + id + "'");
+
+        mDB.close();
+    }
+
     public void setDateModified(int id, long timeStamp, String type) {
 
 
@@ -202,7 +207,10 @@ public class ContentDAL extends SQLiteOpenHelper {
         mDB.close();
     }
 
-    // ID Getters
+
+
+
+    // Getters of contents by id
     public DBContent getNextToSync(String type) {
 
         DBContent result = null;
@@ -337,7 +345,6 @@ public class ContentDAL extends SQLiteOpenHelper {
         return result;
     }
 
-
     public boolean getDirty(int id, String type) {
 
         Cursor cursor;
@@ -370,6 +377,10 @@ public class ContentDAL extends SQLiteOpenHelper {
     }
 
 
+
+
+
+    // Getters of the contents according flags states
     public List<DBContent> getAllContents(String type) {
 
         List<DBContent> result;
@@ -458,8 +469,6 @@ public class ContentDAL extends SQLiteOpenHelper {
         return result;
     }
 
-
-
     public List<Integer> getAllSyncedContents(String type) {
         List<Integer> result;
 
@@ -489,8 +498,6 @@ public class ContentDAL extends SQLiteOpenHelper {
 
         return result;
     }
-
-
 
     public List<Integer> getAllInSyncContents(String type) {
         List<Integer> result;

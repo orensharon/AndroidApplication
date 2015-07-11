@@ -5,6 +5,7 @@ import java.util.TimeZone;
 
 /**
  * Created by orensharon on 5/7/15.
+ * Object represents a content give from db
  */
 public class DBContent {
 
@@ -41,6 +42,7 @@ public class DBContent {
         return "\nid:" + mId + "\ttype:" + mType + "\tchecksum:" + mChecksum + "\tsynced:" + mWasSynced +
                 "\tisSyncing:" + mIsSyncing + "\treturnedError:" + mIsReturnedError + "\tisDirty:" + mIsDirty +
                 "\tdateCreated:" + date(mDateCreated) + "\tdateModified:" + date(mDateModified);
+
     }
 
     public int getId() {
