@@ -82,6 +82,10 @@ public class SettingsActivity extends FragmentActivity implements IFragment {
 
     }
 
+    public void Evil() {
+        mObserverService.Evil();
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -191,9 +195,9 @@ public class SettingsActivity extends FragmentActivity implements IFragment {
         actionBarTitleView.setTextColor(Color.WHITE);
         Typeface font = Typeface.createFromAsset(getAssets(), "fonts/LHANDW.TTF");
 
-        //if(actionBarTitleView != null){
+
         actionBarTitleView.setTypeface(font);
-        //}
+
 
     }
 

@@ -19,6 +19,7 @@ import android.util.Log;
 
 import com.example.orensharon.finalproject.ApplicationConstants;
 import com.example.orensharon.finalproject.R;
+import com.example.orensharon.finalproject.service.db.ContentBL;
 import com.example.orensharon.finalproject.service.observers.BaseContentObserver;
 import com.example.orensharon.finalproject.service.observers.ContactObserver;
 import com.example.orensharon.finalproject.service.observers.PhotoObserver;
@@ -94,7 +95,7 @@ public class ObserverService extends Service implements Observer {
     private SettingsSession mSettingsSession;
     private SystemSession mSystemSession;
     private static boolean mIsInternetObserving = false;
-
+    private static boolean mFirstStart = true;
 
     private NotificationManager mNotificationManager;
     public final static int SYNC_NOTIFICATION = 10002;
@@ -103,8 +104,7 @@ public class ObserverService extends Service implements Observer {
     @Override
     public void onCreate() {
 
-        // Upon service creation:
-        // 1. Init broadcaster - an helper to communicate with the activity
+        // Serivce creation
 
         super.onCreate();
         mBroadcaster = LocalBroadcastManager.getInstance(this);
@@ -116,6 +116,21 @@ public class ObserverService extends Service implements Observer {
 
         Log.e("sharontest","Service OnCreate: [" + mSystemSession.getInSync(null) +
         "," + mSystemSession.getInSync("Photo") + "," + mSystemSession.getInSync("Contact") + "]");
+
+        // Raising down all in sync flags after crash
+        ContentBL contentBL = new ContentBL(this);
+
+        // If created after crash
+        // Cancel notification after service was crashed during process
+        if (mFirstStart) {
+            Log.e("sharonlog", "First creation - cancel sync");
+
+            contentBL.CancelAllInSync(ApplicationConstants.TYPE_OF_CONTENT_PHOTO);
+            contentBL.CancelAllInSync(ApplicationConstants.TYPE_OF_CONTENT_CONTACT);
+            mSystemSession.setInSync(null, false);
+            cancelNotification(SYNC_NOTIFICATION);
+            mFirstStart = false;
+        }
 
     }
 
@@ -153,6 +168,11 @@ public class ObserverService extends Service implements Observer {
         Log.i("sharonlog","Service destroyed");
 
 
+    }
+
+    public void Evil() {
+        Log.e("sharonlog","Killing 0_0");
+        int x = 1 / 0;
     }
 
     private void UnregisterFromObserver(BaseContentObserver contentObserver) {
@@ -231,14 +251,21 @@ public class ObserverService extends Service implements Observer {
 
     private void StartObservers() {
 
+
+        if( mContactsObserver == null) {
+            mContactsObserver = new ContactObserver(this, CONTACT_OBSERVER_URI);
+        }
+
+        if (mPhotosObserver == null) {
+            mPhotosObserver = new PhotoObserver(this, PHOTO_OBSERVER_URI);
+        }
+
+
         StartObserver(ApplicationConstants.TYPE_OF_CONTENT_CONTACT);
         StartObserver(ApplicationConstants.TYPE_OF_CONTENT_PHOTO);
 
     }
     public void StartObserver(String type) {
-
-        mContactsObserver = new ContactObserver(this, CONTACT_OBSERVER_URI);
-        mPhotosObserver = new PhotoObserver(this, PHOTO_OBSERVER_URI);
 
         if (mSettingsSession.getUserContentItem(type)) {
 

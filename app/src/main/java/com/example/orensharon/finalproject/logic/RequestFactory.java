@@ -16,6 +16,7 @@ import com.example.orensharon.finalproject.logic.requests.MyStringRequest;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by orensharon on 1/27/15.
@@ -46,8 +47,10 @@ public class RequestFactory {
 
         request.setTag(typeOfContent);
 
-        //request.setRetryPolicy(new DefaultRetryPolicy(5000,
-        //        DefaultRetryPolicy.DEFAULT_MAX_RETRIES,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        //request.setRetryPolicy(new DefaultRetryPolicy(
+        //        (int) TimeUnit.SECONDS.toMillis(20),
+        //        DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+        //        DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
         RequestPool.getInstance(mContext).addToRequestQueue(request);
 

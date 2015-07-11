@@ -373,6 +373,8 @@ public class ContactManager extends BaseManager {
 
 
     private String getVersion(int id) {
+
+        String result = null;
         //specify which fields of RawContacts table to be retrieved.
         String[] projection = new String[]{ContactsContract.RawContacts.VERSION};
         String selection = ContactsContract.RawContacts.CONTACT_ID + " = ?";
@@ -380,14 +382,16 @@ public class ContactManager extends BaseManager {
         //query the RawContacts.CONTENT_URI
         Cursor cur = mContext.getContentResolver().query(ContactsContract.RawContacts.CONTENT_URI, projection, selection, selectionArgs, null);
 
+        if (cur == null) {
+            return null;
+        }
         if (cur.moveToNext()) {
-            return cur.getString(cur.getColumnIndex(ContactsContract.RawContacts.VERSION));
+
+            result = cur.getString(cur.getColumnIndex(ContactsContract.RawContacts.VERSION));
+            cur.close();
         }
 
-        //Always remember to close the cursor. Otherwise it leads to side-effects.
-
-        cur.close();
-        return null;
+        return result;
     }
 
 

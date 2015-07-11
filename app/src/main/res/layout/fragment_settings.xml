@@ -5,6 +5,12 @@
     android:id="@+id/fragment_settings_container"
     style="@style/body">
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/evil"
+        android:text="Kill me"
+        android:onClick="Evil"/>
     <RelativeLayout
         style="@style/activity_row"
         android:gravity="center"

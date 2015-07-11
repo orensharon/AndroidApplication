@@ -79,6 +79,12 @@ public abstract class BaseManager {
         //mSystemSession.setInSync(mContentType, false);
         Log.e("sharontest",mContentType + " BaseManager Construector: [" + mSystemSession.getInSync(null) +
                 "," + mSystemSession.getInSync("Photo") + "," + mSystemSession.getInSync("Contact") + "]");
+
+
+        //mContentBL.setInSync(513,false,"Photo");
+        //mSystemSession.setInSync(null,false);
+        Log.i("sharonlog", mContentBL.getAllContents(mContentType).toString());
+
     }
 
 
@@ -103,8 +109,6 @@ public abstract class BaseManager {
 
             // Save the latest id of the local storage content
             mContentSession.setLatestId(mContentType, getLatestSystemID());
-
-            // TODO: check new content while sync
 
             // Save meta data of the content to database
             mContentBL.InsertContent(result);
@@ -724,7 +728,7 @@ public abstract class BaseManager {
 
                                     }
 
-                                    if (response.statusCode != ApplicationConstants.HTTP_METHOD_NOT_ALLOWED) {
+                                    //if (response.statusCode != ApplicationConstants.HTTP_METHOD_NOT_ALLOWED) {
                                         // Rising the error flag of the spec. content
                                         mContentBL.setReturnedError(myContact.getId(), true, mContentType);
 
@@ -733,7 +737,7 @@ public abstract class BaseManager {
                                             Log.i(mContentType + " sharonlog", "but Next....");
                                             HandleUnsyncedContent();
                                         }
-                                    }
+                                    //}
 
                                 } else if (error.getMessage() != null) {
                                     errorMessage = error.getMessage();
@@ -890,16 +894,17 @@ public abstract class BaseManager {
 
                                     }
 
-                                    if (response.statusCode != ApplicationConstants.HTTP_METHOD_NOT_ALLOWED) {
+                                    //if (response.statusCode != ApplicationConstants.HTTP_METHOD_NOT_ALLOWED) {
                                         // Rising the error flag of the spec. content
                                         mContentBL.setReturnedError(myPhoto.getId(), true, mContentType);
+
 
                                         if (syncing) {
                                             // If a middle of sync - get the next content to sync using HandleUnsyncedContent
                                             Log.i("sharonlog", mContentType + " but Next....");
                                             HandleUnsyncedContent();
                                         }
-                                    }
+                                    //}
 
                                 } else if (error.getMessage() != null) {
                                     errorMessage = error.getMessage();
@@ -1010,6 +1015,9 @@ public abstract class BaseManager {
                         public void onErrorResponse(VolleyError error) {
                             String errorMessage = null;
 
+                            // Canceling inSync flag
+                            mContentBL.setInSync(content.getId(), false, mContentType);
+
                             NetworkResponse response = error.networkResponse;
                             if (response != null && response.data != null) {
                                 switch (response.statusCode) {
@@ -1044,6 +1052,9 @@ public abstract class BaseManager {
                             if (errorMessage != null) {
                                 
                             }
+
+                            CancelAllSyncing();
+                            mServiceInstance.sendProgress(ObserverService.SYNC_ERROR);
                         }
                     });
 
