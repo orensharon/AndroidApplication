@@ -64,6 +64,7 @@ public class ObserverService extends Service implements Observer {
     public static final int SYNC_START = 21;
     public static final int SYNC_ERROR = 22;
     public static final int SYNC_PAUSE = 23;
+    public static final int SYNC_READY = 24;
 
     // Internal error code
     public static final int SAFE_UNREACHABLE = 40;
@@ -98,6 +99,7 @@ public class ObserverService extends Service implements Observer {
     private static boolean mFirstStart = true;
 
     private NotificationManager mNotificationManager;
+
     public final static int SYNC_NOTIFICATION = 10002;
     public final static int DETAILS_NOTIFICATION = 10003;
 
@@ -107,31 +109,77 @@ public class ObserverService extends Service implements Observer {
         // Serivce creation
 
         super.onCreate();
+
+        // To send messages to activity
         mBroadcaster = LocalBroadcastManager.getInstance(this);
 
+        // For the notifications
         mNotificationManager = (NotificationManager) this
                 .getSystemService(Context.NOTIFICATION_SERVICE);
 
+
+        // Init the sessions
         mSystemSession = new SystemSession(this);
+        mSettingsSession = new SettingsSession(getApplicationContext());
 
         Log.e("sharontest","Service OnCreate: [" + mSystemSession.getInSync(null) +
         "," + mSystemSession.getInSync("Photo") + "," + mSystemSession.getInSync("Contact") + "]");
 
-        // Raising down all in sync flags after crash
-        ContentBL contentBL = new ContentBL(this);
+        handleRecover();
 
-        // If created after crash
-        // Cancel notification after service was crashed during process
-        if (mFirstStart) {
-            Log.e("sharonlog", "First creation - cancel sync");
 
-            contentBL.CancelAllInSync(ApplicationConstants.TYPE_OF_CONTENT_PHOTO);
-            contentBL.CancelAllInSync(ApplicationConstants.TYPE_OF_CONTENT_CONTACT);
-            mSystemSession.setInSync(null, false);
-            cancelNotification(SYNC_NOTIFICATION);
-            mFirstStart = false;
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        return mBinder;
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+
+        // Service was started
+        String message = null;
+
+
+        super.onStartCommand(intent, flags, startId);
+
+        // If the service is started at the first time - send message its running
+        if (mServiceStatus == STATUS_SERVICE_NOT_RUNNING) {
+            mServiceStatus = STATUS_SERVICE_RUNNING;
+            message = SERVICE_RUNNING_MSG;
+
+            // Register to internet connection observer
+            if (!mIsInternetObserving) {
+                RegisterNetworkObserver();
+            }
         }
 
+        // Set the status anyway
+        mServiceStatus = STATUS_SERVICE_RUNNING;
+
+        StartObservers();
+
+
+        Log.e("sharontest","Service before fix: [" + mSystemSession.getInSync(null) +
+                "," + mSystemSession.getInSync("Photo") + "," + mSystemSession.getInSync("Contact") + "]");
+
+
+        // Fix the notification flag status if not in a middle of sync
+        if (!mSystemSession.getInSync("Photo") && !mSystemSession.getInSync("Contact"))  {
+            mSystemSession.setInSync(null, false);
+        }
+
+
+        Log.e("sharontest","Service check if can remove noti: [" + mSystemSession.getInSync(null) +
+                "," + mSystemSession.getInSync("Photo") + "," + mSystemSession.getInSync("Contact") + "]");
+
+        // Send message to activity
+        sendResult(2, STATUS_SERVICE_RUNNING, message);
+
+
+        // For auto start after crash
+        return START_STICKY;
     }
 
     @Override
@@ -141,6 +189,7 @@ public class ObserverService extends Service implements Observer {
 
         super.onDestroy();
 
+        // Sending service status to the activity
         mServiceStatus = STATUS_SERVICE_NOT_RUNNING;
         sendResult(2, STATUS_SERVICE_NOT_RUNNING, SERVICE_NOT_RUNNING_MSG);
 
@@ -148,7 +197,7 @@ public class ObserverService extends Service implements Observer {
         // Unregister from observers
         StopObservers();
 
-        // Wait for sync to complete before destroy ends
+        // Wait for sync to show notification
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -170,85 +219,34 @@ public class ObserverService extends Service implements Observer {
 
     }
 
-    public void Evil() {
-        Log.e("sharonlog","Killing 0_0");
-        int x = 1 / 0;
-    }
-
-    private void UnregisterFromObserver(BaseContentObserver contentObserver) {
-
-        // Unregister from given observer
-        // Also canceling existing request
-
-        if (contentObserver != null) {
-
-            //contentObserver.CancelSyncing();
-
-            Log.e("sharonlog","UnregisterFromObserver ");
-            this.getApplicationContext().getContentResolver()
-                    .unregisterContentObserver(contentObserver);
-
-        }
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-
-        // Service was started
-        String message = null;
 
 
-        mSettingsSession = new SettingsSession(getApplicationContext());
-
-        super.onStartCommand(intent, flags, startId);
-
-        // If the service is started at the first time - send message its running
-        if (mServiceStatus == STATUS_SERVICE_NOT_RUNNING) {
-            mServiceStatus = STATUS_SERVICE_RUNNING;
-            message = SERVICE_RUNNING_MSG;
-
-            // Register to internet connection observer
-            if (!mIsInternetObserving) {
-                RegisterNetworkObserver();
-            }
-        }
-        // Set the status anyway
-        mServiceStatus = STATUS_SERVICE_RUNNING;
-
-        StartObservers();
 
 
-        Log.e("sharontest","Service before fix: [" + mSystemSession.getInSync(null) +
-                "," + mSystemSession.getInSync("Photo") + "," + mSystemSession.getInSync("Contact") + "]");
+    // Rolling back the states of the 'middle-of-sync' flags
+    private void handleRecover() {
 
 
-        if (!mSystemSession.getInSync("Photo") && !mSystemSession.getInSync("Contact"))  {
+        ContentBL contentBL = new ContentBL(this);
+
+
+        // If created after crash
+        // Cancel notification after service was crashed during process
+        if (mFirstStart) {
+
+            Log.e("sharonlog", "First creation - cancel sync");
+
+            contentBL.CancelAllInSync(ApplicationConstants.TYPE_OF_CONTENT_PHOTO);
+            contentBL.CancelAllInSync(ApplicationConstants.TYPE_OF_CONTENT_CONTACT);
             mSystemSession.setInSync(null, false);
+            cancelNotification(SYNC_NOTIFICATION);
+            mFirstStart = false;
         }
-
-
-        Log.e("sharontest","Service check if can remove noti: [" + mSystemSession.getInSync(null) +
-                "," + mSystemSession.getInSync("Photo") + "," + mSystemSession.getInSync("Contact") + "]");
-
-
-        if (!mSystemSession.getInSync(null)) {
-            //cancelNotification(SYNC_NOTIFICATION);
-        }
-
-        sendResult(2, STATUS_SERVICE_RUNNING, message);
-
-
-
-
-        return START_STICKY;
-    }
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        return mBinder;
     }
 
 
+
+    // Start the observers
     private void StartObservers() {
 
 
@@ -265,6 +263,15 @@ public class ObserverService extends Service implements Observer {
         StartObserver(ApplicationConstants.TYPE_OF_CONTENT_PHOTO);
 
     }
+
+    // Stop the observers
+    private void StopObservers() {
+        StopObserver(ApplicationConstants.TYPE_OF_CONTENT_CONTACT);
+        StopObserver(ApplicationConstants.TYPE_OF_CONTENT_PHOTO);
+    }
+
+
+    // Start given observer
     public void StartObserver(String type) {
 
         if (mSettingsSession.getUserContentItem(type)) {
@@ -278,10 +285,8 @@ public class ObserverService extends Service implements Observer {
             Log.i("sharonlog", "register " + type);
         }
     }
-    private void StopObservers() {
-        StopObserver(ApplicationConstants.TYPE_OF_CONTENT_CONTACT);
-        StopObserver(ApplicationConstants.TYPE_OF_CONTENT_PHOTO);
-    }
+
+    // Stop given observer
     public void StopObserver(String type) {
 
         if (type.equals(ApplicationConstants.TYPE_OF_CONTENT_CONTACT)) {
@@ -294,16 +299,14 @@ public class ObserverService extends Service implements Observer {
 
     }
 
-    public void Sync() {
 
-        sendProgress(SYNC_START);
-        mPhotosObserver.Sync();
-        mContactsObserver.Sync();
-    }
 
+
+
+    // Register a given observer according to the given uri
     private void RegisterToObserver(Uri uri, BaseContentObserver observer) {
 
-        // Register a given observer according to the given uri
+
 
         this.getApplicationContext()
                 .getContentResolver()
@@ -312,17 +315,43 @@ public class ObserverService extends Service implements Observer {
                         observer);
     }
 
-    public static int getServiceStatus() {
+    // Unregister from given observer
+    private void UnregisterFromObserver(BaseContentObserver contentObserver) {
 
-        // Getter of service status
+        // Also canceling existing request
 
-        return mServiceStatus;
+        if (contentObserver != null) {
+
+            Log.e("sharonlog","UnregisterFromObserver ");
+
+            this.getApplicationContext().getContentResolver()
+                    .unregisterContentObserver(contentObserver);
+
+        }
     }
 
 
 
 
-    public void sendResult(int resultType, int code, String message) {
+    // Getter of service status
+    public static int getServiceStatus() {
+
+        return mServiceStatus;
+    }
+
+    // Start sync the contents
+    public void Sync() {
+
+        sendProgress(SYNC_START);
+        mPhotosObserver.Sync();
+        mContactsObserver.Sync();
+    }
+
+
+
+
+    // User recevier send messages to activity user sends functions
+    private void sendResult(int resultType, int code, String message) {
 
         // Send a broadcast to the loader activity
 
@@ -346,7 +375,6 @@ public class ObserverService extends Service implements Observer {
         // Send the broadcast message
         mBroadcaster.sendBroadcast(intent);
     }
-
     public void sendProgress(int progressCode) {
 
         String message = "";
@@ -416,8 +444,9 @@ public class ObserverService extends Service implements Observer {
             // Internet is connected
             Log.e("sharonlog","Internet connection changed : " +  internetStatus);
 
+            // TODO: remove
             // Making sure using wifi if user selected it
-            if ( !mSettingsSession.getWIFIOnly() ||
+           /* if ( !mSettingsSession.getWIFIOnly() ||
                     (internetStatus != ConnectivityManager.TYPE_MOBILE && mSettingsSession.getWIFIOnly())) {
                 if (mContactsObserver != null) {
                     mContactsObserver.Manage();
@@ -427,12 +456,11 @@ public class ObserverService extends Service implements Observer {
                     mPhotosObserver.Manage();
                 }
 
-            }
+            }*/
         }
 
 
     }
-
     private SyncUpdateMessage ExtractMessageFromData(Object data) {
 
         SyncUpdateMessage msg;
@@ -449,8 +477,6 @@ public class ObserverService extends Service implements Observer {
 
         return msg;
     }
-
-
 
 
 
@@ -507,4 +533,8 @@ public class ObserverService extends Service implements Observer {
 
 
 
+    public void Evil() {
+        Log.e("sharonlog","Killing 0_0");
+        int x = 1 / 0;
+    }
 }

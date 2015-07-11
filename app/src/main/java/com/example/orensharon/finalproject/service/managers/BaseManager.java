@@ -119,45 +119,69 @@ public abstract class BaseManager {
 
             // Content might be deleted or edited content
 
-            Log.i("sharonlog",mContentType + " Checking if was edited...");
+            Log.i("sharonlog",mContentType + " Content may has been changed or deleted");
 
-            // Checking if the content was edited
-            ArrayList<BaseObject> list = getAllContents();
-
-            // TODO: not here
-            for (BaseObject content : list) {
-
-                int key = content.getId();
-
-                DBContent dbContent = mContentBL.isContentExist(mContentType, content.getId());
-                if (dbContent != null) {
-
-                    Log.i("sharonlog",mContentType + " Checking content with id " + dbContent.getId() );
-                    Log.i("sharonlog",mContentType + " Before checksum " + dbContent.getChecksum());
-                    Log.i("sharonlog",mContentType + " After checksum " + content.getChecksum());
-
-                    // Comparing checksum of the contents
-                    if (!dbContent.getChecksum().equals(content.getChecksum())) {
-
-                        // Content was edited - set new checksum, update flags
-
-                        Log.e("sharonlog",mContentType + " EDITED!");
-
-                        result = getContentByID(key);
-                        mContentBL.setChecksum(content.getId(), content.getChecksum(),mContentType);
-                        mContentBL.setSynced(content.getId(), false, mContentType);
-                        mContentBL.setDirty(content.getId(), true, mContentType);
-                        mContentBL.setDateModified(content.getId(), System.currentTimeMillis(), mContentType);
-
-                    }
-                }
-
-            }
 
 
         }
 
         return result;
+    }
+
+    private void handleContentEdit() {
+
+        // Checking if the content was edited, if does it marked as unsynced
+        // And will update safe upon next sync
+
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                ArrayList<BaseObject> list = getAllContents();
+
+                // Flag to indicate if have edited content
+                boolean isContentsEdited = false;
+
+                // Run throw all contents in local replica
+                for (BaseObject content : list) {
+
+
+                    DBContent dbContent = mContentBL.isContentExist(mContentType, content.getId());
+                    if (dbContent != null) {
+
+                        Log.i("sharonlog", mContentType + " Checking content with id " + dbContent.getId());
+                        Log.i("sharonlog",mContentType + " Before checksum " + dbContent.getChecksum());
+                        Log.i("sharonlog",mContentType + " After checksum " + content.getChecksum());
+
+                        // Comparing checksum of the contents
+                        if (!dbContent.getChecksum().equals(content.getChecksum())) {
+
+                            // Content was edited - set new checksum, update flags
+
+                            Log.e("sharonlog",mContentType + " EDITED!");
+
+                            // Set the flag of the content to be unsynced
+                            mContentBL.setChecksum(content.getId(), content.getChecksum(),mContentType);
+                            mContentBL.setSynced(content.getId(), false, mContentType);
+                            mContentBL.setDirty(content.getId(), true, mContentType);
+                            mContentBL.setDateModified(content.getId(), System.currentTimeMillis(), mContentType);
+
+                            isContentsEdited = true;
+                        }
+                    }
+
+                }
+
+                // Need to enable to sync button
+                if (isContentsEdited) {
+                    mServiceInstance.sendProgress(ObserverService.SYNC_READY);
+                }
+
+
+            }
+        }).start();
+
     }
 
 
@@ -189,7 +213,9 @@ public abstract class BaseManager {
                 Log.i("sharonlog", mContentType + " Content List:");
                 Log.i("sharonlog", mContentBL.getAllContents(mContentType).toString());
 
-                // TODO: check for edits
+                // Check for contents that has been edited by user
+                handleContentEdit();
+
                 if (mServiceInstance.getServiceStatus() == ObserverService.STATUS_SERVICE_RUNNING) {
                     //Sync();
                 }
@@ -216,6 +242,7 @@ public abstract class BaseManager {
             // TODO: Thread
             HandleUnsyncedContent();
         } else {
+
             // Means that need to pause the sync
 
             mServiceInstance.sendProgress(ObserverService.SYNC_ERROR);

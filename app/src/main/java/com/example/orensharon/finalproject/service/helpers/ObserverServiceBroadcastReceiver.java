@@ -28,10 +28,10 @@ public class ObserverServiceBroadcastReceiver extends BroadcastReceiver {
 
 
     public ObserverServiceBroadcastReceiver(Context context) {
-
-
         mContext = context;
     }
+
+
     public void onReceive(Context context, Intent intent) {
 
         // The service sends messages to the main thread
@@ -40,68 +40,46 @@ public class ObserverServiceBroadcastReceiver extends BroadcastReceiver {
         int typeOfMessage;
         int code;
 
-        SystemSession systemSession = new SystemSession(mContext);
-        String message;
-
         SettingsActivity activity;
         activity = (SettingsActivity) mContext;
 
         SettingsFragment settingsFragment =
                 (SettingsFragment)activity.getSupportFragmentManager().findFragmentByTag("SETTINGS_FRAGMENT");
 
-
         // Determine which kind of message the service send
         typeOfMessage = intent.getIntExtra(ObserverService.TYPE_OF_MESSAGE_FROM_SERVICE_KEY, 0);
-        message = intent.getStringExtra(ObserverService.EXTRA_MESSAGE_FROM_SERVICE_KEY);
         Button syncNowButton = (Button) activity.findViewById(R.id.sync_now_button);
         RelativeLayout syncNowButtonContainer = (RelativeLayout) activity.findViewById(R.id.sync_now_button_container);
 
-        switch (typeOfMessage) {
+        if  (typeOfMessage == ObserverService.MESSAGE_FROM_SERVICE_PROGRESS) {
 
-            case ObserverService.MESSAGE_FROM_SERVICE_ERROR:
-                // Get the error code
-                code = intent.getIntExtra(ObserverService.ERROR_CODE_FROM_SERVICE_KEY, 0);
-                if (code != 0) {
-                    if (settingsFragment != null) {
+            code = intent.getIntExtra(ObserverService.PROGRESS_CODE_FROM_SERVICE_KEY, 0);
 
-                    }
-                }
-                break;
+            if (settingsFragment != null) {
 
-            case ObserverService.MESSAGE_FROM_SERVICE_PROGRESS:
-                code = intent.getIntExtra(ObserverService.PROGRESS_CODE_FROM_SERVICE_KEY, 0);
+                switch (code) {
 
-                if (code == ObserverService.SYNC_START) {
-                    // The sync is started
-                    if (settingsFragment != null) {
-
+                    case ObserverService.SYNC_START:
                         syncNowButton.setEnabled(false);
+                        break;
 
-                    }
-                }
-
-                if (code == ObserverService.SYNC_DONE) {
-
-
-                    if (settingsFragment != null) {
+                    case ObserverService.SYNC_DONE:
                         settingsFragment.initSyncButton();
-                    }
-                }
-                if (code == ObserverService.SYNC_ERROR) {
+                        break;
 
-
-                    if (settingsFragment != null) {
-                        //syncNowButton.setEnabled(true);
+                    case ObserverService.SYNC_ERROR:
                         settingsFragment.initSyncButton();
-                    }
+                        break;
+
+                    case ObserverService.SYNC_READY:
+                        syncNowButton.setBackgroundResource(R.drawable.button_sync_now_selector);
+                        settingsFragment.initSyncButton();
+                        break;
+
+
+
                 }
-
-
-                break;
+            }
         }
     }
-
-
-
-
 }

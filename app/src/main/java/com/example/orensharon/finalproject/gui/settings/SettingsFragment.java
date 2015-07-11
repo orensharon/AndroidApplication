@@ -103,6 +103,13 @@ public class SettingsFragment extends Fragment {
 
         view = inflater.inflate(R.layout.fragment_settings, container, false);
 
+        initView(view);
+
+        return view;
+    }
+
+    // Init the view components
+    private void initView(View view) {
         mContentsListView = (ListView) view.findViewById(R.id.content_list_view);
 
         mSyncNowButton = (Button)view.findViewById(R.id.sync_now_button);
@@ -125,22 +132,13 @@ public class SettingsFragment extends Fragment {
 
 
         // Check the current state before we display the list
-
         mContentsListView.setEnabled(mServiceEnableSwitch.isChecked());
 
         mWifiOnlySwitch.setEnabled(mSettingsSession.getServiceIsEnabledByUser());
         LoadContentOptionsIntoListView();
-
-
-        if (mSystemSession.getInSync(null)) {
-
-            // Show progress dialog
-        }
-
-        return view;
     }
 
-
+    // Init the status of the sync button
     public void initSyncButton() {
 
         // Init the sync now button according system state
@@ -170,6 +168,7 @@ public class SettingsFragment extends Fragment {
 
     }
 
+    // Init the sync button click listener
     private void initSyncButtonListener() {
         View.OnClickListener mSyncNowButton_onClick = new View.OnClickListener() {
 
@@ -226,6 +225,7 @@ public class SettingsFragment extends Fragment {
 
     }
 
+
     private void toggleCheckBoxEnable(boolean isChecked) {
         for(int i=0 ; i< mContentsListView.getCount() ; i++){
             CheckBox cb = (CheckBox)mContentsListView.getChildAt(i).findViewById(R.id.list_view_check_box);
@@ -248,8 +248,6 @@ public class SettingsFragment extends Fragment {
         });
 
     }
-
-
 
 
     private void LoadContentOptionsIntoListView() {
