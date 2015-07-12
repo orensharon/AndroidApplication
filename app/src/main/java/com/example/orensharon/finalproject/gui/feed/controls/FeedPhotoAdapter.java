@@ -91,7 +91,7 @@ public class FeedPhotoAdapter extends ArrayAdapter<FeedPhotoItem> {
         // Put the geo location
         String geoLocation = feedItem.getGeoLocation();
         if (geoLocation.equals("null") || geoLocation.equals("")) {
-            geoLocation = "Not available";
+            geoLocation = mContext.getString(R.string.photo_location_not_availavle);
         }
 
         //holder.textCreatedDate.setText("ID" + feedItem.getRealPhotoId());
@@ -127,40 +127,6 @@ public class FeedPhotoAdapter extends ArrayAdapter<FeedPhotoItem> {
 
             }
         });
-          /*imageLoader.loadImage(feedItem.getPhoto(), new SimpleImageLoadingListener() {
-            @Override
-            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-                finalProgressBar.setVisibility(View.GONE);
-                finalHolder.imageIcon.setImageBitmap(loadedImage);
-            }
-        });
-
-
-        //CustomPicasso.getImageLoader(mContext, mToken)
-      Picasso.with(mContext)
-                .load(feedItem.getPhoto())
-                .fit()
-                .centerCrop()
-                .tag(mContext)
-                .into(holder.imageIcon, new ImageLoadedCallback(progressBar) {
-                    @Override
-                    public void onSuccess() {
-                        if (this.progressBar != null) {
-                            this.progressBar.setVisibility(View.GONE);
-                        }
-                    }
-
-                    @Override
-                    public void onError() {
-                        if (this.progressBar != null) {
-                            this.progressBar.setVisibility(View.GONE);
-                        }
-                        CustomPicasso.getImageLoader(mContext, mToken)
-                                .load(R.drawable.image_not_found)
-                                .resize((int) dpWidth, (int) dpWidth)
-                                .into(finalHolder.imageIcon);
-                    }
-                });*/
 
 
 

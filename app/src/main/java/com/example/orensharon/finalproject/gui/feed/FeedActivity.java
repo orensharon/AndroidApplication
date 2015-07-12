@@ -42,8 +42,8 @@ public class FeedActivity extends FragmentActivity implements IFragment {
 
     // Tabs fields
     private FragmentTabHost mTabHost;
-    private static final String FEED_PHOTOS = "photos";
-    private static final String FEED_CONTACTS = "contacts";
+    public static final String FEED_PHOTOS = "photos";
+    public static final String FEED_CONTACTS = "contacts";
 
     private final int FADE_TIME_MILLI = 1000;
 
@@ -66,17 +66,21 @@ public class FeedActivity extends FragmentActivity implements IFragment {
     }
 
 
-
-
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feed);
 
         createCustomActionBarTitle();
+
+        initImageLoader();
+        initView();
+
+
+    }
+
+    // Init and configure that loading the images from safe
+    private void initImageLoader() {
 
         SystemSession systemSession = new SystemSession(this);
         HashMap<String, String> headers = new HashMap<String, String>();
@@ -101,10 +105,6 @@ public class FeedActivity extends FragmentActivity implements IFragment {
 
 
         ImageLoader.getInstance().init(config);
-
-        initView();
-
-
     }
 
     @Override
@@ -193,7 +193,7 @@ public class FeedActivity extends FragmentActivity implements IFragment {
 
         actionBarTitleView = (TextView) getWindow().findViewById(actionBarTitle);
         actionBarTitleView.setTextColor(Color.WHITE);
-        Typeface font = Typeface.createFromAsset(getAssets(), "fonts/LHANDW.TTF");
+        Typeface font = Typeface.createFromAsset(getAssets(),  ApplicationConstants.CUSTOM_FONT_PATH);
 
         //if(actionBarTitleView != null){
         actionBarTitleView.setTypeface(font);

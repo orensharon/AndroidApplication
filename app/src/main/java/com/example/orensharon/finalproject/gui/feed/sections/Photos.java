@@ -44,7 +44,13 @@ public class Photos extends Base {
 
         mProgressBar.setVisibility(View.VISIBLE);
 
+        requestDataFromSafe();
 
+        return view;
+    }
+
+    // Creating request to get data from safe
+    private void requestDataFromSafe() {
         Response.Listener response = new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -54,42 +60,37 @@ public class Photos extends Base {
                     // Hide progress bar
                     mProgressBar.setVisibility(View.GONE);
 
-                    String url = getString(R.string.http_prefix) +
+                    String url = "http://" +
                             mSystemSession.geIPAddressOfSafe() + ApplicationConstants.PHOTO_GET_API_SUFFIX;
 
                     LoadData(response, url);
-
-
                 }
-
-
             }
         };
 
-
-
+        // Get list with meta data
         GetListOfContents(
                 response,
                 ApplicationConstants.PHOTO_GET_LIST_API_SUFFIX,
                 RETRIES);
-        return view;
     }
 
 
+    // Extracting given data string into Json array and iterate over all photos
     public void LoadData(String data, String url) {
 
-        // Extracting given data string into Json array and iterate over
-        // All given photos
+
         JSONObject json;
         JSONArray jsonArray = null;
         try {
             json = new JSONObject(data);
-            jsonArray = json.getJSONArray("GetListOfPhotosResult");
+            jsonArray = json.getJSONArray(ApplicationConstants.SAFE_RESPONSE_LIST_OF_PHOTOS);
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
 
+        // Got list
         if (jsonArray != null) {
 
             int length = jsonArray.length();
@@ -97,17 +98,27 @@ public class Photos extends Base {
 
             if (length > 0 ) {
 
+                // Create array from the list
                 for (int i = 0; i < length; i++) {
 
-
-
                     try {
+                        // Read data from list
+
                         String id = jsonArray.getJSONObject(i).get(ApplicationConstants.CONTENT_ID_KEY).toString();
-                        int realId = jsonArray.getJSONObject(i).getInt("RealId");
-                        String dateCreated = jsonArray.getJSONObject(i).get("DateCreated").toString();
-                        String geoLocation = jsonArray.getJSONObject(i).get("GeoLocation").toString();
+                        int realId = jsonArray.getJSONObject(i).getInt(ApplicationConstants.PHOTO_READ_ID_KEY);
+
+                        // Read dates
+                        String dateCreated =
+                                jsonArray.getJSONObject(i).get(ApplicationConstants.PHOTO_DATE_CREATED_KEY).toString();
+
+                        // Read location
+                        String geoLocation =
+                                jsonArray.getJSONObject(i).get(ApplicationConstants.PHOTO_GEO_LOCATION_KEY).toString();
+
+                        // Read photo url
                         String photoUrl = url + id;
                         feedItems[i] = new FeedPhotoItem(i, realId,photoUrl, dateCreated,geoLocation);
+
                     } catch (JSONException e) {
                         e.printStackTrace();
                         feedItems[i] = new FeedPhotoItem(i, -1 , "", "", "");
@@ -132,7 +143,6 @@ public class Photos extends Base {
 
                 // No items to show yet...
                 ShowErrorMessage(getActivity().getString(R.string.feed_nothing_to_show_message), R.drawable.icon_info);
-               // LoadMessageIntoSection("Nothing to show", R.drawable.icon_info);
             }
         }
 

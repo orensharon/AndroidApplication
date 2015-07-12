@@ -335,7 +335,7 @@ public abstract class BaseManager {
             boolean nothingToDo = true;
 
             // If nothingToDo == false means the sync is done
-            if (mSystemSession.getInSync(null) == true) {
+            if (mSystemSession.getInSync(null)) {
                 nothingToDo = false;
             }
             mSystemSession.setInSync(mContentType, false);
@@ -618,10 +618,7 @@ public abstract class BaseManager {
                 // There is not internet connectivity in the middle of the sync
                 // Cancel the sync
 
-               // mServiceInstance.sendProgress(ObserverService.SYNC_ERROR);
-
-                //Log.e("sharontest",mContentType + " Sync no internet: [" + mSystemSession.getInSync(null) +
-                  //      "," + mSystemSession.getInSync("Photo") + "," + mSystemSession.getInSync("Contact") + "]");
+                // mServiceInstance.sendProgress(ObserverService.SYNC_ERROR);
             }
 
         }
@@ -635,7 +632,7 @@ public abstract class BaseManager {
 
             mRequestFactory.CancelByTag(mContentType);
             mContentBL.CancelAllInSync(mContentType);
-;
+
 
         }
 
@@ -653,7 +650,7 @@ public abstract class BaseManager {
         }
 
 
-        private void UploadContact(final BaseObject baseObject, final boolean syncing, final int ipRequestCount) {
+        private void UploadContact(final BaseObject baseObject, final boolean syncing, final int ipRequestRetriesCount) {
 
             // Upload a contact into the safe.
             // From a given baseObject, syncing flag to know if in a middle of syncing
@@ -716,18 +713,16 @@ public abstract class BaseManager {
 
 
                                 // Means the content was successfully uploaded
-                                mContentBL.setInSync(myContact.getId(), false, mContentType);
-                                mContentBL.setSynced(myContact.getId(), true, mContentType);
-                                mContentBL.setDirty(myContact.getId(), false, mContentType);
+                                mContentBL.setInSync(baseObject.getId(), false, mContentType);
+                                mContentBL.setSynced(baseObject.getId(), true, mContentType);
+                                mContentBL.setDirty(baseObject.getId(), false, mContentType);
 
-                                Log.i(mContentType + " sharonlog", myContact.getId() + " Done!\nAfter sending.:");
+                                Log.i(mContentType + " sharonlog", baseObject.getId() + " Done!\nAfter sending.:");
                                 Log.i(mContentType + " sharonlog", mContentBL.getAllContents(mContentType).toString());
 
-                                //Toast.makeText(mContext, myContact.getId() + " - Done!",
-                                //        Toast.LENGTH_LONG).show();
                                 if (syncing) {
                                     // If a middle of sync - get the next content to sync using HandleUnsyncedContent
-                                    Log.i("sharonlog", mContentType + " Next....");
+                                    Log.i(mContentType + " sharonlog", mContentType + " Next....");
                                     HandleUnsyncedContent();
                                 }
 
@@ -743,8 +738,8 @@ public abstract class BaseManager {
 
                                 Log.i(mContentType + " sharonlog", "ERROR!");
 
-                                // Canceling the inSync flag
-                                mContentBL.setInSync(myContact.getId(), false, mContentType);
+                                // Canceling inSync flag
+                                mContentBL.setInSync(baseObject.getId(), false, mContentType);
 
                                 NetworkResponse response = error.networkResponse;
                                 if (response != null && response.data != null) {
@@ -780,7 +775,7 @@ public abstract class BaseManager {
 
                                     //if (response.statusCode != ApplicationConstants.HTTP_METHOD_NOT_ALLOWED) {
                                         // Rising the error flag of the spec. content
-                                        mContentBL.setReturnedError(myContact.getId(), true, mContentType);
+                                        mContentBL.setReturnedError(baseObject.getId(), true, mContentType);
 
                                         if (syncing) {
                                             // If a middle of sync - get the next content to sync using HandleUnsyncedContent
@@ -801,22 +796,21 @@ public abstract class BaseManager {
                                         // Safe is unreachable, cancel all the queued requests
                                         CancelAllSyncing();
 
-                                        Log.i(mContentType + " sharonlog", "cant find safe.... retries:" + ipRequestCount);
+                                        Log.i(mContentType + " sharonlog", "cant find safe.... retries:" + ipRequestRetriesCount);
 
                                         // Cant find safe
-                                        if (ipRequestCount > 0) {
+                                        if (ipRequestRetriesCount > 0) {
                                             // Try to get the ip address of safe again - it may have been changed
-                                            RequestSafeIP(myContact, syncing);
+                                            RequestSafeIP(baseObject, syncing);
                                         } else {
 
                                             mServiceInstance.sendProgress(ObserverService.SYNC_ERROR);
 
                                         }
 
-
                                     } else if (errorMessage.contains("connectivity")) {
 
-                                        // Some issue with the network connectivity
+                                        // Network connectivity issue, cancel all the queued requests
                                         CancelAllSyncing();
                                         mServiceInstance.sendProgress(ObserverService.SYNC_ERROR);
 
@@ -886,17 +880,16 @@ public abstract class BaseManager {
 
 
                                 // Means the content was successfully uploaded
-                                mContentBL.setInSync(myPhoto.getId(), false, mContentType);
-                                mContentBL.setSynced(myPhoto.getId(), true, mContentType);
-                                mContentBL.setDirty(myPhoto.getId(), false, mContentType);
+                                mContentBL.setInSync(baseObject.getId(), false, mContentType);
+                                mContentBL.setSynced(baseObject.getId(), true, mContentType);
+                                mContentBL.setDirty(baseObject.getId(), false, mContentType);
 
-                                Log.i("sharonlog", mContentType + " " + myPhoto.getId() + " Done!\nAfter sending.:");
-                                Log.i("sharonlog", mContentType + " " + mContentBL.getAllContents(mContentType).toString());
-
+                                Log.i(mContentType + " sharonlog", baseObject.getId() + " Done!\nAfter sending.:");
+                                Log.i(mContentType + " sharonlog", mContentBL.getAllContents(mContentType).toString());
 
                                 if (syncing) {
                                     // If a middle of sync - get the next content to sync using HandleUnsyncedContent
-                                    Log.i("sharonlog", mContentType + " Next....");
+                                    Log.i(mContentType + " sharonlog", mContentType + " Next....");
                                     HandleUnsyncedContent();
                                 }
                             }
@@ -904,13 +897,13 @@ public abstract class BaseManager {
                         new Response.ErrorListener() {
                             @Override
                             public void onErrorResponse(VolleyError error) {
-
+                                // TODO: refactor
                                 String errorMessage = null;
 
-                                Log.i("sharonlog", mContentType + " ERROR!");
+                                Log.i(mContentType + " sharonlog", "ERROR!");
 
                                 // Canceling inSync flag
-                                mContentBL.setInSync(myPhoto.getId(), false, mContentType);
+                                mContentBL.setInSync(baseObject.getId(), false, mContentType);
 
                                 NetworkResponse response = error.networkResponse;
                                 if (response != null && response.data != null) {
@@ -946,36 +939,37 @@ public abstract class BaseManager {
 
                                     //if (response.statusCode != ApplicationConstants.HTTP_METHOD_NOT_ALLOWED) {
                                         // Rising the error flag of the spec. content
-                                        mContentBL.setReturnedError(myPhoto.getId(), true, mContentType);
-
+                                        mContentBL.setReturnedError(baseObject.getId(), true, mContentType);
 
                                         if (syncing) {
                                             // If a middle of sync - get the next content to sync using HandleUnsyncedContent
-                                            Log.i("sharonlog", mContentType + " but Next....");
+                                            Log.i(mContentType + " sharonlog", "but Next....");
                                             HandleUnsyncedContent();
                                         }
                                     //}
 
                                 } else if (error.getMessage() != null) {
                                     errorMessage = error.getMessage();
-
                                 }
-                                Log.i("sharonlog", errorMessage);
+
+
                                 if (errorMessage != null) {
 
                                     if (errorMessage.contains("unreachable")) {
 
                                         // Safe is unreachable, cancel all the queued requests
                                         CancelAllSyncing();
-                                        Log.i("sharonlog", mContentType + " cant find safe.... retries:" + ipRequestRetriesCount);
 
+                                        Log.i(mContentType + " sharonlog", "cant find safe.... retries:" + ipRequestRetriesCount);
 
+                                        // Cant find safe
                                         if (ipRequestRetriesCount > 0) {
                                             // Try to get the ip address of safe again - it may have been changed
-                                            RequestSafeIP(myPhoto, syncing);
+                                            RequestSafeIP(baseObject, syncing);
                                         } else {
 
                                             mServiceInstance.sendProgress(ObserverService.SYNC_ERROR);
+
                                         }
 
                                     } else if (errorMessage.contains("connectivity")) {
@@ -985,10 +979,10 @@ public abstract class BaseManager {
                                         mServiceInstance.sendProgress(ObserverService.SYNC_ERROR);
 
                                     }
-
                                 }
                             }
-                        });
+                        }
+                );
             }
         }
 

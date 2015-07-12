@@ -193,7 +193,7 @@ public class SettingsActivity extends FragmentActivity implements IFragment {
 
         actionBarTitleView = (TextView) getWindow().findViewById(actionBarTitle);
         actionBarTitleView.setTextColor(Color.WHITE);
-        Typeface font = Typeface.createFromAsset(getAssets(), "fonts/LHANDW.TTF");
+        Typeface font = Typeface.createFromAsset(getAssets(),  ApplicationConstants.CUSTOM_FONT_PATH);
 
 
         actionBarTitleView.setTypeface(font);

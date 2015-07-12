@@ -19,12 +19,13 @@ import java.util.Hashtable;
  */
 public class MD5Checksum {
 
+    public final static String MD5 = "MD5";
 
     // This helper will used after the uploading of each content.
     // The purpose of the method is to verify the integrity of the uploaded file
     public static String getMd5Hash(byte[] input) {
         try     {
-            MessageDigest md = MessageDigest.getInstance("MD5");
+            MessageDigest md = MessageDigest.getInstance(MD5);
             md.update(input);
             return getMd5Hash(md);
         } catch(NoSuchAlgorithmException e) {
@@ -64,7 +65,7 @@ public class MD5Checksum {
 
             int read = 0;
             try {
-                MessageDigest digest = MessageDigest.getInstance("MD5");
+                MessageDigest digest = MessageDigest.getInstance(MD5);
                 while( (read = is.read(buffer)) > 0) {
                     digest.update(buffer, 0, read);
                 }

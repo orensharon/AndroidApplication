@@ -59,5 +59,8 @@
     <string name="login_unexpected_error">Unexpected Login response (Not error)</string>
     <string name="login_incorrect_details">Username or password are incorrect.\nPlease try again</string>
     <string name="feed_nothing_to_show_message">Nothing to show</string>
+    <string name="message_nothing_to_show">Nothing to show</string>
+    <string name="feed_content_no_info">No info</string>
+    <string name="photo_location_not_availavle">Not available</string>
 
 </resources>

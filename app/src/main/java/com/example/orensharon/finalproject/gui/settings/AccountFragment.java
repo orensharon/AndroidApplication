@@ -1,7 +1,6 @@
 package com.example.orensharon.finalproject.gui.settings;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -15,7 +14,6 @@ import android.widget.TextView;
 import com.example.orensharon.finalproject.R;
 import com.example.orensharon.finalproject.gui.IFragment;
 import com.example.orensharon.finalproject.gui.login.LoginActivity;
-import com.example.orensharon.finalproject.service.ObserverService;
 import com.example.orensharon.finalproject.sessions.SettingsSession;
 import com.example.orensharon.finalproject.sessions.SystemSession;
 
@@ -63,6 +61,14 @@ public class AccountFragment extends Fragment {
 
         view = inflater.inflate(R.layout.fragment_settings_account, container, false);
 
+        initView(view);
+
+        return view;
+    }
+
+    // Init view objects
+    private void initView(View view) {
+
         Button logoutButton = (Button) view.findViewById(R.id.button_logout);
         TextView usernameTextView = (TextView) view.findViewById(R.id.username_text_view);
         TextView safeIPTextView = (TextView) view.findViewById(R.id.safe_ip_text_view);
@@ -72,7 +78,8 @@ public class AccountFragment extends Fragment {
         usernameTextView.setText(systemSession.getUsername());
         safeIPTextView.setText(systemSession.geIPAddressOfSafe());
 
-        View.OnClickListener mLoginButton_onClick = new View.OnClickListener() {
+        // Click listener to the logout button
+        View.OnClickListener mLogoutButton_onClick = new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -82,10 +89,10 @@ public class AccountFragment extends Fragment {
         };
 
         // Assign click listener to the Login button
-        logoutButton.setOnClickListener(mLoginButton_onClick);
-        return view;
+        logoutButton.setOnClickListener(mLogoutButton_onClick);
     }
 
+    // Logout from system
     private void LogOut() {
 
         SystemSession systemSession;

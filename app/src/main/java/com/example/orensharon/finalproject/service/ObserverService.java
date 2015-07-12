@@ -141,9 +141,6 @@ public class ObserverService extends Service implements Observer {
         // Service was started
         String message = null;
 
-
-        //super.onStartCommand(intent, flags, startId);
-
         // If the service is started at the first time - send message its running
         if (mServiceStatus == STATUS_SERVICE_NOT_RUNNING) {
             mServiceStatus = STATUS_SERVICE_RUNNING;

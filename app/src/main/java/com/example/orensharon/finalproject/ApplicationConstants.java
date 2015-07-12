@@ -12,7 +12,7 @@ public class ApplicationConstants
     public static final String LOGIN_API = ROUTING_SERVER_URL + ":9004/Login/auth/json";
     public static final String IP_GET_API = ROUTING_SERVER_URL + ":9002/IPGetterService/json";
 
-
+    // Safe endpoints
     public static final String PHOTO_INSERT_API_SUFFIX = ":9003/StreamService/Photo/Insert";
     public static final String PHOTO_UPDATE_API_SUFFIX = ":9003/StreamService/Photo/Update";
     public static final String PHOTO_GET_LIST_API_SUFFIX = ":9003/StreamService/Photo/Get";
@@ -24,6 +24,11 @@ public class ApplicationConstants
 
     /* JSON parameters keys */
 
+    // Requests types
+    public static final String IP_REQUEST_TAG = "ip_request";
+    public static final String LOGIN_REQUEST_TAG= "login";
+    public static final String LIST_REQUEST_TAG = "list_request";
+
     // Login
     public static final String AUTH_TOKEN_KEY = "Token";
     public static final String LOGIN_USERNAME_KEY = "Username";
@@ -31,12 +36,14 @@ public class ApplicationConstants
 
     // IP Getter
     public static final String IP_GETTER_IP_ADDRESS_KEY = "IP";
-    public static final String IP_REQUEST_TAG = "ip_request";
+
+
     // Data streaming
     public static final String CONTENT_STREAM_UPLOAD_RESULT_KEY = "UploadResult";  // MD5
+    public static final String SAFE_RESPONSE_LIST_OF_PHOTOS = "GetListOfPhotosResult";
+    public static final String SAFE_RESPONSE_LIST_OF_CONTACTS = "GetContactsResult";
 
-
-    // Contact properties
+    // Contact properties of JSON request
     public static final String CONTACT_ID_KEY = "Id";
     public static final String CONTACT_DISPLAY_NAME_KEY = "DisplayName";
     public static final String CONTACT_PHOTO_URI_KEY = "PhotoId";
@@ -51,6 +58,16 @@ public class ApplicationConstants
     public static final String CONTACT_ORGANIZATION_TITLE_KEY = "Title";
     public static final String CONTACT_ORGANIZATION_COMPANY_KEY = "Company";
     public static final String CONTACT_NOTES_KEY = "Notes";
+
+    // Photo properties of JSON request
+    public static final String PHOTO_READ_ID_KEY= "RealId";
+    public static final String PHOTO_DATE_CREATED_KEY= "DateCreated";
+    public static final String PHOTO_GEO_LOCATION_KEY= "GeoLocation";
+
+
+
+
+
 
     /* End JSON parameters keys */
 
@@ -112,6 +129,9 @@ public class ApplicationConstants
     public static final String LAST_ID_PHOTOS = "LAST_ID_PHOTOS";
     public static final String BACK_UP_LIST_PHOTOS = "BACK_UP_LIST_PHOTOS";
     public static final String UNSYNCED_PHOTOS = "UNSYNCED_PHOTOS";
+
+    public static final String CUSTOM_FONT_PATH = "fonts/LHANDW.TTF";
+
 
     public static enum FeedContentKeys {
         PHOTOS(PHOTO_GET_API_SUFFIX, PHOTO_GET_LIST_API_SUFFIX),

@@ -3,7 +3,6 @@ package com.example.orensharon.finalproject.gui.feed.sections;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.widget.Toast;
 
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
@@ -46,10 +45,11 @@ public class Base extends Fragment {
 
             // Don't have saved IP address - get it first
             RequestSafeIP(reqResponse, apiSuffix);
-        } else {
+        } else if (getActivity() != null && isAdded()) {
 
             // Got saved IP address
-            final String url = "http://" + mSystemSession.geIPAddressOfSafe() + apiSuffix;
+            final String url =
+                    "http://" + mSystemSession.geIPAddressOfSafe() + apiSuffix;
 
             RequestFactory requestFactory = new RequestFactory(getActivity());
             JSONObject body = new JSONObject();
@@ -58,7 +58,7 @@ public class Base extends Fragment {
             requestFactory.createJsonRequest(
                     Request.Method.POST,
                     url,
-                    "list_request",
+                    ApplicationConstants.LIST_REQUEST_TAG,
                     body.toString(),
                     mSystemSession.getToken(),
                     reqResponse,
@@ -97,14 +97,7 @@ public class Base extends Fragment {
                                 errorMessage = error.getMessage();
                             }
 
-
                             if (errorMessage != null) {
-
-                                if (getActivity() != null) {
-                                    //Toast.makeText(getActivity(), errorMessage,
-                                    //        Toast.LENGTH_LONG).show();
-                                }
-
                                 if (errorMessage.contains("unreachable")) {
                                     // Request safe IP
                                     if (ipRequestRetriesCount > 0) {
@@ -112,15 +105,9 @@ public class Base extends Fragment {
                                         RequestSafeIP(reqResponse, apiSuffix);
                                     }
                                 } else if (errorMessage.contains("connectivity")) {
-
-
                                         ShowErrorMessage("Check connection", R.drawable.icon_alert);
-
                                 }
-
                             }
-
-
                             if (ipRequestRetriesCount == 0) {
 
                                 // Loads error message into the current tab
@@ -136,21 +123,19 @@ public class Base extends Fragment {
         Bundle bundle = new Bundle();
 
         if (getParentFragment().getTag() != null) {
-            bundle.putString("section", getParentFragment().getTag().toString());
-            bundle.putString("message", message);
-            bundle.putInt("icon", icon);
+            bundle.putString(Message.MESSAGE_SECTION_KEY, getParentFragment().getTag().toString());
+            bundle.putString(Message.MESSAGE_KEY, message);
+            bundle.putInt(Message.MESSAGE_ICON_KEY, icon);
 
             fragment.setArguments(bundle);
 
 
-            ((BaseContainerFragment) getParentFragment()).replaceFragment(fragment, "message", false);
+            ((BaseContainerFragment) getParentFragment()).replaceFragment(fragment, Message.MESSAGE_KEY, false);
         }
     }
 
+    // Create a request to server to get the ip address of the safe
     protected void RequestSafeIP(final Response.Listener reqResponse, final String api) {
-
-        // Create a request to server to get the ip address of the safe
-
 
         RequestFactory requestFactory = new RequestFactory(getActivity());
         JSONObject body = new JSONObject();
@@ -158,7 +143,7 @@ public class Base extends Fragment {
         requestFactory.createJsonRequest(
                 Request.Method.POST,
                 ApplicationConstants.IP_GET_API,
-                "ip_request",
+                ApplicationConstants.IP_REQUEST_TAG,
                 body.toString(),
                 mSystemSession.getToken(),
                 new Response.Listener<String>() {
@@ -183,19 +168,8 @@ public class Base extends Fragment {
 
                         if (ip != null && ipAddressValidator.validate(ip)) {
                             mSystemSession.setIPAddressOfSafe(ip);
-
-                            if (getActivity() != null) {
-                                //Toast.makeText(getActivity(), mSystemSession.geIPAddressOfSafe(),
-                                //        Toast.LENGTH_LONG).show();
-                            }
                         } else {
-
                             mSystemSession.setIPAddressOfSafe(ApplicationConstants.NO_IP_VALUE);
-
-                            if (getActivity() != null) {
-                                //Toast.makeText(getActivity(), "NO-IP",
-                                //        Toast.LENGTH_LONG).show();
-                            }
                         }
                         GetListOfContents(reqResponse, api, 0);
                     }

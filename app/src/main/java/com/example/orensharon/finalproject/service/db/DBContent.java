@@ -14,6 +14,7 @@ public class DBContent {
     private String mType, mChecksum;
     private boolean mWasSynced, mIsSyncing, mIsReturnedError, mIsDirty;
 
+    private final String DATE_FORMAT = "HH:mm:ss MM/dd/yyyy";
 
     public DBContent(int id, String type, String checksum) {
 
@@ -65,7 +66,7 @@ public class DBContent {
         return mDateModified;
     }
     private String date(long time) {
-        SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss MM/dd/yyyy");
+        SimpleDateFormat df = new SimpleDateFormat(DATE_FORMAT);
         df.setTimeZone(TimeZone.getTimeZone("GMT"));
         String result = df.format(time);
 

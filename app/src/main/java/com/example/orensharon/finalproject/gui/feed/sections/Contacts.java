@@ -1,26 +1,19 @@
 package com.example.orensharon.finalproject.gui.feed.sections;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
 import com.android.volley.Response;
 import com.example.orensharon.finalproject.ApplicationConstants;
 import com.example.orensharon.finalproject.R;
+import com.example.orensharon.finalproject.gui.feed.FeedActivity;
 import com.example.orensharon.finalproject.gui.feed.controls.FeedContactAdapter;
 import com.example.orensharon.finalproject.gui.feed.controls.FeedContactItem;
-import com.example.orensharon.finalproject.gui.feed.controls.FeedPhotoAdapter;
-import com.example.orensharon.finalproject.gui.feed.controls.FeedPhotoItem;
 import com.example.orensharon.finalproject.gui.feed.sections.containers.BaseContainerFragment;
 
 import org.json.JSONArray;
@@ -29,6 +22,7 @@ import org.json.JSONObject;
 
 /**
  * Created by orensharon on 5/23/15.
+ * Contacts Screen bl
  */
 public class Contacts extends Base {
 
@@ -38,6 +32,7 @@ public class Contacts extends Base {
 
     private ProgressBar mProgressBar;
 
+    public final static String OBJECT_DATA = "data";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -47,6 +42,13 @@ public class Contacts extends Base {
 
         view = inflater.inflate(R.layout.fragment_feed_tab_section, container, false);
 
+        initView(view);
+        return view;
+    }
+
+    // Init contact screen components
+    private void initView(View view) {
+
         mFeedItemListView = (ListView) view.findViewById(R.id.feed_items_list_view);
         mFeedItemListView.setClickable(true);
         mFeedItemListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -54,26 +56,25 @@ public class Contacts extends Base {
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
 
-                Object o = mFeedItemListView.getItemAtPosition(position);
 
                 ContactDetails fragment = new ContactDetails();
-                // if U need to pass some data
+
                 Bundle bundle = new Bundle();
 
                 FeedContactItem feedContactItem = mFeedContactAdapter.getData(position);
-                bundle.putString("data", feedContactItem.getData());
+                bundle.putString(OBJECT_DATA, feedContactItem.getData());
 
 
                 fragment.setArguments(bundle);
-                ((BaseContainerFragment)getParentFragment()).replaceFragment(fragment, "contacts", true);
+                ((BaseContainerFragment)getParentFragment()).replaceFragment(fragment, FeedActivity.FEED_CONTACTS, true);
             }
         });
 
+        // Show the progress bar
         mProgressBar = (ProgressBar) view.findViewById(R.id.feed_loading_progress);
-
         mProgressBar.setVisibility(View.VISIBLE);
 
-
+        // Create response for the list getter
         Response.Listener response = new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -83,42 +84,30 @@ public class Contacts extends Base {
                     // Hide progress bar
                     mProgressBar.setVisibility(View.GONE);
 
-                    String url = "http://" +
-                            mSystemSession.geIPAddressOfSafe() + ApplicationConstants.CONTACT_GET_API_SUFFIX;
-
-
-                   LoadData(response);
-
-
+                    LoadData(response);
                 }
-
-
             }
         };
 
-
-
+        // Get all data
         GetListOfContents(
                 response,
                 ApplicationConstants.CONTACT_GET_API_SUFFIX,
                 1);
-        return view;
     }
 
 
+    // Extracting given data string into Json array and iterate over
     public void LoadData(String data) {
 
-        // Extracting given data string into Json array and iterate over
-        // All given photos
-        JSONObject json = null;
+        JSONObject json;
         JSONArray jsonArray = null;
         try {
             json = new JSONObject(data);
-            jsonArray = json.getJSONArray("GetContactsResult");
+            jsonArray = json.getJSONArray(ApplicationConstants.SAFE_RESPONSE_LIST_OF_CONTACTS);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
 
         if (jsonArray != null) {
 
@@ -129,17 +118,14 @@ public class Contacts extends Base {
 
                 for (int i = 0; i < length; i++) {
 
-
-
                     try {
-                        String displayName = jsonArray.getJSONObject(i).get("DisplayName").toString();
+                        String displayName =
+                                jsonArray.getJSONObject(i).get(ApplicationConstants.CONTACT_DISPLAY_NAME_KEY).toString();
                         feedItems[i] = new FeedContactItem(i, displayName, jsonArray.getJSONObject(i).toString());
                     } catch (JSONException e) {
                         e.printStackTrace();
                         feedItems[i] = new FeedContactItem(i, "","");
                     }
-
-
 
                 }
 
@@ -152,7 +138,7 @@ public class Contacts extends Base {
             } else {
 
                 // No items to show yet...
-                ShowErrorMessage("Nothing to show", R.drawable.icon_info);
+                ShowErrorMessage(getActivity().getString(R.string.message_nothing_to_show), R.drawable.icon_info);
             }
         }
 

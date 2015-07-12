@@ -41,7 +41,6 @@ public class FeedContactAdapter extends ArrayAdapter<FeedContactItem> {
             holder = new FeedItemHolder();
             holder.imageIcon = (ImageView)convertView.findViewById(R.id.icon);
             holder.textTitle = (TextView)convertView.findViewById(R.id.contact_name_text_view);
-            //holder.textScore = (TextView)convertView.findViewById(R.id.score);
 
             convertView.setTag(holder);
         }
@@ -52,9 +51,6 @@ public class FeedContactAdapter extends ArrayAdapter<FeedContactItem> {
 
         FeedContactItem feedItem = data[position];
         holder.textTitle.setText(feedItem.getDisplayName());
-        //holder.textTitle.setText(feedItem.gametype);
-        //holder.imageIcon.setImageResource(feedItem.getPhoto());
-
 
         return convertView;
     }
@@ -67,7 +63,7 @@ public class FeedContactAdapter extends ArrayAdapter<FeedContactItem> {
     {
         ImageView imageIcon;
         TextView textTitle;
-        //TextView textScore;
+
     }
 
 

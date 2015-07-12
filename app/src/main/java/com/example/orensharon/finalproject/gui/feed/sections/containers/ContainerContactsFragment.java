@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.orensharon.finalproject.R;
+import com.example.orensharon.finalproject.gui.feed.FeedActivity;
 import com.example.orensharon.finalproject.gui.feed.sections.Contacts;
 
 /**
@@ -46,6 +47,6 @@ public class ContainerContactsFragment extends BaseContainerFragment {
 
     private void initView() {
 
-        replaceFragment(new Contacts(), "contacts", false);
+        replaceFragment(new Contacts(), FeedActivity.FEED_CONTACTS, false);
     }
 }

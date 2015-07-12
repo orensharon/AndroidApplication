@@ -60,6 +60,7 @@ public class LoginActivity extends Activity {
 
     }
 
+    // When username change the username the password deleted automatic
     private void UsernameOnChangeListener() {
         mUsername.addTextChangedListener(new TextWatcher() {
 
@@ -107,7 +108,7 @@ public class LoginActivity extends Activity {
 
     private void InitLogo() {
         // Font path
-        String fontPath = "fonts/LHANDW.TTF";
+        String fontPath = ApplicationConstants.CUSTOM_FONT_PATH;
 
         // text view label
         TextView txtGhost = (TextView) findViewById(R.id.text_view_logo);
@@ -119,9 +120,10 @@ public class LoginActivity extends Activity {
         txtGhost.setTypeface(tf);
     }
 
+    // Init the progress bar
     private void initProgressDialog() {
 
-        // Init the progress bar
+
         mProgressDialog = new ProgressDialog(this);
         // Set Progress Dialog Text
         mProgressDialog.setMessage(getString(R.string.login_progress_dialog_text));
@@ -129,8 +131,10 @@ public class LoginActivity extends Activity {
         mProgressDialog.setCancelable(false);
     }
 
+
+    // create click listener
     private void LoginButtonListener() {
-        // create click listener
+
 
         Button loginButton = (Button) findViewById(R.id.button_login);
 
@@ -168,6 +172,7 @@ public class LoginActivity extends Activity {
         loginButton.setOnClickListener(mLoginButton_onClick);
     }
 
+    // Make attempt to login
     private void LoginAttempt(final String username, final String password) {
 
         JSONObject body;
@@ -292,9 +297,9 @@ public class LoginActivity extends Activity {
 
     }
 
-    private void ShowErrorDialog(String message) {
 
-        // Custom 'sorry' dialog with a return button
+    // Custom 'sorry' dialog with a return button
+    private void ShowErrorDialog(String message) {
 
         final Dialog dialog;
 
@@ -302,10 +307,6 @@ public class LoginActivity extends Activity {
 
         // Set the dialog style - without a title bar
         dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-
-        // Set the dialog background to transparent
-        //dialog.getWindow().setBackgroundDrawable(
-        //        new ColorDrawable(Color.TRANSPARENT));
 
         // Get the dialog layout
         dialog.setContentView(this.getLayoutInflater().inflate(R.layout.dialog_login_error, null));
@@ -331,6 +332,7 @@ public class LoginActivity extends Activity {
         // Show the dialog
         dialog.show();
     }
+
 
     private void LoadFeedActivity() {
 

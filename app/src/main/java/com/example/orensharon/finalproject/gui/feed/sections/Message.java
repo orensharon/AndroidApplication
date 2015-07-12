@@ -10,6 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.orensharon.finalproject.R;
+import com.example.orensharon.finalproject.gui.feed.FeedActivity;
 import com.example.orensharon.finalproject.gui.feed.sections.containers.BaseContainerFragment;
 import com.example.orensharon.finalproject.gui.feed.sections.containers.ContainerContactsFragment;
 import com.example.orensharon.finalproject.gui.feed.sections.containers.ContainerPhotosFragment;
@@ -22,17 +23,26 @@ public class Message extends Fragment {
     private TextView mMessageTextView, mRetryTextView;
     private ImageView mMessageImageView;
 
+    public final static String MESSAGE_KEY = "message";
+    public final static String MESSAGE_ICON_KEY = "icon";
+    public final static String MESSAGE_SECTION_KEY = "section";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
 
         View view;
-
-
         view = inflater.inflate(R.layout.fragment_feed_error, container, false);
 
-        // Init message components
+        initView(view);
+
+        return view;
+    }
+
+    // Init message components
+    private void initView(View view) {
+
+
         mMessageTextView = (TextView) view.findViewById(R.id.feed_section_message_text_view);
         mRetryTextView = (TextView) view.findViewById(R.id.retry_load_content_text_view);
         mMessageImageView = (ImageView) view.findViewById(R.id.feed_section_message_image_view);
@@ -41,21 +51,17 @@ public class Message extends Fragment {
         Bundle bundle = getArguments();
 
         // Set the message
-        mMessageTextView.setText(bundle.getString("message"));
-        mMessageImageView.setImageResource(bundle.getInt("icon"));
+        mMessageTextView.setText(bundle.getString(MESSAGE_KEY));
+        mMessageImageView.setImageResource(bundle.getInt(MESSAGE_ICON_KEY));
 
         // Init retry link
-        initRetryOnClick(bundle.getString("section"));
-
-        return view;
+        initRetryOnClick(bundle.getString(MESSAGE_SECTION_KEY));
     }
 
 
+    // Create message retry click listener
     private void initRetryOnClick(final String section)
     {
-
-        // create click listener
-
         final View.OnClickListener mRetryTextView_onClick = new View.OnClickListener() {
 
             @Override
@@ -65,18 +71,15 @@ public class Message extends Fragment {
                 Fragment fragment = null;
 
 
-                if (section.equals("photos")) {
+                if (section.equals(FeedActivity.FEED_PHOTOS)) {
                     fragment = new ContainerPhotosFragment();
-                } else if (section.equals("contacts")) {
+                } else if (section.equals(FeedActivity.FEED_CONTACTS)) {
                     fragment = new ContainerContactsFragment();
                 }
 
                 if (fragment != null) {
                     ((BaseContainerFragment) getParentFragment()).replaceFragment(fragment, section, false);
                 }
-
-
-
             }
         };
 

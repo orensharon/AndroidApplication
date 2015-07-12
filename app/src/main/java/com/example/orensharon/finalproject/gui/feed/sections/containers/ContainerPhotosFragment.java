@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.orensharon.finalproject.R;
+import com.example.orensharon.finalproject.gui.feed.FeedActivity;
 import com.example.orensharon.finalproject.gui.feed.sections.Photos;
 
 /**
@@ -52,6 +53,6 @@ public class ContainerPhotosFragment extends BaseContainerFragment {
 
     private void initView() {
 
-        replaceFragment(new Photos(), "photos", false);
+        replaceFragment(new Photos(), FeedActivity.FEED_PHOTOS, false);
     }
 }
